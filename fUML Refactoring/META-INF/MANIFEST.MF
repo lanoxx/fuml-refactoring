@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FUML_Refactoring
+Bundle-SymbolicName: fUML_Refactoring
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.modelexecution.fumldebug;bundle-version="1.0.0",
+ org.eclipse.papyrus.infra.core;bundle-version="0.10.2",
+ org.modelexecution.fuml.convert;bundle-version="1.0.0",
+ org.eclipse.uml2.uml;bundle-version="4.1.2",
+ org.junit;bundle-version="4.11.0",
+ org.modelexecution.fumldebug.papyrus;bundle-version="1.0.0",
+ org.eclipse.ocl.uml;bundle-version="4.0.100",
+ org.eclipse.ocl.ecore;bundle-version="3.3.0"
