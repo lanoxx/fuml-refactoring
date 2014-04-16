@@ -1,4 +1,0 @@
-import uml : 'http://www.eclipse.org/uml2/4.0.0/UML#/'
-
-context uml::Class
-	inv CamelCaseName: name.at(0)=name.at(0).toUpperCase()
