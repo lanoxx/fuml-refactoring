@@ -3,12 +3,14 @@ package org.modelexecution.fuml.refactoring;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EEnumLiteral;
+import org.eclipse.emf.ecore.ENamedElement;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
@@ -16,8 +18,8 @@ import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.ocl.OCLInput;
 import org.eclipse.ocl.ParserException;
+import org.eclipse.ocl.Query;
 import org.eclipse.ocl.ecore.CallOperationAction;
 import org.eclipse.ocl.ecore.Constraint;
 import org.eclipse.ocl.ecore.EcoreEnvironmentFactory;
@@ -26,6 +28,8 @@ import org.eclipse.ocl.expressions.OCLExpression;
 import org.eclipse.ocl.helper.OCLHelper;
 import org.eclipse.ocl.uml.OCL;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.internal.impl.ActivityImpl;
+import org.eclipse.uml2.uml.internal.impl.ClassImpl;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
 public class OclLoader {
@@ -44,26 +48,46 @@ public class OclLoader {
 		org.eclipse.ocl.OCL<EPackage,EClassifier,EOperation,EStructuralFeature,EEnumLiteral,EParameter,
 		                    EObject,CallOperationAction,SendSignalAction,org.eclipse.ocl.ecore.Constraint,EClass,EObject>
 			ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
-		
-		boolean valid = false;
+
 		OCLExpression<EClassifier> query = null;
+		EClassifier context = null;
 		try {
+			for(EObject eclass : set.getResources().get(0).getContents()) {
+				for (EObject object : eclass.eContents()) {
+					System.out.println(object.getClass().getName());
+					if(object instanceof ClassImpl) {
+						ClassImpl clazz = (ClassImpl) object;
+						if(clazz.getName().equals("InsurancePolicy")) {
+							context = clazz.eClass();
+						}
+						
+					}
+					
+				}
+				
+			}
+			
 		    // create an OCL helper object
 		    OCLHelper<EClassifier, ?, ?, Constraint> helper = ocl.createOCLHelper();
 		    // set the OCL context classifier
-		    helper.setContext(null);
-		    query = helper.createQuery("true");
-		    
-		    valid = true;
+		    helper.setContext(context); //UMLPackage.Literals.CLASS
+		    System.out.println(helper.getContextClassifier());
+		    query = helper.createQuery("name.at(1)=name.at(1).toUpperCase()");
 		} catch ( ParserException e) {
 			e.printStackTrace();
 		}
+		
+		if(query != null) {
+		    // use the query expression parsed before to create a Query
+		    Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
 
-		if(valid) {
-			System.out.println("true");
+		    //Collection<?> result = (Collection<?>) 
+		    System.out.println(eval.evaluate(set));
+		    //System.out.println(result);
 		}
+		return null;
 		
-		
+		/*
 		//Load file stream for ocl file
 		InputStream stream;
 		try {
@@ -73,7 +97,7 @@ public class OclLoader {
 			return constraints; }
 		catch (FileNotFoundException e) { e.printStackTrace(); }
 		catch (ParserException e) { e.printStackTrace(); }
-		return null;
+		return null;*/
 	}
 
 	public static void main(String[] args) {
