@@ -1,4 +1,4 @@
-package org.modelexecution.fuml.refactoring;
+package org.modelexecution.fuml.refactoring.experiments;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

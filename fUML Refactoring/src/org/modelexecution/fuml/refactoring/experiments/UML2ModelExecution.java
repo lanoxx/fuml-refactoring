@@ -1,4 +1,4 @@
-package org.modelexecution.fuml.refactoring;
+package org.modelexecution.fuml.refactoring.experiments;
 
 /*
  * Copyright (c) 2012 Vienna University of Technology.

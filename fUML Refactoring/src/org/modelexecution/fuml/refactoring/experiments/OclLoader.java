@@ -1,4 +1,4 @@
-package org.modelexecution.fuml.refactoring;
+package org.modelexecution.fuml.refactoring.experiments;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.ocl.ParserException;
@@ -27,10 +28,12 @@ import org.eclipse.ocl.ecore.SendSignalAction;
 import org.eclipse.ocl.expressions.OCLExpression;
 import org.eclipse.ocl.helper.OCLHelper;
 import org.eclipse.ocl.uml.OCL;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.internal.impl.ActivityImpl;
 import org.eclipse.uml2.uml.internal.impl.ClassImpl;
 import org.eclipse.uml2.uml.resource.UMLResource;
+import org.modelexecution.fuml.refactoring.refactorings.ExtractSuperClass;
 
 public class OclLoader {
 
@@ -55,16 +58,14 @@ public class OclLoader {
 			for(EObject eclass : set.getResources().get(0).getContents()) {
 				for (EObject object : eclass.eContents()) {
 					System.out.println(object.getClass().getName());
-					if(object instanceof ClassImpl) {
-						ClassImpl clazz = (ClassImpl) object;
-						if(clazz.getName().equals("InsurancePolicy")) {
-							context = clazz.eClass();
-						}
-						
-					}
-					
+					context = object.eClass();
+//					if(object instanceof ClassImpl) {
+//						ClassImpl clazz = (ClassImpl) object;
+//						if(clazz.getName().equals("InsurancePolicy")) {
+//							context = clazz.eClass();
+//						}
+//					}
 				}
-				
 			}
 			
 		    // create an OCL helper object
