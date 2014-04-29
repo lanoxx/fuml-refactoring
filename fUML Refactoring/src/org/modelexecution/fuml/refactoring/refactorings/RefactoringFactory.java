@@ -7,7 +7,7 @@ public class RefactoringFactory {
 	public static Refactorable getInstance(String refactoring) {
 		switch(refactoring) {
 		case "extractSuperclass": {
-			 return new ExtractSuperClass();
+			 return new ExtractSuperClass2();
 		}
 		default: return null;
 		}

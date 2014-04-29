@@ -1,12 +1,22 @@
 package org.modelexecution.fuml.refactoring;
 
-import java.util.Set;
+import java.util.List;
 
-import org.eclipse.ocl.uml.OCL;
-import org.eclipse.uml2.uml.Class;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.ocl.OCL;
+import org.eclipse.ocl.ecore.Constraint;
 
 public interface Refactorable {
-	boolean checkPreCondition(OCL ocl);
-	boolean performRefactoring(Set<Class> allClasses) throws RefactoringException;
-	boolean checkPostCondition(OCL ocl);
+	boolean checkPreCondition(
+			OCL<?, EClassifier, ?, ?, ?, ?, ?, ?, ?, Constraint, EClass, EObject> ocl,
+			Resource resource, String name);
+
+	boolean performRefactoring(Resource resource, String superClassName,
+			List<String> classNames) throws RefactoringException;
+
+	boolean checkPostCondition(
+			OCL<?, EClassifier, ?, ?, ?, ?, ?, ?, ?, Constraint, EClass, EObject> ocl);
 }
