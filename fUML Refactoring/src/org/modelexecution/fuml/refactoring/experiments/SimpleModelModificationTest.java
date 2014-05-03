@@ -7,11 +7,13 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.ocl.expressions.ExpressionsFactory;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -20,6 +22,7 @@ import org.eclipse.ocl.ParserException;
 import org.eclipse.ocl.Query;
 import org.eclipse.ocl.ecore.Constraint;
 import org.eclipse.ocl.ecore.EcoreEnvironmentFactory;
+import org.eclipse.ocl.expressions.Variable;
 import org.eclipse.ocl.expressions.OCLExpression;
 import org.eclipse.ocl.helper.OCLHelper;
 import org.eclipse.uml2.uml.Activity;
@@ -31,16 +34,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SimpleModelModificationTest {
-    private static final String MODEL_PATH = "models/extractSuperclass/extractSuperclass.uml";
+    private static final String MODEL_PATH = "models/extractSuperclass.uml";
 
     private static final String OCL_PRE_CONSTRAINT = "self.name <> '%s'";
-    // FIXME Query works in OCL console but returns an exception here.
-    private static final String OCL_POST_CONSTRAINT = "self.oclIsKindOf(%s)";
+    private static final String OCL_POST_CONSTRAINT = "self.general->includes(newSuperClass)";
 
     /** The current resource. */
     private ResourceSet resourceSet;
     private Resource resource;
-    private OCL<?, EClassifier, ?, ?, ?, ?, ?, ?, ?, Constraint, EClass, EObject> ocl;
+    private OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
     private OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
     /**
@@ -165,12 +167,18 @@ public class SimpleModelModificationTest {
      */
     private boolean checkPostconstraints(Class superClass) throws ParserException {
         helper.setContext(UMLPackage.eINSTANCE.getClass_());
-
+        
         for (Class clazz : loadAllClasses()) {
             if (clazz.getName().equals("Truck") || clazz.getName().equals("Car")) {
-                // FIXME This query can not be parsed due to a SemanticException with message
-                // "Unknown enumeration literal (Vehicle)"
-                helper.createQuery(String.format(OCL_POST_CONSTRAINT, superClass.getQualifiedName()));
+            	Variable<EClassifier, EParameter> variable = ExpressionsFactory.eINSTANCE.createVariable();
+            	variable.setName("newSuperClass");
+            	variable.setType(UMLPackage.Literals.CLASSIFIER);
+            	ocl.getEnvironment().addElement(variable.getName(), variable, true);
+                OCLExpression<EClassifier> query = helper.createQuery(OCL_POST_CONSTRAINT);
+                Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+                eval.getEvaluationEnvironment().add("newSuperClass", superClass);
+                if (!eval.check(clazz))
+                	return false;
             }
         }
         return true;
