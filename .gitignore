@@ -12,8 +12,11 @@
 hs_err_pid*
 
 # Latex
-.aux
-.log
+*.aux
+*.bbl
+*.blg
+*.log
+*.toc
 /bin
 
 # Eclipse files
