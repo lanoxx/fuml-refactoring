@@ -19,6 +19,10 @@ hs_err_pid*
 *.toc
 /bin
 
+#JabRef
+*.bib.bak
+
 # Eclipse files
 .settings
 *.classpath
+*.emf*.xml
