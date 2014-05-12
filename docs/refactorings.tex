@@ -1,29 +1,34 @@
-%\documentclass{llncs}
-\documentclass[a4paper,10pt]{article}
+\documentclass{llncs}
 
 \usepackage{url}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{verbatim}
-%\usepackage[lined,linesnumbered,algochapter]{algorithm2e}
+\usepackage[lined,linesnumbered,algochapter]{algorithm2e}
 \usepackage{tikz}
 \usetikzlibrary{arrows,automata}
 \usepackage{xspace}
+\usepackage{todonotes}          % Package for working draft comments
 
-\usepackage[margin=1.5cm]{geometry}
+\usepackage{ngerman}
+\usepackage[ngerman, english]{babel}
+\usepackage{bibgerm,cite}       % Deutsche Bezeichnungen, Automatisches Zusammenfassen von Literaturstellen
+\usepackage[ngerman]{varioref}  % Querverweise
+
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{3}
 
 % define custom macros for specific formats or names
 \newcommand{\uml}[1]{\texttt{#1}}
 \newcommand{\cd}{\textsf{Class Diagram}}
 
 \begin{document}
-%\pagestyle{plain}
-%\pagenumbering{roman}
-
-\twocolumn
+\pagestyle{plain}
+\pagenumbering{roman}
 
 \title{fUML Refactoring with EMF\footnote{This work has been created in the context of the course ``Advanced Model Engineering'' (188.952) in SS14.}}
-\author{Sebastian Geiger (1127054) \\ Kristof Meixner (...)}
+
+\author{Sebastian Geiger (1127054) \and Kristof Meixner (9725208)}
 %\institute{Business Informatics Group\\Vienna Technical University}
 
 \maketitle
@@ -35,6 +40,12 @@ parts such as activity diagrams. In this work we will present basic concepts for
 preserved through the use of OCL constraints. Finally we conclude with a discussion of EMF.Refactor, which shows how such refactorings
 can be included into Eclipse GUIs such as EMF tree editor or Papyrus.
 \end{abstract}
+
+\tableofcontents
+%\thispagestyle{plain}
+\newpage
+
+\pagenumbering{arabic}
 
 \section{Introduction}
 fUML adds semantics to UML models that make it possible to create semantically closed models which can be executed on the model level. With
