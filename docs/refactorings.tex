@@ -46,20 +46,44 @@ can be included into Eclipse GUIs such as EMF tree editor or Papyrus.
 \pagenumbering{arabic}
 
 \section{Introduction}
+% what is refactoring and what does it mean in the context of models?
+% what is fuml? what does fuml consist for diagram types?
+% what is ocl? why do we use it and what for?
 fUML adds semantics to UML models that make it possible to create semantically closed models which can be executed on the model level. With
 fUML classic refactorings are not enough to refactor those models as they do not support the refactoring of the dynamic aspects of models
 such as activity diagrams.
 
 \section{Motivation}
-
+% what do we want to achieve?
+% Why is it interesting to refactor models
+% Why is it important in fUML that models remain consistent -> to preserve executability
+% It is possible to use pre and post conditions in OCL to guarantee the semantic preservation of models during refactorings.
 
 \section{Refactorings Examples}
+% take model refactorings of markovic paper
+% insurance example
+% create example that supports all proposed refactorings
+\begin{itemize}
+\item Rename Class
+\item Rename Method
+\item Rename Variable
+\item Add / Remove Parameter
+\item Encapsulate Field
+\item Pull up field
+\end{itemize}
+
 In this section we will present some general refactorings such as the ``extract superclass'' refactoring.
 
 \section{Refactoring of fUML diagrams}
+% abstract syntax of fUML and changes in diagrams
+% ecore and ocl (with code examples)
 In this section we will present some general refactorings
 
 \section{Tool chain and implementation}
+% usage of fUML reference implementation of BIG
+% how to load models?
+% how to execute models?
+% how to apply queries and changes?
 
 \subsection{Model refactoring}
 Describe our tool chain, how we created models, how we load them, what information of the abstract syntax we use for refactoring, etc.
@@ -68,24 +92,14 @@ Describe our tool chain, how we created models, how we load them, what informati
 Describe what we did with EMF.Refactor.
 
 \section{Related Works}
+% papers we read
+% what we did that they didnt
 We have compared our works with several other available papers. In [..] there is a discussion of uml refactings which covers ....
 
 some related works such as ...
 
 \section{Conclusion}
 We conclude this paper with...
-
-\section{Bibliographic Issues}
-
-\subsection{Literature Search}
-
-Information on online libraries and literature search, e.g., interesting magazines, journals, conferences, and organizations may be found at \url{http://www.big.tuwien.ac.at/teaching/info.html}.
-
-\subsection{BibTeX}
-
-BibTeX should be used for referencing.
-
-The LaTeX source document of this pdf document provides you with different samples for references to journals~\cite{jour:B2BServices}, conference papers~\cite{proc:TheWebMLApproach}, books~\cite{book:umlatwork}, book chapters~\cite{incoll:ErhardKonrad1992}, electronic standards~\cite{man:BPEL}, dissertations~\cite{phdthesis:manuelWimmer}, masters' theses~\cite{mast:AUMLProfile}, and web sites~\cite{misc:BIGWebsite}. The respective BibTeX entries may be found in the file \texttt{references.bib}. For administration of the BibTeX references we recommend \url{http://www.citeulike.org} or JabRef for offline administration, respectively.
 
 \bibliographystyle{acm}
 \bibliography{references}
