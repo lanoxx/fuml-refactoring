@@ -10,8 +10,8 @@
 \usepackage{xspace}
 \usepackage{todonotes}          % Package for working draft comments
 
-\usepackage{bibgerm,cite}       % Deutsche Bezeichnungen, Automatisches Zusammenfassen von Literaturstellen
-\usepackage[ngerman]{varioref}  % Querverweise
+
+\usepackage[english]{babel}
 
 \setcounter{secnumdepth}{2}
 \setcounter{tocdepth}{3}
@@ -27,7 +27,7 @@
 \title{fUML Refactoring with EMF\footnote{This work has been created in the context of the course ``Advanced Model Engineering'' (188.952) in SS14.}}
 
 \author{Sebastian Geiger (1127054) \and Kristof Meixner (9725208)}
-%\institute{Business Informatics Group\\Vienna Technical University}
+\institute{Business Informatics Group\\Vienna Technical University}
 
 \maketitle
 
@@ -79,7 +79,19 @@ In this section we will present some general refactorings such as the ``extract 
 % ecore and ocl (with code examples)
 In this section we will present some general refactorings
 
+\begin{figure}
+ \includegraphics{images/addCar-activity_diagram}
+\end{figure}
+
+\begin{figure}
+ \includegraphics{images/addCar-class_diagram.pdf}
+\end{figure}
+
+
+
 \section{Tool chain and implementation}
+For our tool chain we have relied on the moliz\footnote{source...} repository, mainly for the ability to execute the fUML models with
+a virtual machine. The models are stored as XMI 
 % usage of fUML reference implementation of BIG
 % how to load models?
 % how to execute models?
