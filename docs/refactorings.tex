@@ -32,29 +32,57 @@
 \maketitle
 
 \begin{abstract}
-In this work we will present some ideas and concepts for refactoring fUML with EMF. The main contribution of this work is the extension of
-existing UML refactorings to cover not only the static aspect of UML such as class diagrams but also include refactorings for dynamic
+In this work we will present some ideas and concepts for the refactoring of fUML. The main contribution of this work is the extension of
+existing UML refactorings to cover not only the static aspect of UML such as class diagrams but to also include refactorings for dynamic
 parts such as activity diagrams. In this work we will present basic concepts for refactoring with EMF and show how model semantics can be
-preserved through the use of OCL constraints. Finally we conclude with a discussion of EMF.Refactor, which shows how such refactorings
-can be included into Eclipse GUIs such as EMF tree editor or Papyrus.
+preserved through the use of OCL constraints. In the remainder of the paper we then present our tool chain and the used technologies
+such as EMF and Ecore and how we used them for refactoring. We also present a discussion of EMF.Refactor, which shows how such refactorings
+can be made available in the Eclipse GUIs such as the EMF tree editor or Papyrus.
 \end{abstract}
 
 \tableofcontents
-%\thispagestyle{plain}
 \newpage
 
 \pagenumbering{arabic}
 
 \section{Introduction}
+The concept of refactoring is an important part of software development which should be included in every cycle of iterative and evolutionary
+software development. It main goal is to reorganise software components to achieve better design, lower coupling, higher cohesion, and other
+attributes which make up good software design. The important aspect of refactoring is that no additional features are introduced during
+a refactoring step and the semantics of the software are maintained; no additional bugs or errors are introduced. Refactoring can not only
+be applied to source code but as well to models such as UML or fUML models. In the context of models such as class diagrams, it means that
+the structure of the diagram is rearranged to achieve a better design. This included changing superclass releationships, moving attributes
+and methods to different classes or adding new interfaced. A catalogue of possible UML refactorings can be found in \todo{cite markovic}.
+
+fUML is an extension of UML which builds on a subset of UML classes with the purpose of adding semantics to UML models such that they can
+be executed on the model level. The dominant concept for this is the activity diagram. If a refactoring is performed on a UML model such
+as a class diagram, then any activity diagram which is releated to the class diagram, has to be checked and possibly changed as well. In
+section \ref{sec:fuml-refactoring} we will present some examples of fUML activity diagrams and present the implications that result from
+changing class diagrams.
+
+Since a refactoring changes the structure of a model it is important to ensure that all changes maintain the original semantics of the
+model. Violating this requirement can result in models with either a different behavior, or in models which can no longer be executed.
+To ensure semantic preservation, two main techniques can be used. First, the refactoring can be broken down into smaller steps, each of
+which either guarantees to preseve the semantics of the model or makes it easier to verify that this is the case. Second, logical
+constraints can be used to limit refactorings on models to only those cases where semantic preservation can be ensured. For this
+purpose pre- and postconditions are specified with OCL constraints. A refactoring is then only applied if the original model satisfies
+the precondition before the refactoring is applied and the postcondition after the refactoring has been completed. Such constrains must
+be individually specified for each kind of refactoring that is to be performed, as such a part of this paper will discuss different OCL
+constraints for the refactorings that we introduce.
+
 % what is refactoring and what does it mean in the context of models?
 % what is fuml? what does fuml consist for diagram types?
 % what is ocl? why do we use it and what for?
-fUML adds semantics to UML models that make it possible to create semantically closed models which can be executed on the model level. With
-fUML classic refactorings are not enough to refactor those models as they do not support the refactoring of the dynamic aspects of models
-such as activity diagrams.
+
+%fUML adds semantics to UML models that make it possible to create semantically closed models which can be executed on the model level. With
+%fUML classic refactorings are not enough to refactor those models as they do not support the refactoring of the dynamic aspects of models
+%such as activity diagrams.
 
 \section{Motivation}
 % what do we want to achieve?
+
+In this paper we will present a set of refactorings and give examples of how each refactoring can be applied to a concrete model. 
+
 % Why is it interesting to refactor models
 % Why is it important in fUML that models remain consistent -> to preserve executability
 % It is possible to use pre and post conditions in OCL to guarantee the semantic preservation of models during refactorings.
@@ -63,18 +91,33 @@ such as activity diagrams.
 % take model refactorings of markovic paper
 % insurance example
 % create example that supports all proposed refactorings
-\begin{itemize}
-\item Rename Class
-\item Rename Method
-\item Rename Variable
-\item Add / Remove Parameter
-\item Encapsulate Field
-\item Pull up field
-\end{itemize}
+For this we use an example for the insurance domain. Figure X. \todo{reference insurance figure} shows the class diagram of an insurance policy.
+The policy allows to insure cars and trucks. Both Car and Truck have some attributes that are similar (weight, registration) and others that
+are different (dangerousGoods, passengers).
 
-In this section we will present some general refactorings such as the ``extract superclass'' refactoring.
+\begin{figure}
+ \centering
+ \begin{tabular}[]{l}
+  \hline
+  Extract class\\
+  Extract superclass\\
+  Rename Class\\
+  Rename Method\\
+  Rename Variable\\
+  Add / Remove Parameter\\
+  Encapsulate Field\\
+  Pull up field\\
+  \hline
+ \end{tabular}
+ \caption{Refactoring examples}
+ \label{fig:refactoringlist}
+\end{figure}
+
+In this section we will present some general refactorings such as the ``extract superclass'' refactoring. A list of example refactorings
+is presented in figure \ref{fig:refactoringlist}.
 
 \section{Refactoring of fUML diagrams}
+\label{sec:fuml-refactoring}
 % abstract syntax of fUML and changes in diagrams
 % ecore and ocl (with code examples)
 In this section we will present some general refactorings
@@ -108,7 +151,10 @@ Describe what we did with EMF.Refactor.
 % what we did that they didnt
 We have compared our works with several other available papers. In [..] there is a discussion of uml refactings which covers ....
 
-some related works such as ...
+some related works such as ... 
+
+% we need at least one citation in the document or an error occurs. Remove this line after we have other citations in the document.
+\cite{rob99}
 
 \section{Conclusion}
 We conclude this paper with...
