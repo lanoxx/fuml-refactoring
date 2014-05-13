@@ -46,13 +46,25 @@ can be made available in the Eclipse GUIs such as the EMF tree editor or Papyrus
 \pagenumbering{arabic}
 
 \section{Introduction}
-The concept of refactoring is an important part of software development which should be included in every cycle of iterative and evolutionary
+Todays software development processes focus more and more on the models than on designing source code. Models are not 
+only used as abstract visual explanations of the underlying concepts but as the origin for source code generation. The 
+\textit{Unified Modelling Language} advanced to a standard for designing models for software systems on an abstract level. The concept 
+of refactoring is an important part of software development which affects all artifacts of the design process and should be included 
+in every cycle of iterative and evolutionary software development. It main goal is to reorganise software components in a behavior 
+preserving way \cite{mast:REFOOF} to achieve better quality.
+
+The quality of the models and thus refactoring impacts can be either measured in a static way by \textit{code smells} or \textit{code metrics} 
+as proposed by Aendt et.al. \cite{DBLP:journals/ase/ArendtT13} or in a dynamic way by \textit{executing} and \textit{debugging} as proposed by 
+Mayerhofer \cite{DBLP:conf/icse/Mayerhofer12}.
+
+
+(The concept of refactoring is an important part of software development which should be included in every cycle of iterative and evolutionary
 software development. It main goal is to reorganise software components to achieve better design, lower coupling, higher cohesion, and other
 attributes which make up good software design. The important aspect of refactoring is that no additional features are introduced during
 a refactoring step and the semantics of the software are maintained; no additional bugs or errors are introduced. Refactoring can not only
 be applied to source code but as well to models such as UML or fUML models. In the context of models such as class diagrams, it means that
 the structure of the diagram is rearranged to achieve a better design. This included changing superclass releationships, moving attributes
-and methods to different classes or adding new interfaced. A catalogue of possible UML refactorings can be found in \todo{cite markovic}.
+and methods to different classes or adding new interfaced. A catalogue of possible UML refactorings can be found in \todo{cite markovic}.)
 
 fUML is an extension of UML which builds on a subset of UML classes with the purpose of adding semantics to UML models such that they can
 be executed on the model level. The dominant concept for this is the activity diagram. If a refactoring is performed on a UML model such
