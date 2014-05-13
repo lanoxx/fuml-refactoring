@@ -91,9 +91,44 @@ In this paper we will present a set of refactorings and give examples of how eac
 % take model refactorings of markovic paper
 % insurance example
 % create example that supports all proposed refactorings
-For this we use an example for the insurance domain. Figure X. \todo{reference insurance figure} shows the class diagram of an insurance policy.
+
+This section covers some general refactorings of UML class diagrams. As the basis of these refactorings an example from the insurance
+domain is used. In the insurance business there are domain objects such as an insurance policy. Cars and trucks can be insured by 
+adding them to the policy. There is an insurance company which has customers and employees and employees may purchase an insurance policy 
+for one of their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance policy. This class 
+diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both Car and Truck 
+to extract a Vehicle class. A simple \textit{extract class} can be used on InsurancePolicy to extract the from and until dates into their
+own InsurancePeriod class. As part of the \textit{extract superclass} refactoring two additional refactorings namely \textit{pull up 
+attribute} and \textit{pull up method} are used to move the identical attributes and methods of both classes to the new superclass. As the 
+attributes weight and registration are public, we can use \textit{encapsulate field} to make them private and provide getter and setter 
+implementations. Finally the method addCar can be renamed into addVehicle with \textit{rename method} and the addTruck method can be 
+removed with \textit{remove method}.
+
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.7]{images/ClassDiagramComplex.pdf}
+ \caption{A car object that could benefit of extract class}
+ \label{fig:classdiagramcomplex}
+\end{figure}
+
+For each of the methods the \textIt{InsurancePolicy} and \textit{Company} classes a separate activity diagram exists which defines the
+semantics of these methods. As some of them are quite similar we will present only the diagrams for addCar(), sellPolicy(Customer, Car) and calculatePremium().
+
+
+
+
+
+
+Figure \ref{fig:complexcar} shows an example of a more complex car object which captures additinoal information about the owner which is allowed to drive the car. This example would benefit from an \textit{extract class} refactoring. The extract class refactoring would pull the members 
 The policy allows to insure cars and trucks. Both Car and Truck have some attributes that are similar (weight, registration) and others that
-are different (dangerousGoods, passengers).
+are different (dangerousGoods, passengers). From the 
+
+\begin{figure}[ht]
+ \centering
+ \includegraphics{images/addCar-class_diagram.pdf}
+ \caption{Insurance policy class diagram}
+ \label{fig:insurancepolicy}
+\end{figure}
 
 \begin{figure}
  \centering
@@ -106,7 +141,10 @@ are different (dangerousGoods, passengers).
   Rename Variable\\
   Add / Remove Parameter\\
   Encapsulate Field\\
-  Pull up field\\
+  Pull up attribute\\
+  Pull up operation\\
+  Pull up association end\\
+  Remove unused class\\
   \hline
  \end{tabular}
  \caption{Refactoring examples}
@@ -116,21 +154,27 @@ are different (dangerousGoods, passengers).
 In this section we will present some general refactorings such as the ``extract superclass'' refactoring. A list of example refactorings
 is presented in figure \ref{fig:refactoringlist}.
 
+
+
+
+\begin{figure}[ht]
+ \centering
+ \includegraphics{images/ComplexCar-class_diagram.pdf}
+ \caption{A car object that could benefit of extract class}
+ \label{fig:complexcar}
+\end{figure}
+
+
 \section{Refactoring of fUML diagrams}
 \label{sec:fuml-refactoring}
 % abstract syntax of fUML and changes in diagrams
 % ecore and ocl (with code examples)
 In this section we will present some general refactorings
 
-\begin{figure}
+\begin{figure}[ht]
+ \centering
  \includegraphics{images/addCar-activity_diagram}
 \end{figure}
-
-\begin{figure}
- \includegraphics{images/addCar-class_diagram.pdf}
-\end{figure}
-
-
 
 \section{Tool chain and implementation}
 For our tool chain we have relied on the moliz\footnote{source...} repository, mainly for the ability to execute the fUML models with
