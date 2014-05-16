@@ -65,7 +65,7 @@ these common semantics enriched models can be preserved over time and even reuse
 
 Nevertheless models might have to be revised over the lifecycle of the software. With todays trend to more agile software 
 development such as eXtreme Programming \cite{DBLP:journals/computer/Beck99} or Scrum \cite{DBLP:journals/software/RisingJ00} 
-changes on models have to be even more efficient which brings refactoring of models into account.
+changes on models have to be even more efficient which brings refactoring of models into the focus of research.
 
 % Refactoring is behavior preserving changing that should also improve quality
 
@@ -85,24 +85,25 @@ needs to span over those different types of diagrams and semantics.
 To prove the correctness of models before and after refactoring different approachs exist. One is the static analysis of
 UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13} which can be done via
 OCL \cite{man:OCL}. Another one is to verify that models can be executed and debugged in some way. The OMG introduced a subset 
-of UML named fUML \cite{man:FUML} which narrowly defines semantics for class and acivity diagrams to make them executable. 
-Mayerhofer \cite{DBLP:conf/icse/Mayerhofer12} in her work furthermore proposed a framework based on fUML that is able to execute
+of UML named fUML \cite{man:FUML} which narrowly defines semantics for class and activity diagrams to make them executable. 
+Further more in \cite{DBLP:conf/icse/Mayerhofer12} Mayerhofer proposed a framework based on fUML that is able to execute
 and debug those models.
 
 % our approach is to combine both
 
 The goal of this work is to introduce refactorings for fUML models, examine the requirements for co-refactoring of the
 corresponding diagram types and define which co-changes have to be done to preserve the behavior. Our approach to prove
-the correctness of the models after refactoring is twofold. On the one hand side we use pre- and postconditions
+the correctness of the models after refactoring is twofold. On the one hand we use pre- and postconditions
 \cite{rob99} to define if the specific changes can be applied and that the models are semantically correct afterwards.
-On the other hand side the models have to stay executable as well as traceable after the changes.
+On the other hand the models have to stay executable as well as traceable after the changes.
 
 % we present a motivating example (class and activity diagrams) we provide some refactorings that target bothe diagram
 % types we provide a how to test statically and dynamically, then refator and retest we provide a tool chain
 
 % we provide some related work we provide a conclusion
 
-The rest of the work is structured as follows. In section X we give an overview over fUML and provide a motivating
+The rest of the work is structured as follows. In section \ref{refactoring-examples} we give an overview over fUML and provide
+a motivating
 example of a model that is used throughout the paper. Section Y describes a selection of useful refactorings inspired by
 Fowler \cite{fow99} and Markovic and Baar \cite{DBLP:journals/sosym/MarkovicB08} and their effects on class diagrams as
 well as activity diagrams. In section Z we show which pre- and postcondition that are needed for the refactorings and
@@ -143,6 +144,7 @@ In this paper we will present a set of refactorings and give examples of how eac
 % It is possible to use pre and post conditions in OCL to guarantee the semantic preservation of models during refactorings.
 
 \section{Refactorings Examples}
+\label{refactoring-examples}
 % take model refactorings of markovic paper
 % insurance example
 % create example that supports all proposed refactorings
