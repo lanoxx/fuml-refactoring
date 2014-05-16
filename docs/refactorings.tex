@@ -52,19 +52,19 @@ can be made available in the Eclipse GUIs such as the EMF tree editor or Papyrus
 Model-based software development or model-driven software development is not only an extensive field of research but
 gets also more and more attention from the industry side. Nowadays models are not only used as visual explanations of
 the underlying concepts but as source for the development process itself. Thus models need to provide an abstraction of
-the represented domains in a high quality. Mohagheghi et al. (2009) \todo{cite} discussed possible quality attributes of
-models in their work.
+the represented domains in a high quality. Mohagheghi et al. \cite{DBLP:journals/infsof/MohagheghiDN09} discussed possible 
+quality attributes of models in their work.
 
 % UML is a modelling language for models provided by the OMG that supports various types of models
 
-To represent formal models the OMG developed the UML which by now advanced to an industry standard for modeling. With
+To represent formal models the OMG developed the UML \cite{man:UML} which by now advanced to an industry standard for modeling. With
 these common semantics enriched models can be preserved over time and even reused.
 
 % Models need to be changed in the development lifecycle
 
-Nevertheless models might have to be revised over the lifecycle of the software. With todays trend to more agile
-software development such as XP or Scrum changes on models have to be even more efficient which brings refactoring of
-models into account.
+Nevertheless models might have to be revised over the lifecycle of the software. With todays trend to more agile software 
+development such as eXtreme Programming \cite{DBLP:journals/computer/Beck99} or Scrum \cite{DBLP:journals/software/RisingJ00} 
+changes on models have to be even more efficient which brings refactoring of models into account.
 
 % Refactoring is behavior preserving changing that should also improve quality
 
@@ -83,9 +83,9 @@ needs to span over those different types of diagrams and semantics.
 
 To prove the correctness of models before and after refactoring different approachs exist. One is the static analysis of
 UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13} which can be done via
-OCL. Another one is to verify that models can be executed and debugged in some way. The OMG introduced a subset of UML
-named fUML which narrowly defines semantics for class and acivity diagrams to make them executable. Mayerhofer
-\cite{DBLP:conf/icse/Mayerhofer12} in her work furthermore proposed a framework based on fUML that is able to execute
+OCL \cite{man:OCL}. Another one is to verify that models can be executed and debugged in some way. The OMG introduced a subset 
+of UML named fUML \cite{man:FUML} which narrowly defines semantics for class and acivity diagrams to make them executable. 
+Mayerhofer \cite{DBLP:conf/icse/Mayerhofer12} in her work furthermore proposed a framework based on fUML that is able to execute
 and debug those models.
 
 % our approach is to combine both
