@@ -9,6 +9,7 @@
 \usetikzlibrary{arrows,automata}
 \usepackage{xspace}
 \usepackage{todonotes}          % Package for working draft comments
+\usepackage{hyperref}           % Package for hyperlink references in the document
 
 
 \usepackage[english]{babel}
@@ -245,14 +246,35 @@ Describe our tool chain, how we created models, how we load them, what informati
 Describe what we did with EMF.Refactor.
 
 \section{Related Works}
-% papers we read
-% what we did that they didnt
-We have compared our works with several other available papers. In [..] there is a discussion of uml refactings which covers ....
+% Refactoring of prgram code
 
-some related works such as ... 
+In this section we give an overview on the related work. Refactoring in a general way with preconditions was described
+by Opdyke \cite{mast:REFOOF} in his master thesis and stated more precisely by Roberts \cite{rob99} who also introduced
+postconditions for refactorings. Fowler \cite{fow99} generated an extensive yet simple to understand catalog of
+refactorings for Java and Ruby which can be be adapted to model refactorings.
 
-% we need at least one citation in the document or an error occurs. Remove this line after we have other citations in the document.
-\cite{rob99}
+% Refactoring of models and OCL Code analysis via OCL
+
+Suny{\'e} et. al. \cite{DBLP:conf/uml/SunyePTJ01} described how several refactorings can be applied to \textit{UML}
+diagrams and introduced OCL as a possiblity to specify pre- and postconditions. Gorp et al. \cite{gorp03} extends the
+discussion with the usage of \textit{OCL} for additinal analysis such as code smells of models.
+
+% Code execution via fUML
+
+Despite of the further discussion of model refactoring (\cite{DBLP:conf/uml/CorreaW04}, \cite{DBLP:conf/ershov/BaarM06},
+\cite{DBLP:journals/ase/ArendtT13}) most authors concetrate on static analysis and class diagram representations of
+models. Dynamic analysis of models by execution and debugging \textit{fUML} models is discussed by Mayerhofer
+\cite{DBLP:conf/icse/Mayerhofer12} and provides the basis for the approach discussed here. Mayerhofer et al.
+\cite{DBLP:conf/models/MayerhoferLK12} furthermore introduce a runtime model and an
+implementation\footnote{http://www.modelexecution.org} that is capable to test the models and directly show impacts of
+refactorings.
+
+% Refactoring implementation with EMF Refactor
+
+Arendt and Taentzer \cite{DBLP:journals/ase/ArendtT13} present a framework that is based on \textit{Eclipse} and the
+\textit{Eclipse Modelling Framework} which allows static model analysis and refactorings that are implemented in
+different languages (Java, OCL \& Henshin) and can be directly extended in \textit{Eclipse}.
+
 
 \section{Conclusion}
 We conclude this paper with...
