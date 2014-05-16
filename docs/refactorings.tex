@@ -46,26 +46,78 @@ can be made available in the Eclipse GUIs such as the EMF tree editor or Papyrus
 \pagenumbering{arabic}
 
 \section{Introduction}
-Todays software development processes focus more and more on the models than on designing source code. Models are not 
-only used as abstract visual explanations of the underlying concepts but as the origin for source code generation. The 
-\textit{Unified Modelling Language} advanced to a standard for designing models for software systems on an abstract level. The concept 
-of refactoring is an important part of software development which affects all artifacts of the design process and should be included 
-in every cycle of iterative and evolutionary software development. It main goal is to reorganise software components in a behavior 
-preserving way \cite{mast:REFOOF} to achieve better quality.
+% INTRODUCTION Models are getting more important in model-based software development, model-driven software development,
+% model-driven architecture Models thus need to have a good quality
 
-The quality of the models and thus refactoring impacts can be either measured in a static way by \textit{code smells} or \textit{code metrics} 
-as proposed by Aendt et.al. \cite{DBLP:journals/ase/ArendtT13} or in a dynamic way by \textit{executing} and \textit{debugging} as proposed by 
-Mayerhofer \cite{DBLP:conf/icse/Mayerhofer12}.
+Model-based software development or model-driven software development is not only an extensive field of research but
+gets also more and more attention from the industry side. Nowadays models are not only used as visual explanations of
+the underlying concepts but as source for the development process itself. Thus models need to provide an abstraction of
+the represented domains in a high quality. Mohagheghi et al. (2009) \todo{cite} discussed possible quality attributes of
+models in their work.
 
+% UML is a modelling language for models provided by the OMG that supports various types of models
 
-(The concept of refactoring is an important part of software development which should be included in every cycle of iterative and evolutionary
-software development. It main goal is to reorganise software components to achieve better design, lower coupling, higher cohesion, and other
-attributes which make up good software design. The important aspect of refactoring is that no additional features are introduced during
-a refactoring step and the semantics of the software are maintained; no additional bugs or errors are introduced. Refactoring can not only
-be applied to source code but as well to models such as UML or fUML models. In the context of models such as class diagrams, it means that
-the structure of the diagram is rearranged to achieve a better design. This included changing superclass releationships, moving attributes
-and methods to different classes or adding new interfaced. A catalogue of possible UML refactorings can be found in \todo{cite markovic}.)
+To represent formal models the OMG developed the UML which by now advanced to an industry standard for modeling. With
+these common semantics enriched models can be preserved over time and even reused.
 
+% Models need to be changed in the development lifecycle
+
+Nevertheless models might have to be revised over the lifecycle of the software. With todays trend to more agile
+software development such as XP or Scrum changes on models have to be even more efficient which brings refactoring of
+models into account.
+
+% Refactoring is behavior preserving changing that should also improve quality
+
+Refactoring is a technique that originates from source code development but can also be applied to model engineering.
+The goal is to introduce behavior preserving changes \cite{mast:REFOOF} that increase the quality and understandability
+of the models.
+
+% Refactoring must preserve the behavior of all model types
+
+While refactoring source code respectively textual code applies to a single type of represenation in UML different
+representations of models exist as various diagram types. This makes behavior preserving refactoring even harder as it
+needs to span over those different types of diagrams and semantics.
+
+% Behaviour preservation can be tested statically or dynamically UML can be analysed statically fUML is a modelling
+% language for models provided by the OMG that also allows execution and thus can be analysed dynamically
+
+To prove the correctness of models before and after refactoring different approachs exist. One is the static analysis of
+UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13} which can be done via
+OCL. Another one is to verify that models can be executed and debugged in some way. The OMG introduced a subset of UML
+named fUML which narrowly defines semantics for class and acivity diagrams to make them executable. Mayerhofer
+\cite{DBLP:conf/icse/Mayerhofer12} in her work furthermore proposed a framework based on fUML that is able to execute
+and debug those models.
+
+% our approach is to combine both
+
+The goal of this work is to introduce refactorings for fUML models, examine the requirements for co-refactoring of the
+corresponding diagram types and define which co-changes have to be done to preserve the behavior. Our approach to prove
+the correctness of the models after refactoring is twofold. On the one hand side we use pre- and postconditions
+\cite{rob99} to define if the specific changes can be applied and that the models are semantically correct afterwards.
+On the other hand side the models have to stay executable as well as traceable after the changes.
+
+% we present a motivating example (class and activity diagrams) we provide some refactorings that target bothe diagram
+% types we provide a how to test statically and dynamically, then refator and retest we provide a tool chain
+
+% we provide some related work we provide a conclusion
+
+The rest of the work is structured as follows. In section X we give an overview over fUML and provide a motivating
+example of a model that is used throughout the paper. Section Y describes a selection of useful refactorings inspired by
+Fowler \cite{fow99} and Markovic and Baar \cite{DBLP:journals/sosym/MarkovicB08} and their effects on class diagrams as
+well as activity diagrams. In section Z we show which pre- and postcondition that are needed for the refactorings and
+how we refactor the models. In section AA we describe the toolchain that we use to define the models, implement a set of
+refactorings and test them. Related work is covered in section AC and a conclusion is drawn to summarize the paper.
+
+% what is refactoring and what does it mean in the context of models?
+% what is fuml? what does fuml consist for diagram types?
+% what is ocl? why do we use it and what for?
+
+%fUML adds semantics to UML models that make it possible to create semantically closed models which can be executed on the model level. With
+%fUML classic refactorings are not enough to refactor those models as they do not support the refactoring of the dynamic aspects of models
+%such as activity diagrams.
+
+\section{Motivation}
+% what do we want to achieve?
 fUML is an extension of UML which builds on a subset of UML classes with the purpose of adding semantics to UML models such that they can
 be executed on the model level. The dominant concept for this is the activity diagram. If a refactoring is performed on a UML model such
 as a class diagram, then any activity diagram which is releated to the class diagram, has to be checked and possibly changed as well. In
@@ -82,16 +134,6 @@ the precondition before the refactoring is applied and the postcondition after t
 be individually specified for each kind of refactoring that is to be performed, as such a part of this paper will discuss different OCL
 constraints for the refactorings that we introduce.
 
-% what is refactoring and what does it mean in the context of models?
-% what is fuml? what does fuml consist for diagram types?
-% what is ocl? why do we use it and what for?
-
-%fUML adds semantics to UML models that make it possible to create semantically closed models which can be executed on the model level. With
-%fUML classic refactorings are not enough to refactor those models as they do not support the refactoring of the dynamic aspects of models
-%such as activity diagrams.
-
-\section{Motivation}
-% what do we want to achieve?
 
 In this paper we will present a set of refactorings and give examples of how each refactoring can be applied to a concrete model. 
 
