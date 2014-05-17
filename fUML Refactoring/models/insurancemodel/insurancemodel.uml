@@ -71,7 +71,7 @@
           <value xsi:nil="true"/>
         </defaultValue>
       </ownedAttribute>
-      <ownedAttribute xmi:type="uml:Property" xmi:id="__lS9EN0IEeOzQ81W41Dz0A" name="truck" type="_1nELoN0DEeOkD5x5qlp0bA" association="__lULMN0IEeOzQ81W41Dz0A">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="__lS9EN0IEeOzQ81W41Dz0A" name="trucks" type="_1nELoN0DEeOkD5x5qlp0bA" association="__lULMN0IEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__lS9Ed0IEeOzQ81W41Dz0A"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__lS9Et0IEeOzQ81W41Dz0A" value="*"/>
       </ownedAttribute>
@@ -84,6 +84,12 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ISwHUN0HEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ISzKoN0HEeOzQ81W41Dz0A" value="1"/>
         <defaultValue xmi:type="uml:LiteralInteger" xmi:id="_QDHsUN0HEeOzQ81W41Dz0A"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_LSuPoN3cEeORMctkWXHAOw" name="numberOfCars">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_R0ukEN3cEeORMctkWXHAOw" name="numberOfTrucks">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_JDGCUN0LEeOzQ81W41Dz0A" name="addCarActivity" specification="_gpA1oN0JEeOzQ81W41Dz0A" node="_zB0uEN0LEeOzQ81W41Dz0A _F5msYN0MEeOzQ81W41Dz0A _eyrewN0MEeOzQ81W41Dz0A _T_KcYN0NEeOzQ81W41Dz0A">
         <ownedParameter xmi:type="uml:Parameter" xmi:id="_gqEBsN0NEeOzQ81W41Dz0A" name="car" type="_0gtAgN0DEeOkD5x5qlp0bA"/>
@@ -122,33 +128,13 @@
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="_T_KcYN0NEeOzQ81W41Dz0A" name="ActivityFinalNode" incoming="_VaDtEN0NEeOzQ81W41Dz0A"/>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_rYj50N0PEeOzHM6HJlEjnQ" name="calculatePremium" specification="_493goN0JEeOzQ81W41Dz0A" group="_mHv1kN0REeOzHM6HJlEjnQ" node="_CzBZIN0QEeOzHM6HJlEjnQ _VlVBkN0QEeOzHM6HJlEjnQ">
-        <edge xmi:type="uml:ObjectFlow" xmi:id="_gK1AoN0QEeOzHM6HJlEjnQ" name="insurancePolicyFlow" source="_FDUAwN0QEeOzHM6HJlEjnQ" target="_VlXd0N0QEeOzHM6HJlEjnQ">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="_gK3c4N0QEeOzHM6HJlEjnQ" value="true"/>
-          <weight xmi:type="uml:LiteralInteger" xmi:id="_gK3c4d0QEeOzHM6HJlEjnQ" value="1"/>
-        </edge>
-        <group xmi:type="uml:ExpansionRegion" xmi:id="_mHv1kN0REeOzHM6HJlEjnQ" name="calculatePremiumExReg"/>
-        <node xmi:type="uml:ReadSelfAction" xmi:id="_CzBZIN0QEeOzHM6HJlEjnQ" name="self">
-          <result xmi:type="uml:OutputPin" xmi:id="_FDUAwN0QEeOzHM6HJlEjnQ" name="result" outgoing="_gK1AoN0QEeOzHM6HJlEjnQ" type="_xuewgN0DEeOkD5x5qlp0bA">
-            <upperBound xmi:type="uml:LiteralInteger" xmi:id="_P24RAN0QEeOzHM6HJlEjnQ" value="1"/>
-          </result>
-        </node>
-        <node xmi:type="uml:ReadStructuralFeatureAction" xmi:id="_VlVBkN0QEeOzHM6HJlEjnQ" name="readCars" structuralFeature="_DQA7UN0JEeOzQ81W41Dz0A">
-          <object xmi:type="uml:InputPin" xmi:id="_VlXd0N0QEeOzHM6HJlEjnQ" name="object" incoming="_gK1AoN0QEeOzHM6HJlEjnQ" type="_xuewgN0DEeOkD5x5qlp0bA">
-            <upperBound xmi:type="uml:LiteralInteger" xmi:id="_VlXd0d0QEeOzHM6HJlEjnQ" value="1"/>
-          </object>
-          <result xmi:type="uml:OutputPin" xmi:id="_VlW2wN0QEeOzHM6HJlEjnQ" name="result" type="_0gtAgN0DEeOkD5x5qlp0bA">
-            <upperBound xmi:type="uml:LiteralInteger" xmi:id="_VlW2wd0QEeOzHM6HJlEjnQ" value="1"/>
-          </result>
-        </node>
-      </ownedBehavior>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_gpA1oN0JEeOzQ81W41Dz0A" name="addCar" method="_JDGCUN0LEeOzQ81W41Dz0A">
         <ownedParameter xmi:type="uml:Parameter" xmi:id="_xLQf8N0JEeOzQ81W41Dz0A" name="car" type="_0gtAgN0DEeOkD5x5qlp0bA"/>
       </ownedOperation>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_y7si0N0JEeOzQ81W41Dz0A" name="addTruck">
         <ownedParameter xmi:type="uml:Parameter" xmi:id="_3v_YQN0JEeOzQ81W41Dz0A" name="truck" type="_1nELoN0DEeOkD5x5qlp0bA"/>
       </ownedOperation>
-      <ownedOperation xmi:type="uml:Operation" xmi:id="_493goN0JEeOzQ81W41Dz0A" name="calculatePremium" method="_rYj50N0PEeOzHM6HJlEjnQ">
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_493goN0JEeOzQ81W41Dz0A" name="calculatePremium">
         <ownedParameter xmi:type="uml:Parameter" xmi:id="_AASagN0KEeOzQ81W41Dz0A" direction="return">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
         </ownedParameter>

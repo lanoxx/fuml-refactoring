@@ -23,9 +23,6 @@
         <children>
           <emfPageIdentifier href="insurancemodel.notation#_Kj01QN0LEeOzQ81W41Dz0A"/>
         </children>
-        <children>
-          <emfPageIdentifier href="insurancemodel.notation#_t6aykN0PEeOzHM6HJlEjnQ"/>
-        </children>
       </children>
     </windows>
   </sashModel>
