@@ -16,6 +16,9 @@
     <availablePage>
       <emfPageIdentifier href="insurancemodel.notation#_5YG_AN3tEeOFRK8JlLpj3Q"/>
     </availablePage>
+    <availablePage>
+      <emfPageIdentifier href="insurancemodel.notation#_dOf9EN36EeO2e_4Ts3wk9A"/>
+    </availablePage>
   </pageList>
   <sashModel currentSelection="//@sashModel/@windows.0/@children.0">
     <windows>
@@ -28,6 +31,9 @@
         </children>
         <children>
           <emfPageIdentifier href="insurancemodel.notation#_5YG_AN3tEeOFRK8JlLpj3Q"/>
+        </children>
+        <children>
+          <emfPageIdentifier href="insurancemodel.notation#_dOf9EN36EeO2e_4Ts3wk9A"/>
         </children>
       </children>
     </windows>
