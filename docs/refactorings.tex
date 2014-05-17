@@ -168,26 +168,63 @@ removed with \textit{remove method}.
  \label{fig:classdiagramcomplex}
 \end{figure}
 
-For each of the methods the \textit{InsurancePolicy} and \textit{Company} classes a separate activity diagram exists which defines the
-semantics of these methods. As some of them are quite similar we will present only the diagrams for addCar(), sellPolicy(Customer, Car) and calculatePremium().
+For each of the methods in the \textit{InsurancePolicy} and \textit{Company} classes a separate activity diagram exists
+which defines the semantics of these methods. As some of them are quite similar we will present only the diagrams for
+addCar() in figure \ref{fig:addCar}, sellPolicy(Customer, Car) \ref{fig:sellPolicy} and calculatePremium() figure \ref{fig:calculatePremium}.
 
 
+The activity for the \lstinline|addCar| operation is rather simple. It takes a car as a parameter and uses the
+\lstinline|AddStructuralFeatureValueAction| to add the car to the insurance policy. In comparison \lstinline|calculatePremium| is
+more complex, it calculates the insurance premium as follows:
 
+\begin{itemize}
+ \item Each insurance policy starts with a base fee of 50.
+ \item For each car the number of passengers is multiplied by 5.
+ \item The sum of multiplications for each car plus the base fee is the result.
+\end{itemize}
 
+Finally the activity for the \lstinline|sellPolicy| operation works as follows. It creates a new object of type \lstinline|InsurancePolicy| and adds the car to the policy and the policy to the customer using \lstinline|AddStructuralFeatureValueAction|. Finally
+the policy price (the premium) is calculated and returned.
 
-
-Figure \ref{fig:complexcar} shows an example of a more complex car object which captures additinoal information about the owner which is allowed to drive the car. This example would benefit from an \textit{extract class} refactoring. The extract class refactoring would pull the members 
-The policy allows to insure cars and trucks. Both Car and Truck have some attributes that are similar (weight, registration) and others that
-are different (dangerousGoods, passengers). From the 
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.76]{images/calculatePremium.pdf}
+ \caption{Activity diagram for calculate premium method}
+ \label{fig:calculatePremium}
+\end{figure}
 
 \begin{figure}[ht]
  \centering
- \includegraphics{images/addCar-class_diagram.pdf}
- \caption{Insurance policy class diagram}
- \label{fig:insurancepolicy}
+ \includegraphics{images/addCar-activity_diagram}
+ \caption{Add car activity diagram}
+ \label{fig:addCar}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.6]{images/sellPolicy.pdf}
+ \caption{Actity diagram for sellPolicy.}
+ \label{fig:sellPolicy}
+\end{figure}
+
+\section{Refactoring of fUML models}
+\label{sec:fuml-refactoring}
+% abstract syntax of fUML and changes in diagrams
+% ecore and ocl (with code examples)
+
+In the last section we presented some models and their related activity diagrams. We also presented some of the possible refactorings such as \textit{extract superclass} or \textit{extract class}. This section discusses how the models actually need to be transformed in order to realize the refactoring.
+
+Every model has two kinds of syntaxes. The concrete syntax, which defines how the model looks like, and the abstract syntax, which defines the language elements and the gramar of the model. In order to refactor a model, we need to look at 
+its abstract syntax and transform it according to the refactoring rules.
+
+A refactoring takes several parameters to configure the parts of the model that change and how they change. For example
+the \textit{extract superclass} refactoring takes two parameters, the new name of the extracted superclass as well as
+the list of classes that participate in the refactoring and which will receive the new class as their superclass.
+
+In terms of the abstract syntax of these models, the two classes Car and Truck are instances of type class of the meta-model a superclass named Vehicle would be an instance of type Class as well, and can be associated with these two classes through the recursive attribute \textit{superclass} of the class \textit{Class} to create the inheritance hierarchy. In order to guarantee that the refactoring is possible, we must ensure that each class that participates in the 
+refactoring does not already have a superclass.
+
+\begin{figure}[h!t]
  \centering
  \begin{tabular}[]{l}
   \hline
@@ -210,28 +247,6 @@ are different (dangerousGoods, passengers). From the
 
 In this section we will present some general refactorings such as the ``extract superclass'' refactoring. A list of example refactorings
 is presented in figure \ref{fig:refactoringlist}.
-
-
-
-
-\begin{figure}[ht]
- \centering
- \includegraphics{images/ComplexCar-class_diagram.pdf}
- \caption{A car object that could benefit of extract class}
- \label{fig:complexcar}
-\end{figure}
-
-
-\section{Refactoring of fUML diagrams}
-\label{sec:fuml-refactoring}
-% abstract syntax of fUML and changes in diagrams
-% ecore and ocl (with code examples)
-In this section we will present some general refactorings
-
-\begin{figure}[ht]
- \centering
- \includegraphics{images/addCar-activity_diagram}
-\end{figure}
 
 \section{Tool chain and implementation}
 For our tool chain we have relied on the moliz\footnote{source...} repository, mainly for the ability to execute the fUML models with
