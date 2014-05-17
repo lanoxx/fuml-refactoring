@@ -21,6 +21,46 @@
 \newcommand{\uml}[1]{\texttt{#1}}
 \newcommand{\cd}{\textsf{Class Diagram}}
 
+%Colors for general listings
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+%Colors for JSON listings
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstset{ %
+   backgroundcolor=\color{background},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+   basicstyle=\small\ttfamily,        % the size of the fonts that are used for the code
+%   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+%   breaklines=true,                 % sets automatic line breaking
+%   captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+%   deletekeywords={...},            % if you want to delete keywords from the given language
+%   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+%   extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+   frame=lines,                    % adds a frame around the code
+%   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  columns=fixed,
+  keywordstyle=\color{blue},       % keyword style
+   language=Java,                 % the language of the code
+%   morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\scriptsize\color{mygray}, % the style that is used for the line-numbers
+%   rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+ showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+ showstringspaces=false,          % underline spaces within strings only
+ showtabs=false,                  % show tabs within strings adding particular underscores
+%   stepnumber=2,                    % the step between two line-numbers. If it is 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+%   title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+
 \begin{document}
 \pagestyle{plain}
 \pagenumbering{roman}
@@ -250,8 +290,32 @@ In this section we will present some general refactorings such as the ``extract 
 is presented in figure \ref{fig:refactoringlist}.
 
 \section{Tool chain and implementation}
-For our tool chain we have relied on the moliz\footnote{source...} repository, mainly for the ability to execute the fUML models with
-a virtual machine. The models are stored as XMI 
+For our tool chain we have relied on the moliz\footnote{source...} repository, mainly for the ability to execute the fUML 
+models with a virtual machine. The models are stored in the XMI format and loaded with an EMF ResourceSet. The ResourceSet
+can be used to retrieve a Resource object through an URI, which is then used to access the different objects in the model 
+(see figure \ref{lst:resourceset}). All elements contained in the model are instances of eCore (the implemententation of 
+the MOF meta-meta-model) and they represent classes of the UML meta-model, which is implemented with eCore.
+
+\begin{figure}
+ \begin{lstlisting}
+resourceSet = new ResourceSetImpl();
+resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI,
+                                     UMLPackage.eINSTANCE);
+resourceSet.getResourceFactoryRegistry()
+    .getExtensionToFactoryMap()
+    .put(UMLResource.FILE_EXTENSION,
+         UMLResource.Factory.INSTANCE);
+File file = new File(umlModelFile);
+URI uri = URI.createFileURI(file.getAbsolutePath());
+    resource = resourceSet.getResource(uri, true);
+ \end{lstlisting}
+ \caption{Loading a UML model into a resource set}.
+ \label{lst:resourceset}
+\end{figure}
+
+
+
+
 % usage of fUML reference implementation of BIG
 % how to load models?
 % how to execute models?
@@ -261,7 +325,7 @@ a virtual machine. The models are stored as XMI
 Describe our tool chain, how we created models, how we load them, what information of the abstract syntax we use for refactoring, etc.
 
 \subsection{GUI Integration}
-Describe what we did with EMF.Refactor.
+At the time of this writing our GUI integration is not finished, so we cannot describe it here. The idea is to use EMF.Refactor to add 
 
 \section{Related Works}
 % Refactoring of prgram code
