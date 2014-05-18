@@ -192,14 +192,12 @@ In this paper we will present a set of refactorings and give examples of how eac
 This section covers some general refactorings of UML class diagrams. As the basis of these refactorings an example from the insurance
 domain is used. In the insurance business there are domain objects such as an insurance policy. Cars and trucks can be insured by 
 adding them to the policy. There is an insurance company which has customers and employees and employees may purchase an insurance policy 
-for one of their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance policy. This class 
-diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both Car and Truck 
-to extract a Vehicle class. A simple \textit{extract class} can be used on InsurancePolicy to extract the from and until dates into their
-own InsurancePeriod class. As part of the \textit{extract superclass} refactoring two additional refactorings namely \textit{pull up 
-attribute} and \textit{pull up method} are used to move the identical attributes and methods of both classes to the new superclass. As the 
-attributes weight and registration are public, we can use \textit{encapsulate field} to make them private and provide getter and setter 
-implementations. Finally the method addCar can be renamed into addVehicle with \textit{rename method} and the addTruck method can be 
-removed with \textit{remove method}.
+for one of their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance company. This class 
+diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both \lstinline|Car| and \lstinline|Truck| to extract a \lstinline|Vehicle| class. A simple \textit{extract class} can be used on \lstinline|InsurancePolicy| to 
+extract the \lstinline|from| and \lstinline|until| dates into their own \lstinline|InsurancePeriod\lstinline| class. As part of the 
+\textit{extract superclass} refactoring two additional refactorings namely \textit{pull up attribute} and \textit{pull up method} are 
+used to move the identical attributes and methods of both classes to the new superclass. As the 
+attributes \lstinline|weight| and \lstinline|registration| are public, we can use \textit{encapsulate field} to make them private and provide getter and setter implementations. Finally the method addCar can be renamed into \lstinline|addVehicle| with \textit{rename method} and the \lstinline|addTruck| method can be removed with \textit{remove method}.
 
 \begin{figure}[h!t]
  \centering
@@ -208,7 +206,7 @@ removed with \textit{remove method}.
  \label{fig:classdiagramcomplex}
 \end{figure}
 
-For each of the methods in the \textit{InsurancePolicy} and \textit{Company} classes a separate activity diagram exists
+For each of the methods in the \lstinline|InsurancePolicy| and \lstinline|Company| classes a separate activity diagram exists
 which defines the semantics of these methods. As some of them are quite similar we will present only the diagrams for
 addCar() in figure \ref{fig:addCar}, sellPolicy(Customer, Car) \ref{fig:sellPolicy} and calculatePremium() figure \ref{fig:calculatePremium}.
 
@@ -223,9 +221,6 @@ more complex, it calculates the insurance premium as follows:
  \item The sum of multiplications for each car plus the base fee is the result.
 \end{itemize}
 
-Finally the activity for the \lstinline|sellPolicy| operation works as follows. It creates a new object of type \lstinline|InsurancePolicy| and adds the car to the policy and the policy to the customer using \lstinline|AddStructuralFeatureValueAction|. Finally
-the policy price (the premium) is calculated and returned.
-
 \begin{figure}[h!t]
  \centering
  \includegraphics[scale=0.76]{images/calculatePremium.pdf}
@@ -238,13 +233,6 @@ the policy price (the premium) is calculated and returned.
  \includegraphics[scale=0.7]{images/addCar-activity_diagram}
  \caption{Add car activity diagram}
  \label{fig:addCar}
-\end{figure}
-
-\begin{figure}[h!t]
- \centering
- \includegraphics[scale=0.6]{images/sellPolicy.pdf}
- \caption{Actity diagram for sellPolicy.}
- \label{fig:sellPolicy}
 \end{figure}
 
 \section{Refactoring of fUML models}
@@ -286,12 +274,12 @@ refactoring does not already have a superclass.
  \label{fig:refactoringlist}
 \end{figure}
 
-In this section we will present some general refactorings such as the ``extract superclass'' refactoring. A list of example refactorings
+In this section\todo{Seems to be a misplaced section} we will present some general refactorings such as the ``extract superclass'' refactoring. A list of example refactorings
 is presented in figure \ref{fig:refactoringlist}.
 
 \section{Tool chain and implementation}
-For our tool chain we have relied on the moliz\footnote{source...} repository, mainly for the ability to execute the fUML 
-models with a virtual machine. The models are stored in the XMI format and loaded with an EMF ResourceSet. The ResourceSet
+For our tool chain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
+models in a virtual machine. The models are stored in XMI format and loaded with an EMF ResourceSet. The ResourceSet
 can be used to retrieve a Resource object through an URI, which is then used to access the different objects in the model 
 (see figure \ref{lst:resourceset}). All elements contained in the model are instances of Ecore (the implemententation of
 the MOF meta-meta-model) and they represent classes of the UML meta-model, which is implemented with Ecore.
