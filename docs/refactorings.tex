@@ -65,20 +65,21 @@
 \pagestyle{plain}
 \pagenumbering{roman}
 
-\title{fUML Refactoring with EMF\footnote{This work has been created in the context of the course ``Advanced Model Engineering'' (188.952) in SS14.}}
+\title{fUML Refactoring with EMF}
+
 
 \author{Sebastian Geiger (1127054) \and Kristof Meixner (9725208)}
 \institute{Business Informatics Group\\Vienna Technical University}
-
 \maketitle
 
 \begin{abstract}
-In this work we will present some ideas and concepts for the refactoring of fUML. The main contribution of this work is the extension of
-existing UML refactorings to cover not only the static aspect of UML such as class diagrams but to also include refactorings for dynamic
-parts such as activity diagrams. In this work we will present basic concepts for refactoring with EMF and show how model semantics can be
+In this work we will present ideas and concepts for the refactoring of fUML models. The main contribution of this work is 
+the extension of existing UML refactorings to cover not only the static aspect of UML such as class diagrams but to also 
+include refactorings for dynamic
+parts such as activity diagrams. In this work we will present basic concepts for refactoring of models with EMF and show how model semantics can be
 preserved through the use of OCL constraints. In the remainder of the paper we then present our tool chain and the used technologies
-such as EMF and Ecore and how we used them for refactoring. We also present a discussion of EMF.Refactor, which shows how such refactorings
-can be made available in the Eclipse GUIs such as the EMF tree editor or Papyrus.
+of EMF (in particular Ecore and OCL) and how we used them for refactoring of models. We also present a discussion of EMF.Refactor, which shows how such refactorings
+can be made available in the Eclipse GUIs such as the UML tree editor or Papyrus.
 \end{abstract}
 
 \tableofcontents
@@ -91,19 +92,16 @@ can be made available in the Eclipse GUIs such as the EMF tree editor or Papyrus
 % model-driven architecture Models thus need to have a good quality
 
 Model-based software development or model-driven software development is not only an extensive field of research but
-gets also more and more attention from the industry side. Nowadays models are not only used as visual explanations of
-the underlying concepts but as source for the development process itself. Thus models need to provide an abstraction of
+receives also more and more attention from the industry. Nowadays models are not only used as visual explanations of
+software concepts but as source for the development process itself. Thus models need to provide an abstraction of
 the represented domains in a high quality. Mohagheghi et al. \cite{DBLP:journals/infsof/MohagheghiDN09} discussed possible 
 quality attributes of models in their work.
 
 % UML is a modelling language for models provided by the OMG that supports various types of models
 
-To represent formal models the OMG developed the UML \cite{man:UML} which by now advanced to an industry standard for modeling. With
-these common semantics enriched models can be preserved over time and even reused.
-
-% Models need to be changed in the development lifecycle
-
-Nevertheless models might have to be revised over the lifecycle of the software. With todays trend to more agile software 
+To represent formal models the OMG developed UML \cite{man:UML} which by now advanced to an industry standard for 
+modeling. With these common semantics enriched models can be preserved over time and even reused. Nevertheless models 
+might have to be revised over the lifecycle of the software. With todays trend to more agile software 
 development such as eXtreme Programming \cite{DBLP:journals/computer/Beck99} or Scrum \cite{DBLP:journals/software/RisingJ00} 
 changes on models have to be even more efficient which brings refactoring of models into the focus of research.
 
@@ -115,24 +113,27 @@ of the models.
 
 % Refactoring must preserve the behavior of all model types
 
-While refactoring source code respectively textual code applies to a single type of represenation in UML different
-representations of models exist as various diagram types. This makes behavior preserving refactoring even harder as it
-needs to span over those different types of diagrams and semantics.
+While refactoring source code and textual code respectively applies to a single type of representation, in UML different
+types of diagrams exist to represent various aspects of the models. This makes behavior preserving refactoring even harder 
+as it needs to span over those different types of diagrams and semantics.
 
 % Behaviour preservation can be tested statically or dynamically UML can be analysed statically fUML is a modelling
 % language for models provided by the OMG that also allows execution and thus can be analysed dynamically
 
 To prove the correctness of models before and after refactoring different approachs exist. One is the static analysis of
 UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13} which can be done via
-OCL \cite{man:OCL}. Another one is to verify that models can be executed and debugged in some way. The OMG introduced a subset 
-of UML named fUML \cite{man:FUML} which narrowly defines semantics for class and activity diagrams to make them executable. 
-Further more in \cite{DBLP:conf/icse/Mayerhofer12} Mayerhofer proposed a framework based on fUML that is able to execute
+OCL \cite{man:OCL}. Another way is to verify that models can be executed and to compare the execution traces of the 
+original and refactored models. The OMG introduced a subset 
+of UML named fUML \cite{man:FUML} which precisely defines semantics for class and activity diagrams to make them 
+executable. 
+Furthermore in \cite{DBLP:conf/icse/Mayerhofer12} Mayerhofer proposed a framework based on fUML that is able to execute
 and debug those models.
 
 % our approach is to combine both
 
 The goal of this work is to introduce refactorings for fUML models, examine the requirements for co-refactoring of the
-corresponding diagram types and define which co-changes have to be done to preserve the behavior. Our approach to prove
+corresponding diagram types and define which co-changes have to be performed to preserve the behavior. Our approach to
+verify
 the correctness of the models after refactoring is twofold. On the one hand we use pre- and postconditions
 \cite{rob99} to define if the specific changes can be applied and that the models are semantically correct afterwards.
 On the other hand the models have to stay executable as well as traceable after the changes.
@@ -146,9 +147,9 @@ The rest of the work is structured as follows. In section \ref{refactoring-examp
 a motivating
 example of a model that is used throughout the paper. Section Y describes a selection of useful refactorings inspired by
 Fowler \cite{fow99} and Markovic and Baar \cite{DBLP:journals/sosym/MarkovicB08} and their effects on class diagrams as
-well as activity diagrams. In section Z we show which pre- and postcondition that are needed for the refactorings and
-how we refactor the models. In section AA we describe the toolchain that we use to define the models, implement a set of
-refactorings and test them. Related work is covered in section AC and a conclusion is drawn to summarize the paper.
+well as activity diagrams. In section \ref{sec:fuml-refactoring} we show which pre- and postcondition are needed for the refactorings and
+how we refactor the models. In section \ref{sec:toolchain} we describe the toolchain that we use to define the models, 
+implement a set of refactorings and test them. Related work is covered in section \ref{sec:relatedwork} and a conclusion is drawn in section \ref{sec:conclusion} to summarize the paper.
 
 % what is refactoring and what does it mean in the context of models?
 % what is fuml? what does fuml consist for diagram types?
@@ -223,7 +224,7 @@ more complex, it calculates the insurance premium as follows:
 
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.76]{images/calculatePremium.pdf}
+ \includegraphics[scale=0.45]{images/calculatePremium.pdf}
  \caption{Activity diagram for calculate premium method}
  \label{fig:calculatePremium}
 \end{figure}
@@ -278,6 +279,7 @@ In this section\todo{Seems to be a misplaced section} we will present some gener
 is presented in figure \ref{fig:refactoringlist}.
 
 \section{Tool chain and implementation}
+\label{sec:toolchain}
 For our tool chain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
 models in a virtual machine. The models are stored in XMI format and loaded with an EMF ResourceSet. The ResourceSet
 can be used to retrieve a Resource object through an URI, which is then used to access the different objects in the model 
@@ -360,7 +362,8 @@ Describe our tool chain, how we created models, how we load them, what informati
 \subsection{GUI Integration}
 At the time of this writing our GUI integration is not finished, so we cannot describe it here. The idea is to use EMF.Refactor to add 
 
-\section{Related Works}
+\section{Related Work}
+\label{sec:relatedwork}
 % Refactoring of prgram code
 
 In this section we give an overview on the related work. Refactoring in a general way with preconditions was described
@@ -392,6 +395,7 @@ different languages (Java, OCL \& Henshin) and can be directly extended in \text
 
 
 \section{Conclusion}
+\label{sec:conclusion}
 We conclude this paper with...
 
 \newpage
