@@ -161,24 +161,25 @@ implement a set of refactorings and test them. Related work is covered in sectio
 
 \section{Motivation}
 % what do we want to achieve?
-fUML is an extension of UML which builds on a subset of UML classes with the purpose of adding semantics to UML models such that they can
-be executed on the model level. The dominant concept for this is the activity diagram. If a refactoring is performed on a UML model such
-as a class diagram, then any activity diagram which is releated to the class diagram, has to be checked and possibly changed as well. In
-section \ref{sec:fuml-refactoring} we will present some examples of fUML activity diagrams and present the implications that result from
-changing class diagrams.
+fUML is an extension of UML which builds on a subset of UML classes with the purpose of adding semantics to UML models 
+such that they can be executed on the model level. The dominant concept for this is the activity diagram. If a refactoring 
+is performed on a UML model such as a class diagram, then any activity diagram which is releated to the class diagram, has 
+to be checked and possibly changed as well. In section \ref{sec:fuml-refactoring} we will present some examples of fUML 
+activity diagrams and present the implications \todo{so far we have not done that} that result from changing class 
+diagrams.
 
-Since a refactoring changes the structure of a model it is important to ensure that all changes maintain the original semantics of the
-model. Violating this requirement can result in models with either a different behavior, or in models which can no longer be executed.
-To ensure semantic preservation, two main techniques can be used. First, the refactoring can be broken down into smaller steps, each of
-which either guarantees to preseve the semantics of the model or makes it easier to verify that this is the case. Second, logical
-constraints can be used to limit refactorings on models to only those cases where semantic preservation can be ensured. For this
-purpose pre- and postconditions are specified with OCL constraints. A refactoring is then only applied if the original model satisfies
-the precondition before the refactoring is applied and the postcondition after the refactoring has been completed. Such constrains must
-be individually specified for each kind of refactoring that is to be performed, as such a part of this paper will discuss different OCL
-constraints for the refactorings that we introduce.
+Since a refactoring changes the structure of a model it is important to ensure that all changes maintain the original 
+semantics of the model. Violating this requirement can result in models with either a different behavior, or in models 
+which can no longer be executed. To ensure semantic preservation, two main techniques can be used. First, the refactoring 
+can be broken down into smaller steps, each of which either guarantees to preseve the semantics of the model or makes it 
+easier to verify that this is the case. Second, logical constraints can be used to limit refactorings on models to only 
+those cases where semantic preservation can be ensured. For this purpose pre- and postconditions are specified with OCL 
+constraints. A refactoring is then only applied if the original model satisfies the precondition before the refactoring is 
+applied and the postcondition after the refactoring has been completed. Such constrains must be individually specified for 
+each kind of refactoring that is to be performed, as such a part of this paper will discuss different OCL constraints for 
+the refactorings that we introduce.
 
-
-In this paper we will present a set of refactorings and give examples of how each refactoring can be applied to a concrete model. 
+In this paper we will present a set of refactorings and give examples of how each refactoring can be applied to a concrete model \todo{it seems we are repeating our selfs about what we will present}.
 
 % Why is it interesting to refactor models
 % Why is it important in fUML that models remain consistent -> to preserve executability
