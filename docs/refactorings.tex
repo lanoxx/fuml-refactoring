@@ -313,21 +313,35 @@ URI uri = URI.createFileURI(file.getAbsolutePath());
  \label{lst:resourceset}
 \end{figure}
 
-Assuming that multiple inheritance is not possible the extract superclass pre- and postconditions are shown in figure 
+The extract superclass pre- and postconditions are shown in figure for single and multiple inheritance respectively.
 \ref{lst:oclsuperclass}.
 
-\begin{figure}[ht]
+\begin{figure}[h!t]
  \begin{lstlisting}
-    pre: self.superClass->isEmpty()
+Single Inheritance:
+    pre: self.superClass->isEmpty() and 
+         self.owner.ownedElement
+            ->select(class|class.oclIsTypeOf(Class))
+            .oclAsType(Class).name
+            ->forAll(o | o<>newSuperClass.name)
     post: self.superClass->size() = 1
+
+Multiple Inheritance:
+   pre: self.owner.ownedElement
+            ->select(class|class.oclIsTypeOf(Class))
+            .oclAsType(Class).name
+            ->forAll(o | o<>newSuperClass.name)
+   post: self.general->contains(superClass)
  \end{lstlisting}
  \caption{OCL pre and post conditions for extract superclass}
  \label{lst:oclsuperclass}
 \end{figure}
 
 These ocl constraints are checked by the refactoring for each class object that participates
-in the refactoring. An object to type OCL from the org.eclipse.ocl package is used to create and evaluate these queries.
+in the refactoring. An object to type OCL from the org.eclipse.ocl package is used to create and evaluate these queries
+as can be seen in figure \ref{lst:ocl}.
 
+\begin{figure}
 \begin{lstlisting}
 variable = ExpressionsFactory.eINSTANCE.createVariable();
 variable.setName("newSuperClass");
@@ -342,7 +356,9 @@ eval.getEvaluationEnvironment()
 if (!eval.check(clazz))
     return false;
 \end{lstlisting}
-
+\caption{OCL validation in Java}
+\label{lst:ocl}
+\end{figure}
 
 
 % usage of fUML reference implementation of BIG
