@@ -313,6 +313,35 @@ URI uri = URI.createFileURI(file.getAbsolutePath());
  \label{lst:resourceset}
 \end{figure}
 
+Assuming that multiple inheritance is not possible the extract superclass pre- and postconditions are shown in figure 
+\ref{lst:oclsuperclass}.
+
+\begin{figure}[ht]
+ \begin{lstlisting}
+    pre: self.superClass->isEmpty()
+    post: self.superClass->size() = 1
+ \end{lstlisting}
+ \caption{OCL pre and post conditions for extract superclass}
+ \label{lst:oclsuperclass}
+\end{figure}
+
+These ocl constraints are checked by the refactoring for each class object that participates
+in the refactoring. An object to type OCL from the org.eclipse.ocl package is used to create and evaluate these queries.
+
+\begin{lstlisting}
+variable = ExpressionsFactory.eINSTANCE.createVariable();
+variable.setName("newSuperClass");
+variable.setType(UMLPackage.Literals.CLASSIFIER);
+ocl.getEnvironment().addElement(variable.getName(),
+                                variable, true);
+query = helper.createQuery(
+    "self.general->includes(newSuperClass)");
+eval = ocl.createQuery(query);
+eval.getEvaluationEnvironment()
+    .add("newSuperClass", superClass);
+if (!eval.check(clazz))
+    return false;
+\end{lstlisting}
 
 
 
