@@ -359,10 +359,10 @@ post: self.owner.ownedElement
      ->exists(name | name = 'newSuperClass')
 \end{lstlisting}
 
-The post conditions for rename attribute apply to all StructuralFeatureAction objects
-which reference the renamed attribute. For rename operation it applies to all CallOperationAction objects which
+The post conditions for rename attribute apply to all \lstinline|StructuralFeatureAction| objects
+which reference the renamed attribute. For rename operation it applies to all \lstinline|CallOperationAction| objects which
 call the renamed operation. For rename class all elements which reference objects of the renamed class must reference
-the new class name, that includes objects such Parameter or Pins (InputPin, OutputPin).
+the new class name, that includes objects such as \lstinline|Parameter| or \lstinline|Pins| (InputPin, OutputPin).
 
 
 \subsection{Extract superclass}
@@ -373,7 +373,7 @@ the list of classes that participate in the refactoring and which will receive t
 In terms of the abstract syntax of these models, the two classes \lstinline|Car| and \lstinline|Truck| are instances of 
 type \textit{Class} of the meta-model a superclass named \lstinline|Vehicle| would be an instance of type \textit{Class} as well, 
 and can be associated with these two classes through the recursive attribute \textit{general} of the class \textit{Class} 
-to create the inheritance hierarchy. However the meta-model representation of the diagram does not change. In order to 
+to create the inheritance hierarchy. However the abstract syntax representation of the diagram does not change. In order to 
 achieve a correct refactoring each class that participates in the refactoring must not already have a superclass. The 
 model would also benefit from changing all possible references to the new class.
 
@@ -444,8 +444,10 @@ URI uri = URI.createFileURI(file.getAbsolutePath());
 
 \subsection{Model refactoring}
 Our refactorings are implemented with a strategy pattern, where each refactoring implements a \lstinline|Refactorable|
-interface that has three methods \lstinline|checkPrecondition|, \lstinline|performRefactoring|, and \lstinline|checkPostcondition|. Each refactoring identifies the model objects that participate in the refactoring and then creates
-and evaluates the OCL constraints on these objects. An object to type OCL from the org.eclipse.ocl package is used to create and evaluate the queries as can be seen in figure \ref{lst:ocl}.
+interface that has three methods \lstinline|checkPrecondition|, \lstinline|performRefactoring|, and \lstinline|checkPostcondition|. 
+Each refactoring identifies the model objects that participate in the refactoring and then creates and evaluates the \textit{OCL} 
+constraints on these objects. An object to type \lstinline|OCL| from the org.eclipse.ocl package is used to create and evaluate the 
+queries as can be seen in figure \ref{lst:ocl}.
 
 \begin{figure}
 \begin{lstlisting}
@@ -466,9 +468,11 @@ if (!eval.check(clazz))
 \label{lst:ocl}
 \end{figure}
 
-We have used OCL notation to specify all constraints, but in the actual implementation of the refactorings it
+% how to apply queries and changes?
+% how to load models?
+We have used \textit{OCL} notation to specify all constraints, but in the actual implementation of the refactorings it
 is also possible to verify some of these constraints directly on the model by checking properties of the abstract syntax
-and not use the OCL validation facilities. On example is the constraint that verifies that the new super class does not
+and not use the \textit{OCL} validation facilities. One example is the constraint that verifies that the new super class does not
 yet exist in the model.
 
 If the preconditions are satisfied the actual refactoring is performed through a direct modification of the model object.
@@ -476,17 +480,70 @@ A new \lstinline|Class| instance with the name of the new superclass is created 
 classes of the model are filtered to select the ones that receive the new generalization, and the newly create superclass
 is added.
 
+\subsection{Model execution}
+\label{sec:execution}
 % usage of fUML reference implementation of BIG
-% how to load models?
 % how to execute models?
-% how to apply queries and changes?
+In the prior section we discussed how the models are statically examined with \textit{OCL} constraints if a refacoring 
+is applicable. In this section we will show how the models can be tested dynamically by executing them. We use the 
+reference implementation as described in \cite{DBLP:conf/models/MayerhoferLK12} to execute the activity diagrams of 
+our models.
 
+\begin{figure}
+ \begin{lstlisting}
+NamedElement namedElement = obtainFirstNamedElement();
+IConverter converter = getConverter(namedElement);
+IConversionResult conversionResult = converter
+  .convert(namedElement);
+Activity activity = conversionResult.getActivity(name);
+ \end{lstlisting}
+ \caption{Converting the UML diagram to fUML}
+ \label{lst:conversion}
+\end{figure}
 
+Our models are formally created in \textit{UML} and are converted to \textit{fUML} with the \lstinline|UML2fUML| converter 
+provided by the implementation as shown in Figure \ref{lst:conversion}. The resulting \textit{fUML} diagram is executed in the 
+virtual machine for model execution. 
+We test our models by examining if a complete execution trace is possible for the chosen activity. Figure \ref{lst:execution} 
+shows how the activity is executed step by step. The \lstinline|EventListener| catches the event which is created for each 
+activity step and builds up a trace. If a trace is created and the process of execution is not interrupted we consider the 
+test as successful. Testing more than one trace as some kind of branching is not part of this work and may be included in future studies.
+
+\begin{figure}
+ \begin{lstlisting}
+getExecutionContext().addEventListener(
+  new ExecutionEventListener() {
+  @Override
+  public void notify(Event event) {
+    System.out.println(event);
+    if (event instanceof ActivityEntryEvent 
+      && executionID == -1) {
+      executionID = ((ActivityEntryEvent) event)
+          .getActivityExecutionID();
+    }
+    if (event instanceof SuspendEvent) {
+      SuspendEvent suspendEvent = (SuspendEvent) event;
+      getExecutionContext().resume(
+          suspendEvent.getActivityExecutionID());
+    }
+  }
+});
+getExecutionContext().executeStepwise(activity, null, 
+  new ParameterValueList());
+getExecutionContext().getTrace(executionID);
+ \end{lstlisting}
+ \caption{Executing the activity stepwise and getting the execution trace}
+ \label{lst:execution}
+\end{figure}
+In the process of refactoring before and after each model change the corresponding activities are executed to prove that 
+the refactoring did not corrupt the model. Further testing can be implemented by going through the trace and verifying 
+that every node of the trace has the expected values.
 
 \subsection{GUI Integration}
-In this section we discuss how we can integrate the defined refactorings to the Eclipse framework. When the paper was 
-written the refactorings were not yet implemented. For our further research we plan to implement some the refactorings 
-in EMF Refactor. EMF Refactor is an Eclipse incubation project which focuses on static model analysis refactoring.
+\label{sec:guiintegration}
+In this section we discuss how we can integrate the defined refactorings to the Eclipse framework. For our further 
+research we plan to implement some the refactorings in EMF Refactor. EMF Refactor is an Eclipse incubation project 
+which focuses on static model analysis refactoring.
 
 EMF Refactor analyses a project for so called code smells and calculates common model metrics. Those two project quality 
 indicators reflect in a very convenient way which could be improved in a model. From a report view different refactorings 
@@ -500,21 +557,20 @@ easy generation of simple refactorings\footnote{The framework support the genera
 refactorings with a module wizard in Eclipse.} and the various implementation possibilities\footnote{EMF Refactor 
 supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit{Henshin} a transformation language.}.
 
-We plan to create the whole refactoring chain for \textit{extractSuperclass} in EMF Refactor which includes extracting 
-a super class and pulling up the attributes and methods programmatically. We also take the co-refactoring of the activity 
-diagrams into account. If this works as intended we plan to rewrite the creation wizard which allows only refactorings 
-on a single class. The code should ideally be carried to the EMF Refactor repository after a quality review.
-
 \section{Current Limitations}
 Our work currently has several limitations. So far we have designed a set of related class and activity diagrams,
 which are the basis for our refactorings. We have discussed the \textit{extract superclass} refactoring including its
 pre- and post conditions and shown how it can be refactored with our toolchain. Until the final version of this
-paper we will add several more refactorings from the list shown in figure \ref{fig:refactoringlist}, such as the
+paper we will formulate the pre- and postconditions for some of the refactorings that have not yet been discussed.
+Furthermore we will implement several more refactorings from the list shown in Figure \ref{fig:refactoringlist}, such as the
 \textit{extract class}, the \textit{rename method}, the \textit{pullup method}, the \textit{pullup field} and 
 \textit{rename variable} refactorings.
 
-We have also briefly mentioned EMF Refactor and we plan to extend out toolchain such that our implmented refactorings
-can be invoked from the Eclipse GUI. At least we want to show that this is possible with our toolchain for at least one refactoring.
+When the paper was written the refactorings were not yet implemented in EMF Refactor.
+We plan to create the whole refactoring chain for \textit{extractSuperclass} in EMF Refactor which includes extracting 
+a super class and pulling up the attributes and methods programmatically. We also take the co-refactoring of the activity 
+diagrams into account. If this works as intended we plan to rewrite the creation wizard which allows only refactorings 
+on a single class. The code should ideally be carried to the EMF Refactor repository after a quality review.
 
 \section{Related Work}
 \label{sec:relatedwork}
