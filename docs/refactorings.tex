@@ -225,13 +225,14 @@ the refactored class diagram.
 
 For each of the methods in the \lstinline|InsurancePolicy| class a separate activity diagram exists which defines the semantics 
 of these methods. As some of them are quite similar we will present only the diagrams for \lstinline|addCar| in figure 
-\ref{fig:addCar} and \lstinline|calculatePremium| in figure \ref{fig:calculatePremium}.
+\ref{fig:addCar} and \lstinline|calculatePremium| in  figure \ref{fig:calculatePremium}.
 
 The activity for the \lstinline|addCar| operation works as follows. Read the policy with a \lstinline|ReadSelfAction|, take the 
 car as a parameter and use the \lstinline|AddStructuralFeatureValueAction| to add the car to the insurance policy. In parallel 
-it reads the number of cars in the policy with \lstinline|ReadStructuralFeatureValueAction|, specifies the integer one with 
-a \lstinline|ValueSpecificationAction|, adds the numbers up with a \lstinline|CallBehaviorAction| and writes it back to the 
-number of cars variable with another \lstinline|AddStructuralFeatureValueAction| that replaces the old value.
+it reads the number of cars in the policy with \lstinline|ReadStructuralFeatureValueAction|, specifies an integer
+with the value of one with 
+a \lstinline|ValueSpecificationAction|, adds the numbers with a \lstinline|CallBehaviorAction| and writes it back to the 
+\lstinline|numberOfCars| variable with another \lstinline|AddStructuralFeatureValueAction| that replaces the old value.
 
 The \lstinline|calculatePremium| activity is more complex, it calculates the insurance premium as described below:
 
