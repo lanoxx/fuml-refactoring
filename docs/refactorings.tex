@@ -77,7 +77,7 @@ In this work we will present ideas and concepts for the refactoring of fUML mode
 the extension of existing UML refactorings to cover not only the static aspect of UML such as class diagrams but to also 
 include refactorings for dynamic
 parts such as activity diagrams. In this work we will present basic concepts for refactoring of models with EMF and show how model semantics can be
-preserved through the use of OCL constraints. In the remainder of the paper we then present our tool chain and the used technologies
+preserved through the use of OCL constraints. In the remainder of the paper we then present our toolchain and the used technologies
 of EMF (in particular Ecore and OCL) and how we used them for refactoring of models. We also present a discussion of EMF.Refactor, which shows how such refactorings
 can be made available in the Eclipse GUIs such as the UML tree editor or Papyrus.
 \end{abstract}
@@ -139,7 +139,7 @@ the correctness of the models after refactoring is twofold. On the one hand we u
 On the other hand the models have to stay executable as well as traceable after the changes.
 
 % we present a motivating example (class and activity diagrams) we provide some refactorings that target bothe diagram
-% types we provide a how to test statically and dynamically, then refator and retest we provide a tool chain
+% types we provide a how to test statically and dynamically, then refator and retest we provide a toolchain
 
 % we provide some related work we provide a conclusion
 
@@ -279,9 +279,9 @@ refactoring does not already have a superclass.
 In this section\todo{Seems to be a misplaced section} we will present some general refactorings such as the ``extract superclass'' refactoring. A list of example refactorings
 is presented in figure \ref{fig:refactoringlist}.
 
-\section{Tool chain and implementation}
+\section{Toolchain and implementation}
 \label{sec:toolchain}
-For our tool chain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
+For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
 models in a virtual machine. The models are stored in XMI format and loaded with an EMF ResourceSet. The ResourceSet
 can be used to retrieve a Resource object through an URI, which is then used to access the different objects in the model 
 (see figure \ref{lst:resourceset}). All elements contained in the model are instances of Ecore (the implemententation of
@@ -358,10 +358,20 @@ if (!eval.check(clazz))
 % how to apply queries and changes?
 
 \subsection{Model refactoring}
-Describe our tool chain, how we created models, how we load them, what information of the abstract syntax we use for refactoring, etc.
+Describe our toolchain, how we created models, how we load them, what information of the abstract syntax we use for refactoring, etc.
 
 \subsection{GUI Integration}
 At the time of this writing our GUI integration is not finished, so we cannot describe it here. The idea is to use EMF.Refactor to add 
+
+\section{Current Limitations}
+Our work currently has several limitations. So far we have designed a set of related class and activity diagrams,
+which are the basis for our refactorings. We have discussed the \textit{extract superclass} refactoring including its
+pre and post conditions and shown how it can be refactored with our toolchain. Until the final version of this
+paper we will add several more refactorings from the list shown in figure \ref{fig:refactoringlist}, such as the
+\textit{extract class} and the \textit{rename class}, \textit{rename method} and \textit{rename variable} refactorings.
+
+We have also briefly mentioned EMF.Refactor and we plan to extend out toolchain such that our implmented refactorings
+can be invoked from the Eclipse GUI. At least we want to show that this is possible with our toolchain for at least one refactoring.
 
 \section{Related Work}
 \label{sec:relatedwork}
@@ -397,7 +407,25 @@ different languages (Java, OCL \& Henshin) and can be directly extended in \text
 
 \section{Conclusion}
 \label{sec:conclusion}
-We conclude this paper with...
+Refactoring models is a rather difficult task and it requires a consise knowledge of the involved technologies, with
+the list of involved technologies being rather long. For one a reasonably well understanding of fUML is required, in
+particular how class diagrams and activity diagrams are constructed and how they are related. It is not enough to simply
+be able to draw both class and activity diagrams, as one also needs a good understanding of the meta-meta-model (MOF) and
+the fUML and UML meta-model implementations in Ecore in order to understand and manipulate the model on the level of its 
+abstract syntax. Finally an understanding of EMF (in particular Ecore and OCL) is required. While MOF and OCL are both 
+modeling concepts and languages respectively, EMF contains implementations for them in Java with a complex API. 
+Understanding these APIs of Ecore and OCL is required to perform the refactorings and was a prerequisite to build
+our toolchain.
+
+With the toolchain in place another challenge was to identify the required steps to perform the actual refactoring work.
+In particular this meant to identify how the activity diagrams needs to change if a change is made in the class
+diagram.
+
+Most of our efforts in the development of this work were focused on gaining a comprehensive understanding of the
+technologies described above, to develop the tool chain and to draw the various diagrams presented in this paper. We
+have presented a comprehensive set of diagrams as the basis for our refactoring work and demonstrated the feasibility
+of our tool chain. However a more comprehensive evaluation of the different refactorings including the specification
+of pre- and postconditions OCL in is still required and will be the focus of our ongoing efforts.
 
 \newpage
 \bibliographystyle{acm}
