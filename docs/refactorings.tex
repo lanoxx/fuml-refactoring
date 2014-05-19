@@ -484,7 +484,26 @@ is added.
 
 
 \subsection{GUI Integration}
-At the time of this writing our GUI integration is not finished, so we cannot describe it here. The idea is to use EMF.Refactor to add 
+In this section we discuss how we can integrate the defined refactorings to the Eclipse framework. When the paper was 
+written the refactorings were not yet implemented. For our further research we plan to implement some the refactorings 
+in EMF Refactor. EMF Refactor is an Eclipse incubation project which focuses on static model analysis refactoring.
+
+EMF Refactor analyses a project for so called code smells and calculates common model metrics. Those two project quality 
+indicators reflect in a very convenient way which could be improved in a model. From a report view different refactorings 
+already implemented in EMF Refactor can be applied to change the model. The refactorings work in the UML tree editor as
+well as in several graphical editors based on EMF.
+
+However EMF Refactor mainly supports the refactoring of class diagrams. The effects that can be seen in activity diagrams 
+when refactoring class diagrams are error prone and seem to happen more or less by accident. Nevertheless we intend to 
+implement our above mentioned catalog in EMF Refactor because of the good integration with the Eclipse framework, the 
+easy generation of simple refactorings\footnote{The framework support the generation of new smells, metrics and 
+refactorings with a module wizard in Eclipse.} and the various implementation possibilities\footnote{EMF Refactor 
+supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit{Henshin} a transformation language.}.
+
+We plan to create the whole refactoring chain for \textit{extractSuperclass} in EMF Refactor which includes extracting 
+a super class and pulling up the attributes and methods programmatically. We also take the co-refactoring of the activity 
+diagrams into account. If this works as intended we plan to rewrite the creation wizard which allows only refactorings 
+on a single class. The code should be ideally be carried to the EMGF Refactor repository after a quality review.
 
 \section{Current Limitations}
 Our work currently has several limitations. So far we have designed a set of related class and activity diagrams,
