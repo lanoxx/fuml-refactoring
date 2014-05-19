@@ -78,7 +78,7 @@ the extension of existing UML refactorings to cover not only the static aspect o
 include refactorings for dynamic
 parts such as activity diagrams. In this work we will present basic concepts for refactoring of models with EMF and show how model semantics can be
 preserved through the use of OCL constraints. In the remainder of the paper we then present our toolchain and the used technologies
-of EMF (in particular Ecore and OCL) and how we used them for refactoring of models. We also present a discussion of EMF.Refactor, which shows how such refactorings
+of EMF (in particular Ecore and OCL) and how we used them for refactoring of models. We also present a discussion of EMF Refactor, which shows how such refactorings
 can be made available in the Eclipse GUIs such as the UML tree editor or Papyrus.
 \end{abstract}
 
@@ -181,9 +181,9 @@ for each kind of refactoring that is to be performed. In this paper will introdu
 for  the refactorings that we introduce.
 
 Refactorings are only useful if they can be easily applied to the models through an easy to use process such as a 
-graphical front end. EMF.Refactor allows the integration of refactorings into editors such as the UML tree editor or 
+graphical front end. EMF Refactor allows the integration of refactorings into editors such as the UML tree editor or 
 papyrus. It provides a Java API as well as a module concept to integrate refactorings. We will discuss the use of 
-EMF.Refactor as part of our tool chain presentation.
+EMF Refactor as part of our tool chain presentation.
 
 % Why is it interesting to refactor models
 % Why is it important in fUML that models remain consistent -> to preserve executability
@@ -503,7 +503,7 @@ supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit
 We plan to create the whole refactoring chain for \textit{extractSuperclass} in EMF Refactor which includes extracting 
 a super class and pulling up the attributes and methods programmatically. We also take the co-refactoring of the activity 
 diagrams into account. If this works as intended we plan to rewrite the creation wizard which allows only refactorings 
-on a single class. The code should ideally be carried to the EMGF Refactor repository after a quality review.
+on a single class. The code should ideally be carried to the EMF Refactor repository after a quality review.
 
 \section{Current Limitations}
 Our work currently has several limitations. So far we have designed a set of related class and activity diagrams,
@@ -513,7 +513,7 @@ paper we will add several more refactorings from the list shown in figure \ref{f
 \textit{extract class}, the \textit{rename method}, the \textit{pullup method}, the \textit{pullup field} and 
 \textit{rename variable} refactorings.
 
-We have also briefly mentioned EMF.Refactor and we plan to extend out toolchain such that our implmented refactorings
+We have also briefly mentioned EMF Refactor and we plan to extend out toolchain such that our implmented refactorings
 can be invoked from the Eclipse GUI. At least we want to show that this is possible with our toolchain for at least one refactoring.
 
 \section{Related Work}
