@@ -377,6 +377,24 @@ to create the inheritance hierarchy. However the meta-model representation of th
 achieve a correct refactoring each class that participates in the refactoring must not already have a superclass. The 
 model would also benefit from changing all possible references to the new class.
 
+\textbf{OCL for extract superclass:}
+\begin{lstlisting}
+Single Inheritance:
+    pre: self.superClass->isEmpty() and 
+         self.owner.ownedElement
+            ->select(class|class.oclIsTypeOf(Class))
+            .oclAsType(Class).name
+            ->forAll(o | o<>newSuperClass.name)
+    post: self.superClass->size() = 1
+
+Multiple Inheritance:
+   pre: self.owner.ownedElement
+            ->select(class|class.oclIsTypeOf(Class))
+            .oclAsType(Class).name
+            ->forAll(o | o<>newSuperClass.name)
+   post: self.general->contains(superClass)
+\end{lstlisting}
+
 \subsection{Pull up attribute \& pull up method}
 \label{sec:pullup}
 Both refactorings are quite similar which is why we describe the first and explain the specifics for the latter one afterwards. 
@@ -425,33 +443,9 @@ URI uri = URI.createFileURI(file.getAbsolutePath());
 \end{figure}
 
 \subsection{Model refactoring}
-The extract superclass pre- and postconditions are shown in figure \ref{lst:oclsuperclass} for single and multiple 
-inheritance respectively \ref{lst:oclsuperclass}.
-
-\begin{figure}[h!t]
- \begin{lstlisting}
-Single Inheritance:
-    pre: self.superClass->isEmpty() and 
-         self.owner.ownedElement
-            ->select(class|class.oclIsTypeOf(Class))
-            .oclAsType(Class).name
-            ->forAll(o | o<>newSuperClass.name)
-    post: self.superClass->size() = 1
-
-Multiple Inheritance:
-   pre: self.owner.ownedElement
-            ->select(class|class.oclIsTypeOf(Class))
-            .oclAsType(Class).name
-            ->forAll(o | o<>newSuperClass.name)
-   post: self.general->contains(superClass)
- \end{lstlisting}
- \caption{OCL pre and post conditions for extract superclass}
- \label{lst:oclsuperclass}
-\end{figure}
-
-These OCL constraints are checked by the refactoring for each class object that participates
-in the refactoring. An object to type OCL from the org.eclipse.ocl package is used to create and evaluate these queries
-as can be seen in figure \ref{lst:ocl}.
+Our refactorings are implemented with a strategy pattern, where each refactoring implements a \lstinline|Refactorable|
+interface that has three methods \lstinline|checkPrecondition|, \lstinline|performRefactoring|, and \lstinline|checkPostcondition|. Each refactoring identifies the model objects that participate in the refactoring and then creates
+and evaluates the OCL constraints on these objects. An object to type OCL from the org.eclipse.ocl package is used to create and evaluate the queries as can be seen in figure \ref{lst:ocl}.
 
 \begin{figure}
 \begin{lstlisting}
@@ -472,7 +466,7 @@ if (!eval.check(clazz))
 \label{lst:ocl}
 \end{figure}
 
-We have used OCL notation to specify all constraints, but in the actual implementation of the refactorings it depends it
+We have used OCL notation to specify all constraints, but in the actual implementation of the refactorings it
 is also possible to verify some of these constraints directly on the model by checking properties of the abstract syntax
 and not use the OCL validation facilities. On example is the constraint that verifies that the new super class does not
 yet exist in the model.
