@@ -1,0 +1,78 @@
+\documentclass{llncs}
+
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage[lined,linesnumbered,algochapter]{algorithm2e}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\usepackage{xspace}
+\usepackage{todonotes}          % Package for working draft comments
+\usepackage{hyperref}           % Package for hyperlink references in the document
+
+\usepackage{ngerman}
+\usepackage[ngerman, english]{babel}
+\usepackage{bibgerm,cite}       % Deutsche Bezeichnungen, Automatisches Zusammenfassen von Literaturstellen
+\usepackage[ngerman]{varioref}  % Querverweise
+
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{3}
+
+% define custom macros for specific formats or names
+\newcommand{\uml}[1]{\texttt{#1}}
+\newcommand{\cd}{\textsf{Class Diagram}}
+
+\begin{document}
+\pagestyle{plain}
+\pagenumbering{roman}
+
+\title{Refactoring UML models}
+
+
+%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+% Name and address of the author
+%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+\author{Kristof Meixner}
+
+\institute{\email{kristof.meixner@fatlenny.net} \\ Registration No. 9725208}
+% \institute{Musterweg 12/3/7, 1040 Wien \\ \email{mustermann@tuwien.ac.at} \\ Registration No.: 0748549}
+
+%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+% Example for more than one authors
+%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+%\author{Max Mustermann\inst{1} and Matthias Mustermann\inst{2}}
+
+%\institute{Musterweg 12/3/7, 1040 Wien \\ \email{mustermann@tuwien.ac.at} \\ MatrNr.: 0748549
+%\and
+%Mustergasse 54/4/3, 1030 Wien \\ \email{matthias@tuwien.ac.at} \\ MatrNr.: 0426553
+%}
+
+\maketitle
+
+\begin{abstract}
+Over the last twenty years refactoring advanced to a commonly known and used techniques in modern software engineering. We present an overview from the beginning of refactoring in source code to its actual application in model-driven software development. Furthermore we discuss methods that ensure that refactored source code is sill correct.
+\end{abstract}
+
+%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+% Table of contents
+% Activate or deactivate this according to the guideline instructor
+%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+\tableofcontents
+%\thispagestyle{plain}
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Refactoring in the beginning}
+
+In his thesis \cite{mast:REFOOF} Opdyke ``defines a set of program restructuring operations'' that ``preserve the behavior of a program'' to increase software quality. This technique became known as refactoring.
+
+The issue he addressed in his work is the problem of changing parts of source code from an object oriented system, grounded in a possibly large code base while also maintaining all the references and dependencies manually. He described this process as ``time consuming, difficult and error prone''. As a solution he proposes ``an approach for providing automated support for the restructuring'', plans to reorganize the source code on an intermediate level without changing the behavior of the program.
+ 
+
+\newpage
+\bibliographystyle{acm}
+\bibliography{references}
+
+\end{document}
