@@ -5,23 +5,23 @@
   </packageImport>
   <packagedElement xmi:type="uml:Package" xmi:id="_QZmkkN0FEeOkD5x5qlp0bA" name="insurance">
     <packagedElement xmi:type="uml:Class" xmi:id="_qP6GIN0DEeOkD5x5qlp0bA" name="Company">
-      <ownedAttribute xmi:type="uml:Property" xmi:id="_WiNPoN0HEeOzQ81W41Dz0A" name="car" type="_0gtAgN0DEeOkD5x5qlp0bA" association="_WiOdwN0HEeOzQ81W41Dz0A">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_WiNPoN0HEeOzQ81W41Dz0A" name="cars" type="_0gtAgN0DEeOkD5x5qlp0bA" association="_WiOdwN0HEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WiNPod0HEeOzQ81W41Dz0A"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WiNPot0HEeOzQ81W41Dz0A" value="*"/>
       </ownedAttribute>
-      <ownedAttribute xmi:type="uml:Property" xmi:id="_40cw0N0HEeOzQ81W41Dz0A" name="truck" type="_1nELoN0DEeOkD5x5qlp0bA" association="_40dX4N0HEeOzQ81W41Dz0A">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_40cw0N0HEeOzQ81W41Dz0A" name="trucks" type="_1nELoN0DEeOkD5x5qlp0bA" association="_40dX4N0HEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_40cw0d0HEeOzQ81W41Dz0A"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_40cw0t0HEeOzQ81W41Dz0A" value="*"/>
       </ownedAttribute>
-      <ownedAttribute xmi:type="uml:Property" xmi:id="_D6zvUN0KEeOzQ81W41Dz0A" name="insurancePolicy" type="_xuewgN0DEeOkD5x5qlp0bA" association="_D60WYN0KEeOzQ81W41Dz0A">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_D6zvUN0KEeOzQ81W41Dz0A" name="policies" type="_xuewgN0DEeOkD5x5qlp0bA" association="_D60WYN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_D6zvUd0KEeOzQ81W41Dz0A"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_D6zvUt0KEeOzQ81W41Dz0A" value="*"/>
       </ownedAttribute>
-      <ownedAttribute xmi:type="uml:Property" xmi:id="_MSyt8N0KEeOzQ81W41Dz0A" name="employee" type="_9-tzEN0DEeOkD5x5qlp0bA" association="_MSzVAN0KEeOzQ81W41Dz0A">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_MSyt8N0KEeOzQ81W41Dz0A" name="employees" type="_9-tzEN0DEeOkD5x5qlp0bA" association="_MSzVAN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_MSyt8d0KEeOzQ81W41Dz0A"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_MSyt8t0KEeOzQ81W41Dz0A" value="*"/>
       </ownedAttribute>
-      <ownedAttribute xmi:type="uml:Property" xmi:id="_Ri25YN0KEeOzQ81W41Dz0A" name="customer" type="_8K3P0N0DEeOkD5x5qlp0bA" association="_Ri4HgN0KEeOzQ81W41Dz0A">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_Ri25YN0KEeOzQ81W41Dz0A" name="customers" type="_8K3P0N0DEeOkD5x5qlp0bA" association="_Ri4HgN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Ri25Yd0KEeOzQ81W41Dz0A"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Ri25Yt0KEeOzQ81W41Dz0A" value="*"/>
       </ownedAttribute>
@@ -145,36 +145,36 @@
           <upperBound xmi:type="uml:LiteralInteger" xmi:id="_zB18MN0LEeOzQ81W41Dz0A" value="1"/>
         </node>
         <node xmi:type="uml:ReadSelfAction" xmi:id="_F5msYN0MEeOzQ81W41Dz0A" name="self">
-          <result xmi:type="uml:OutputPin" xmi:id="_IZZIkN0MEeOzQ81W41Dz0A" name="result" outgoing="_4RBOYN3dEeORMctkWXHAOw" type="_xuewgN0DEeOkD5x5qlp0bA">
+          <result xmi:type="uml:OutputPin" xmi:id="_IZZIkN0MEeOzQ81W41Dz0A" name="policy" outgoing="_4RBOYN3dEeORMctkWXHAOw" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_Z8RwgN0MEeOzQ81W41Dz0A" value="1"/>
             <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_RJ7xIN0MEeOzQ81W41Dz0A" value="1"/>
             <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_RJ8YMN0MEeOzQ81W41Dz0A" value="1"/>
           </result>
         </node>
         <node xmi:type="uml:AddStructuralFeatureValueAction" xmi:id="_eyrewN0MEeOzQ81W41Dz0A" name="addCar" visibility="public" outgoing="_wVztgN3sEeOFRK8JlLpj3Q" structuralFeature="_DQA7UN0JEeOzQ81W41Dz0A">
-          <object xmi:type="uml:InputPin" xmi:id="_eyvwMN0MEeOzQ81W41Dz0A" name="object" incoming="__lTUUN3dEeORMctkWXHAOw" type="_xuewgN0DEeOkD5x5qlp0bA">
+          <object xmi:type="uml:InputPin" xmi:id="_eyvwMN0MEeOzQ81W41Dz0A" name="policy" incoming="__lTUUN3dEeORMctkWXHAOw" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_eyvwMd0MEeOzQ81W41Dz0A" value="1"/>
           </object>
-          <result xmi:type="uml:OutputPin" xmi:id="_eywXQN0MEeOzQ81W41Dz0A" name="result" type="_xuewgN0DEeOkD5x5qlp0bA">
+          <result xmi:type="uml:OutputPin" xmi:id="_eywXQN0MEeOzQ81W41Dz0A" name="policy" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_eywXQd0MEeOzQ81W41Dz0A" value="1"/>
           </result>
-          <value xmi:type="uml:InputPin" xmi:id="_eyvJIN0MEeOzQ81W41Dz0A" name="value" incoming="_NJryUN0NEeOzQ81W41Dz0A" type="_0gtAgN0DEeOkD5x5qlp0bA">
+          <value xmi:type="uml:InputPin" xmi:id="_eyvJIN0MEeOzQ81W41Dz0A" name="car" incoming="_NJryUN0NEeOzQ81W41Dz0A" type="_0gtAgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_eyvJId0MEeOzQ81W41Dz0A" value="1"/>
           </value>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="_T_KcYN0NEeOzQ81W41Dz0A" name="ActivityFinalNode" incoming="_TwQREN3mEeOFRK8JlLpj3Q"/>
         <node xmi:type="uml:ForkNode" xmi:id="_tfvdIN3dEeORMctkWXHAOw" name="policyFork" outgoing="__lTUUN3dEeORMctkWXHAOw _SlQ-QN3eEeORMctkWXHAOw _AN9WIN3mEeOFRK8JlLpj3Q" incoming="_4RBOYN3dEeORMctkWXHAOw"/>
         <node xmi:type="uml:ReadStructuralFeatureAction" xmi:id="_HypwQN3eEeORMctkWXHAOw" name="readNumberOfCars" structuralFeature="_LSuPoN3cEeORMctkWXHAOw">
-          <object xmi:type="uml:InputPin" xmi:id="_Hyrlct3eEeORMctkWXHAOw" name="object" incoming="_SlQ-QN3eEeORMctkWXHAOw" type="_xuewgN0DEeOkD5x5qlp0bA">
+          <object xmi:type="uml:InputPin" xmi:id="_Hyrlct3eEeORMctkWXHAOw" name="policy" incoming="_SlQ-QN3eEeORMctkWXHAOw" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_Hyrlc93eEeORMctkWXHAOw" value="1"/>
           </object>
-          <result xmi:type="uml:OutputPin" xmi:id="_HyrlcN3eEeORMctkWXHAOw" name="result" outgoing="_HZq2QN3jEeOFRK8JlLpj3Q">
+          <result xmi:type="uml:OutputPin" xmi:id="_HyrlcN3eEeORMctkWXHAOw" name="noc" outgoing="_HZq2QN3jEeOFRK8JlLpj3Q">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_Hyrlcd3eEeORMctkWXHAOw" value="1"/>
           </result>
         </node>
         <node xmi:type="uml:ValueSpecificationAction" xmi:id="_mzGeoN3gEeORMctkWXHAOw" name="one">
-          <result xmi:type="uml:OutputPin" xmi:id="_1gijcN3gEeORMctkWXHAOw" name="result" visibility="public" outgoing="_BEwioN3jEeOFRK8JlLpj3Q">
+          <result xmi:type="uml:OutputPin" xmi:id="_1gijcN3gEeORMctkWXHAOw" name="1" visibility="public" outgoing="_BEwioN3jEeOFRK8JlLpj3Q">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="__ykiAN3iEeOFRK8JlLpj3Q" value="1"/>
           </result>
@@ -188,14 +188,14 @@
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_Yw5dQd3iEeOFRK8JlLpj3Q" value="1"/>
           </argument>
-          <argument xmi:type="uml:InputPin" xmi:id="_Yw4PIN3iEeOFRK8JlLpj3Q" name="plusOne" incoming="_BEwioN3jEeOFRK8JlLpj3Q">
+          <argument xmi:type="uml:InputPin" xmi:id="_Yw4PIN3iEeOFRK8JlLpj3Q" name="1" incoming="_BEwioN3jEeOFRK8JlLpj3Q">
             <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_Yw42MN3iEeOFRK8JlLpj3Q" source="PinToParameterLink">
               <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_Yw42Md3iEeOFRK8JlLpj3Q" key="PinToParameterLink" value="_QTmywN3gEeORMctkWXHAOw"/>
             </eAnnotations>
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_Yw4PId3iEeOFRK8JlLpj3Q" value="1"/>
           </argument>
-          <result xmi:type="uml:OutputPin" xmi:id="_Yw5dRN3iEeOFRK8JlLpj3Q" name="oneCarAdded" outgoing="_BoaXYN3lEeOFRK8JlLpj3Q">
+          <result xmi:type="uml:OutputPin" xmi:id="_Yw5dRN3iEeOFRK8JlLpj3Q" name="oneAdded" outgoing="_BoaXYN3lEeOFRK8JlLpj3Q">
             <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_Yw6EUN3iEeOFRK8JlLpj3Q" source="PinToParameterLink">
               <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_Yw6EUd3iEeOFRK8JlLpj3Q" key="PinToParameterLink" value="_WjLTYN3gEeORMctkWXHAOw"/>
             </eAnnotations>
@@ -203,13 +203,13 @@
           </result>
         </node>
         <node xmi:type="uml:AddStructuralFeatureValueAction" xmi:id="_qX1z4N3kEeOFRK8JlLpj3Q" name="writeNumberOfCars" outgoing="_zjz6kN3sEeOFRK8JlLpj3Q" structuralFeature="_LSuPoN3cEeORMctkWXHAOw" isReplaceAll="true">
-          <object xmi:type="uml:InputPin" xmi:id="_qX3pEt3kEeOFRK8JlLpj3Q" name="object" incoming="_AN9WIN3mEeOFRK8JlLpj3Q" type="_xuewgN0DEeOkD5x5qlp0bA">
+          <object xmi:type="uml:InputPin" xmi:id="_qX3pEt3kEeOFRK8JlLpj3Q" name="policy" incoming="_AN9WIN3mEeOFRK8JlLpj3Q" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_qX3pE93kEeOFRK8JlLpj3Q" value="1"/>
           </object>
-          <result xmi:type="uml:OutputPin" xmi:id="_qX4QIN3kEeOFRK8JlLpj3Q" name="result" type="_xuewgN0DEeOkD5x5qlp0bA">
+          <result xmi:type="uml:OutputPin" xmi:id="_qX4QIN3kEeOFRK8JlLpj3Q" name="policy" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_qX4QId3kEeOFRK8JlLpj3Q" value="1"/>
           </result>
-          <value xmi:type="uml:InputPin" xmi:id="_qX3pEN3kEeOFRK8JlLpj3Q" name="value" incoming="_BoaXYN3lEeOFRK8JlLpj3Q">
+          <value xmi:type="uml:InputPin" xmi:id="_qX3pEN3kEeOFRK8JlLpj3Q" name="noc+1" incoming="_BoaXYN3lEeOFRK8JlLpj3Q">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_qX3pEd3kEeOFRK8JlLpj3Q" value="1"/>
           </value>
@@ -409,7 +409,7 @@
           <weight xmi:type="uml:LiteralInteger" xmi:id="_HlyqEd4MEeOxiICXBTLgYQ" value="1"/>
         </edge>
         <node xmi:type="uml:ReadSelfAction" xmi:id="_8yST8N36EeO2e_4Ts3wk9A" name="self">
-          <result xmi:type="uml:OutputPin" xmi:id="_Eti6UN37EeO2e_4Ts3wk9A" name="result" outgoing="_XBmrEN38EeO2e_4Ts3wk9A" type="_xuewgN0DEeOkD5x5qlp0bA">
+          <result xmi:type="uml:OutputPin" xmi:id="_Eti6UN37EeO2e_4Ts3wk9A" name="policy" outgoing="_XBmrEN38EeO2e_4Ts3wk9A" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_Eti6Ud37EeO2e_4Ts3wk9A" value="1"/>
           </result>
         </node>
@@ -417,7 +417,7 @@
           <object xmi:type="uml:InputPin" xmi:id="_sH0sUt37EeO2e_4Ts3wk9A" name="policy" incoming="_YnuUUN38EeO2e_4Ts3wk9A" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_sH0sU937EeO2e_4Ts3wk9A" value="1"/>
           </object>
-          <result xmi:type="uml:OutputPin" xmi:id="_sH0sUN37EeO2e_4Ts3wk9A" name="result" outgoing="_kEeHoN4AEeOxiICXBTLgYQ" type="_8K3P0N0DEeOkD5x5qlp0bA">
+          <result xmi:type="uml:OutputPin" xmi:id="_sH0sUN37EeO2e_4Ts3wk9A" name="customer" outgoing="_kEeHoN4AEeOxiICXBTLgYQ" type="_8K3P0N0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_sH0sUd37EeO2e_4Ts3wk9A" value="1"/>
           </result>
         </node>
@@ -426,7 +426,7 @@
           <object xmi:type="uml:InputPin" xmi:id="_fN-PkN38EeO2e_4Ts3wk9A" name="policy" incoming="_FnUJAN39EeO2e_4Ts3wk9A" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_fN-Pkd38EeO2e_4Ts3wk9A" value="1"/>
           </object>
-          <result xmi:type="uml:OutputPin" xmi:id="_fN9ogN38EeO2e_4Ts3wk9A" name="result" outgoing="_0_J8kN3_EeOxiICXBTLgYQ">
+          <result xmi:type="uml:OutputPin" xmi:id="_fN9ogN38EeO2e_4Ts3wk9A" name="noc" outgoing="_0_J8kN3_EeOxiICXBTLgYQ">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_fN9ogd38EeO2e_4Ts3wk9A" value="1"/>
           </result>
@@ -435,7 +435,7 @@
           <object xmi:type="uml:InputPin" xmi:id="_kJ9BYN38EeO2e_4Ts3wk9A" name="policy" incoming="_G3ohYN39EeO2e_4Ts3wk9A" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_kJ9BYd38EeO2e_4Ts3wk9A" value="1"/>
           </object>
-          <result xmi:type="uml:OutputPin" xmi:id="_kJ8aUN38EeO2e_4Ts3wk9A" name="result" outgoing="_zuMD8N3_EeOxiICXBTLgYQ">
+          <result xmi:type="uml:OutputPin" xmi:id="_kJ8aUN38EeO2e_4Ts3wk9A" name="not" outgoing="_zuMD8N3_EeOxiICXBTLgYQ">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_kJ8aUd38EeO2e_4Ts3wk9A" value="1"/>
           </result>
@@ -466,7 +466,7 @@
           <object xmi:type="uml:InputPin" xmi:id="_gEQagN4AEeOxiICXBTLgYQ" name="customer" incoming="_kEeHoN4AEeOxiICXBTLgYQ" type="_8K3P0N0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_gEQagd4AEeOxiICXBTLgYQ" value="1"/>
           </object>
-          <result xmi:type="uml:OutputPin" xmi:id="_gEPzcN4AEeOxiICXBTLgYQ" name="result" outgoing="_631qYN4DEeOxiICXBTLgYQ">
+          <result xmi:type="uml:OutputPin" xmi:id="_gEPzcN4AEeOxiICXBTLgYQ" name="age" outgoing="_631qYN4DEeOxiICXBTLgYQ">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_gEPzcd4AEeOxiICXBTLgYQ" value="1"/>
           </result>
@@ -532,7 +532,7 @@
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_lkN-8d4HEeOxiICXBTLgYQ" value="1"/>
           </argument>
-          <result xmi:type="uml:OutputPin" xmi:id="_lkOmBt4HEeOxiICXBTLgYQ" name="result" outgoing="_HlvmwN4MEeOxiICXBTLgYQ">
+          <result xmi:type="uml:OutputPin" xmi:id="_lkOmBt4HEeOxiICXBTLgYQ" name="premium" outgoing="_HlvmwN4MEeOxiICXBTLgYQ">
             <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_lkPNEN4HEeOxiICXBTLgYQ" source="PinToParameterLink">
               <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_lkPNEd4HEeOxiICXBTLgYQ" key="PinToParameterLink" value="__gjewN3_EeOxiICXBTLgYQ"/>
             </eAnnotations>
@@ -540,7 +540,7 @@
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_lkOmB94HEeOxiICXBTLgYQ" value="1"/>
           </result>
         </node>
-        <node xmi:type="uml:ActivityParameterNode" xmi:id="_7L-0wN4LEeOxiICXBTLgYQ" name="result" incoming="_HlvmwN4MEeOxiICXBTLgYQ" parameter="_AASagN0KEeOzQ81W41Dz0A">
+        <node xmi:type="uml:ActivityParameterNode" xmi:id="_7L-0wN4LEeOxiICXBTLgYQ" name="premium" incoming="_HlvmwN4MEeOxiICXBTLgYQ" parameter="_AASagN0KEeOzQ81W41Dz0A">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
           <upperBound xmi:type="uml:LiteralInteger" xmi:id="_7MAC4N4LEeOxiICXBTLgYQ" value="1"/>
         </node>
@@ -622,7 +622,7 @@
           <value xsi:nil="true"/>
         </defaultValue>
       </ownedAttribute>
-      <ownedAttribute xmi:type="uml:Property" xmi:id="_G3HIYN0KEeOzQ81W41Dz0A" name="insurancePolicy" type="_xuewgN0DEeOkD5x5qlp0bA" association="_G3HvcN0KEeOzQ81W41Dz0A">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_G3HIYN0KEeOzQ81W41Dz0A" name="policies" type="_xuewgN0DEeOkD5x5qlp0bA" association="_G3HvcN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_G3HIYd0KEeOzQ81W41Dz0A"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_G3HIYt0KEeOzQ81W41Dz0A" value="*"/>
       </ownedAttribute>
@@ -652,56 +652,56 @@
           <value xsi:nil="true"/>
         </defaultValue>
       </ownedAttribute>
-      <ownedAttribute xmi:type="uml:Property" xmi:id="_Uxc8UN0KEeOzQ81W41Dz0A" name="insurancePolicy" type="_xuewgN0DEeOkD5x5qlp0bA" association="_UxdjYN0KEeOzQ81W41Dz0A">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_Uxc8UN0KEeOzQ81W41Dz0A" name="policies" type="_xuewgN0DEeOkD5x5qlp0bA" association="_UxdjYN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Uxc8Ud0KEeOzQ81W41Dz0A"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Uxc8Ut0KEeOzQ81W41Dz0A" value="*"/>
       </ownedAttribute>
     </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_WiOdwN0HEeOzQ81W41Dz0A" name="company_car_1" memberEnd="_WiOdwd0HEeOzQ81W41Dz0A _WiNPoN0HEeOzQ81W41Dz0A">
+    <packagedElement xmi:type="uml:Association" xmi:id="_WiOdwN0HEeOzQ81W41Dz0A" name="insures" memberEnd="_WiOdwd0HEeOzQ81W41Dz0A _WiNPoN0HEeOzQ81W41Dz0A">
       <ownedEnd xmi:type="uml:Property" xmi:id="_WiOdwd0HEeOzQ81W41Dz0A" name="company" type="_qP6GIN0DEeOkD5x5qlp0bA" association="_WiOdwN0HEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WiOdwt0HEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WiOdw90HEeOzQ81W41Dz0A" value="1"/>
       </ownedEnd>
     </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_40dX4N0HEeOzQ81W41Dz0A" name="company_truck_1" memberEnd="_40d-8N0HEeOzQ81W41Dz0A _40cw0N0HEeOzQ81W41Dz0A">
+    <packagedElement xmi:type="uml:Association" xmi:id="_40dX4N0HEeOzQ81W41Dz0A" name="insures" memberEnd="_40d-8N0HEeOzQ81W41Dz0A _40cw0N0HEeOzQ81W41Dz0A">
       <ownedEnd xmi:type="uml:Property" xmi:id="_40d-8N0HEeOzQ81W41Dz0A" name="company" type="_qP6GIN0DEeOkD5x5qlp0bA" association="_40dX4N0HEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_40d-8d0HEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_40d-8t0HEeOzQ81W41Dz0A" value="1"/>
       </ownedEnd>
     </packagedElement>
     <packagedElement xmi:type="uml:Class" xmi:id="_gU6DUN0IEeOzQ81W41Dz0A" name="Date"/>
-    <packagedElement xmi:type="uml:Association" xmi:id="__lULMN0IEeOzQ81W41Dz0A" name="insurancePolicy_truck_1" memberEnd="__lULMd0IEeOzQ81W41Dz0A __lS9EN0IEeOzQ81W41Dz0A">
-      <ownedEnd xmi:type="uml:Property" xmi:id="__lULMd0IEeOzQ81W41Dz0A" name="insurancePolicy" type="_xuewgN0DEeOkD5x5qlp0bA" association="__lULMN0IEeOzQ81W41Dz0A">
+    <packagedElement xmi:type="uml:Association" xmi:id="__lULMN0IEeOzQ81W41Dz0A" name="insures" memberEnd="__lULMd0IEeOzQ81W41Dz0A __lS9EN0IEeOzQ81W41Dz0A">
+      <ownedEnd xmi:type="uml:Property" xmi:id="__lULMd0IEeOzQ81W41Dz0A" name="policy" type="_xuewgN0DEeOkD5x5qlp0bA" association="__lULMN0IEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__lULMt0IEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__lULM90IEeOzQ81W41Dz0A" value="1"/>
       </ownedEnd>
     </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_DQBiYN0JEeOzQ81W41Dz0A" name="insurancePolicy_car_1" memberEnd="_DQBiYd0JEeOzQ81W41Dz0A _DQA7UN0JEeOzQ81W41Dz0A">
-      <ownedEnd xmi:type="uml:Property" xmi:id="_DQBiYd0JEeOzQ81W41Dz0A" name="insurancePolicy" type="_xuewgN0DEeOkD5x5qlp0bA" association="_DQBiYN0JEeOzQ81W41Dz0A">
+    <packagedElement xmi:type="uml:Association" xmi:id="_DQBiYN0JEeOzQ81W41Dz0A" name="insures" memberEnd="_DQBiYd0JEeOzQ81W41Dz0A _DQA7UN0JEeOzQ81W41Dz0A">
+      <ownedEnd xmi:type="uml:Property" xmi:id="_DQBiYd0JEeOzQ81W41Dz0A" name="policy" type="_xuewgN0DEeOkD5x5qlp0bA" association="_DQBiYN0JEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_DQBiYt0JEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_DQBiY90JEeOzQ81W41Dz0A" value="1"/>
       </ownedEnd>
     </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_D60WYN0KEeOzQ81W41Dz0A" name="company_insurancePolicy_1" memberEnd="_D60WYd0KEeOzQ81W41Dz0A _D6zvUN0KEeOzQ81W41Dz0A">
+    <packagedElement xmi:type="uml:Association" xmi:id="_D60WYN0KEeOzQ81W41Dz0A" name="administers" memberEnd="_D60WYd0KEeOzQ81W41Dz0A _D6zvUN0KEeOzQ81W41Dz0A">
       <ownedEnd xmi:type="uml:Property" xmi:id="_D60WYd0KEeOzQ81W41Dz0A" name="company" type="_qP6GIN0DEeOkD5x5qlp0bA" association="_D60WYN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_D60WYt0KEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_D60WY90KEeOzQ81W41Dz0A" value="1"/>
       </ownedEnd>
     </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_G3HvcN0KEeOzQ81W41Dz0A" name="customer_insurancePolicy_1" memberEnd="_G3Hvcd0KEeOzQ81W41Dz0A _G3HIYN0KEeOzQ81W41Dz0A"/>
-    <packagedElement xmi:type="uml:Association" xmi:id="_MSzVAN0KEeOzQ81W41Dz0A" name="company_employee_1" memberEnd="_MSzVAd0KEeOzQ81W41Dz0A _MSyt8N0KEeOzQ81W41Dz0A">
+    <packagedElement xmi:type="uml:Association" xmi:id="_G3HvcN0KEeOzQ81W41Dz0A" name="holds" memberEnd="_G3Hvcd0KEeOzQ81W41Dz0A _G3HIYN0KEeOzQ81W41Dz0A"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_MSzVAN0KEeOzQ81W41Dz0A" name="employees" memberEnd="_MSzVAd0KEeOzQ81W41Dz0A _MSyt8N0KEeOzQ81W41Dz0A">
       <ownedEnd xmi:type="uml:Property" xmi:id="_MSzVAd0KEeOzQ81W41Dz0A" name="company" type="_qP6GIN0DEeOkD5x5qlp0bA" association="_MSzVAN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_MSzVAt0KEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_MSzVA90KEeOzQ81W41Dz0A" value="1"/>
       </ownedEnd>
     </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_Ri4HgN0KEeOzQ81W41Dz0A" name="company_customer_1" memberEnd="_Ri4Hgd0KEeOzQ81W41Dz0A _Ri25YN0KEeOzQ81W41Dz0A">
+    <packagedElement xmi:type="uml:Association" xmi:id="_Ri4HgN0KEeOzQ81W41Dz0A" name="serves" memberEnd="_Ri4Hgd0KEeOzQ81W41Dz0A _Ri25YN0KEeOzQ81W41Dz0A">
       <ownedEnd xmi:type="uml:Property" xmi:id="_Ri4Hgd0KEeOzQ81W41Dz0A" name="company" type="_qP6GIN0DEeOkD5x5qlp0bA" association="_Ri4HgN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Ri4Hgt0KEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Ri4Hg90KEeOzQ81W41Dz0A" value="1"/>
       </ownedEnd>
     </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_UxdjYN0KEeOzQ81W41Dz0A" name="employee_insurancePolicy_1" memberEnd="_UxdjYd0KEeOzQ81W41Dz0A _Uxc8UN0KEeOzQ81W41Dz0A">
+    <packagedElement xmi:type="uml:Association" xmi:id="_UxdjYN0KEeOzQ81W41Dz0A" name="agent" memberEnd="_UxdjYd0KEeOzQ81W41Dz0A _Uxc8UN0KEeOzQ81W41Dz0A">
       <ownedEnd xmi:type="uml:Property" xmi:id="_UxdjYd0KEeOzQ81W41Dz0A" name="employee" type="_9-tzEN0DEeOkD5x5qlp0bA" association="_UxdjYN0KEeOzQ81W41Dz0A">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_UxdjYt0KEeOzQ81W41Dz0A" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_UxdjY90KEeOzQ81W41Dz0A" value="1"/>
