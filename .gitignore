@@ -19,6 +19,7 @@ hs_err_pid*
 *.toc
 *.tex.backup
 *.tex~
+*.out
 /bin
 
 #JabRef
