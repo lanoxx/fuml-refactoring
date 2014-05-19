@@ -195,7 +195,39 @@ EMF.Refactor as part of our tool chain presentation.
 % insurance example
 % create example that supports all proposed refactorings
 
-This section covers some general refactorings of UML class diagrams. As the basis for these refactorings an example from the insurance
+This section covers some refactorings of UML models as well as a model which we use as an example for this work. 
+Markovic \cite{MarkovicB08} presented a list of refactorings which is relevant for changes in combination with class 
+diagrams and OCL constraints. We use this catalog as an input and adapt it for our use case. The resulting list of 
+refactorings which we plan to evaluate and implement is shown in Figure \ref{fig:refactoringlist}.
+
+\begin{figure}[h!t]
+ \centering
+ \begin{tabular}[]{l}
+  \hline
+  Encapsulate Field\\
+  Extract class\\
+  Extract superclass\\
+  Pull up association end\\
+  Pull up attribute\\
+  Pull up operation\\
+  Remove unused class\\
+  Rename Class\\
+  Rename Method\\
+  Rename Variable\\
+  \hline
+ \end{tabular}
+ \caption{Refactoring examples}
+ \label{fig:refactoringlist}
+\end{figure}
+
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.5]{images/insurance/Model_Model_ClassDiagram.PDF}
+ \caption{Insurance class diagram without refactorings}
+ \label{fig:classdiagramcomplex}
+\end{figure}
+
+As the basis for these refactorings an example from the insurance
 domain is used. In the insurance business there are domain objects such as an insurance policy. Cars and trucks can be insured by 
 adding them to the policy. There is an insurance company which has customers and employees where customers may purchase an insurance policy 
 for their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance company. This class 
@@ -208,13 +240,6 @@ attributes \lstinline|weight| and \lstinline|registration| are public, we can us
 provide getter and setter implementations. Finally the method \lstinline|addCar| can be renamed into \lstinline|addVehicle| with \textit{rename method} 
 and the \lstinline|addTruck| method can be removed with \textit{remove method}. Finally figure \ref{fig:classdiagramcomplexRef} shows 
 the refactored class diagram.
-
-\begin{figure}[h!t]
- \centering
- \includegraphics[scale=0.5]{images/insurance/Model_Model_ClassDiagram.PDF}
- \caption{Insurance class diagram without refactorings}
- \label{fig:classdiagramcomplex}
-\end{figure}
 
 \begin{figure}[h!t]
  \centering
@@ -241,7 +266,7 @@ The \lstinline|calculatePremium| activity is more complex, it calculates the ins
  \item Read the number of cars and trucks with \lstinline|ReadStructuralFeatureValueAction|.
  \item Add the two numbers up with a \lstinline|CallBehaviorAction|.
  \item Multiply the result in a \lstinline|CallBehaviorAction| with a base premium value specified in a \lstinline|ValueSpecificationAction|.
- \item Read the age of customer of the policy with two actions of \lstinline|ReadStructuralFeatureValueAction| in a row.
+ \item Read the age of customer of the policy with two actions of type \lstinline|ReadStructuralFeatureValueAction| in a row.
  \item Decide whether the age of a customer is below a certain age and define a or a base value or supplement with a \lstinline|ValueSpecificationAction|.
  \item Multiply the value and the result of the calculation above and return it.
 \end{itemize}
@@ -282,49 +307,48 @@ that the complexity of both diagrams decreased on the visual level as well as on
 \section{Refactoring of fUML models}
 \label{sec:fuml-refactoring}
 % abstract syntax of fUML and changes in diagrams
-% ecore and ocl (with code examples)
+% ecore and ocl (with code examples
 
-In the last section we presented some models and their related activity diagrams. We also presented some of the possible 
-refactorings such as \textit{extract superclass} or \textit{extract class}. This section discusses how the models actually 
-need to be transformed in order to realize the refactoring.
+In the last section we presented an example model and its related activity diagrams. We also presented some of the possible 
+refactorings such as \textit{extract superclass} on the class diagram and their impact on the activity diagrams. This 
+section discusses how the models actually need to be transformed in order to realize the refactoring.
 
 Every model has two kinds of syntaxes. The concrete syntax, which defines how the model looks like, and the abstract
-syntax, which defines the language elements and the grammar of the model. In order to refactor a model, we need to look at
-its abstract syntax and transform it according to the refactoring rules.
+syntax, which defines the language elements and the grammar of the model. In order to refactor a model, we need to look 
+at its abstract syntax and transform it according to the refactoring rules. In Figure \ref{fig:refactoringlist} the 
+refactorings are classified in order if the refactoring also implies changes in the meta-model representation. In the 
+sections below we describe some examples.
 
+\subsection{Extract superClass}
+\label{sec:extract}
 A refactoring takes several parameters to configure the parts of the model that change and how they change. For example
 the \textit{extract superclass} refactoring takes two parameters, the new name of the extracted superclass as well as
 the list of classes that participate in the refactoring and which will receive the new class as their superclass.
 
-In terms of the abstract syntax of these models, the two classes Car and Truck are instances of type class of the meta-model a 
-superclass named Vehicle would be an instance of type Class as well, and can be associated with these two classes through the 
-recursive attribute \textit{superclass} of the class \textit{Class} to create the inheritance hierarchy. In order to guarantee 
-that the refactoring is possible, we must ensure that each class that participates in the 
-refactoring does not already have a superclass.
+In terms of the abstract syntax of these models, the two classes \lstinline|Car| and \lstinline|Truck| are instances of 
+type \textit{Class} of the meta-model a superclass named \lstinline|Vehicle| would be an instance of type \textit{Class} as well, 
+and can be associated with these two classes through the recursive attribute \textit{superclass} of the class \textit{Class} 
+to create the inheritance hierarchy. So the meta-model representation of the diagram does not change. However in order to 
+guarantee that the refactoring is possible, we must ensure that each class that participates in the refactoring does not 
+already have a superclass. The model would also benefit from changing all possible references to the new class.
 
-\begin{figure}[h!t]
- \centering
- \begin{tabular}[]{l}
-  \hline
-  Extract class\\
-  Extract superclass\\
-  Rename Class\\
-  Rename Method\\
-  Rename Variable\\
-  Add / Remove Parameter\\
-  Encapsulate Field\\
-  Pull up attribute\\
-  Pull up operation\\
-  Pull up association end\\
-  Remove unused class\\
-  \hline
- \end{tabular}
- \caption{Refactoring examples}
- \label{fig:refactoringlist}
-\end{figure}
+\subsection{Pull up attribute}
+\label{sec:pullup}
+There are two cases of the \textit{pull up method} refactoring. It can either be executed for an attribute that occurs in 
+a single class or in multiple classes where the attributes should also be combined and pulled up. In the class diagram 
+the attribute has to be pulled up and the occurrences of the attributes in the subclasses have to be deleted. The 
+activity diagrams needs to change occurrences of the \lstinline|StructuralFeatureValueAction| and use the attribute of 
+the super class. A precondition for this refactoring is that there does not already exist an attribute with the same name 
+in the target class and that the field is not private.
 
-In this section\todo{Seems to be a misplaced section} we will present some general refactorings such as the ``extract superclass'' 
-refactoring. A list of example refactorings is presented in figure \ref{fig:refactoringlist}.
+\subsection{Encapsulate attribute}
+\label{sec:encapsulate}
+The \textit{encapsulate attribute} refactoring is a rather complex one. At first setter and getter methods for the attribute have to be 
+created. Afterwards the occurrences of the attribute have to be changed either to the setter for value assignments and to the getter 
+for value usage. For the activity diagram the \lstinline|WriteStructuralFeatureValueAction| has to be changed to a 
+\lstinline|CallOperationAction| which is a \lstinline|BehavioralFeature| class instead of a \lstinline|StructuralFeature| class in 
+the meta-model. Finally the affected attribute has to be set to private. The precondition for this refactoring is that there are no 
+methods with the same name in the classes that use the attribute.
 
 \section{Toolchain and implementation}
 \label{sec:toolchain}
@@ -375,7 +399,7 @@ Multiple Inheritance:
  \label{lst:oclsuperclass}
 \end{figure}
 
-These ocl constraints are checked by the refactoring for each class object that participates
+These OCL constraints are checked by the refactoring for each class object that participates
 in the refactoring. An object to type OCL from the org.eclipse.ocl package is used to create and evaluate these queries
 as can be seen in figure \ref{lst:ocl}.
 
