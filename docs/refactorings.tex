@@ -197,16 +197,17 @@ EMF.Refactor as part of our tool chain presentation.
 
 This section covers some general refactorings of UML class diagrams. As the basis for these refactorings an example from the insurance
 domain is used. In the insurance business there are domain objects such as an insurance policy. Cars and trucks can be insured by 
-adding them to the policy. There is an insurance company which has customers and employees and employees may purchase an insurance policy 
-for one of their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance company. This class 
+adding them to the policy. There is an insurance company which has customers and employees where customers may purchase an insurance policy 
+for their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance company. This class 
 diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both \lstinline|Car| 
 and \lstinline|Truck| to extract a \lstinline|Vehicle| class. A simple \textit{extract class} can be used on \lstinline|InsurancePolicy| to 
 extract the \lstinline|from| and \lstinline|until| dates into their own \lstinline|InsurancePeriod| class. As part of the 
 \textit{extract superclass} refactoring two additional refactorings namely \textit{pull up attribute} and \textit{pull up method} are 
 used to move the identical attributes and methods of both classes to the new superclass. As the 
 attributes \lstinline|weight| and \lstinline|registration| are public, we can use \textit{encapsulate field} to make them private and 
-provide getter and setter implementations. Finally the method addCar can be renamed into \lstinline|addVehicle| with \textit{rename method} 
-and the \lstinline|addTruck| method can be removed with \textit{remove method}.
+provide getter and setter implementations. Finally the method \lstinline|addCar| can be renamed into \lstinline|addVehicle| with \textit{rename method} 
+and the \lstinline|addTruck| method can be removed with \textit{remove method}. Finally figure \ref{fig:classdiagramcomplexRef} shows 
+the refactored class diagram.
 
 \begin{figure}[h!t]
  \centering
@@ -215,19 +216,33 @@ and the \lstinline|addTruck| method can be removed with \textit{remove method}.
  \label{fig:classdiagramcomplex}
 \end{figure}
 
-For each of the methods in the \lstinline|InsurancePolicy| and \lstinline|Company| classes a separate activity diagram exists
-which defines the semantics of these methods. As some of them are quite similar we will present only the diagrams for
-addCar() in figure \ref{fig:addCar} and calculatePremium() figure \ref{fig:calculatePremium}.
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.5]{images/insurance_ref/Model_Model_ClassDiagram}
+ \caption{Insurance class diagram with refactorings}
+ \label{fig:classdiagramcomplexRef}
+\end{figure}
 
+For each of the methods in the \lstinline|InsurancePolicy| class a separate activity diagram exists which defines the semantics 
+of these methods. As some of them are quite similar we will present only the diagrams for \lstinline|addCar| in figure 
+\ref{fig:addCar} and \lstinline|calculatePremium| figure \ref{fig:calculatePremium}.
 
-The activity for the \lstinline|addCar| operation is rather simple. It takes a car as a parameter and uses the
-\lstinline|AddStructuralFeatureValueAction| to add the car to the insurance policy. In comparison \lstinline|calculatePremium| is
-more complex, it calculates the insurance premium as follows:
+The activity for the \lstinline|addCar| operation works as follows. Read the policy with a \lstinline|ReadSelfAction|, take the 
+car as a parameter and use the \lstinline|AddStructuralFeatureValueAction| to add the car to the insurance policy. In parallel 
+it reads the number of cars in the policy with \lstinline|ReadStructuralFeatureValueAction|, specifies the integer one with 
+a \lstinline|ValueSpecificationAction|, adds the numbers up with a \lstinline|CallBehaviorAction| and writes it back to the 
+number of cars variable with another \lstinline|AddStructuralFeatureValueAction| that replaces the old value.
+
+The \lstinline|calculatePremium| activity is more complex, it calculates the insurance premium as described below:
 
 \begin{itemize}
- \item Each insurance policy starts with a base fee of 50.
- \item For each car the number of passengers is multiplied by 5.
- \item The sum of multiplications for each car plus the base fee is the result.
+ \item Read the policy with a \lstinline|ReadSelfAction|.
+ \item Read the number of cars and trucks with \lstinline|ReadStructuralFeatureValueAction|.
+ \item Add the two numbers up with a \lstinline|CallBehaviorAction|.
+ \item Multiply the result in a \lstinline|CallBehaviorAction| with a base premium value specified in a \lstinline|ValueSpecificationAction|.
+ \item Read the age of customer of the policy with two actions of \lstinline|ReadStructuralFeatureValueAction| in a row.
+ \item Decide whether the age of a customer is below a certain age and define a or a base value or supplement with a \lstinline|ValueSpecificationAction|.
+ \item Multiply the value and the result of the calculation above and return it.
 \end{itemize}
 
 \begin{figure}[h!t]
@@ -244,24 +259,22 @@ more complex, it calculates the insurance premium as follows:
  \label{fig:addCar}
 \end{figure}
 
-\begin{figure}[h!t]
- \centering
- \includegraphics[scale=0.5]{images/insurance_ref/Model_Model_ClassDiagram}
- \caption{Insurance class diagram with refactorings}
- \label{fig:classdiagramcomplexRef}
-\end{figure}
+Figure \ref{fig:calculatePremiumRef} shows how the activity diagram benefit from a refactoring of the corresponding 
+class diagram. Additionally a new activity diagram for the \lstinline|addVehicle| method instead of the old 
+\lstinline|addCar| and \lstinline|addTruck| diagrams was created shown in \ref{fig:addCarRef}. It is rather obvious 
+that the complexity of both diagrams decreased on the visual level as well as on the level of execution.
 
 \begin{figure}[h!t]
  \centering
  \includegraphics[scale=0.5]{images/insurance_ref/Activity_calculatePremium_calculatePremium}
- \caption{Calculate premium activity diagram without refactorings}
+ \caption{Calculate premium activity diagram with refactorings}
  \label{fig:calculatePremiumRef}
 \end{figure}
 
 \begin{figure}[ht]
  \centering
  \includegraphics[scale=0.6]{images/insurance_ref/Activity_addVehicle_addVehicle}
- \caption{Add car activity diagram without refactorings}
+ \caption{Add vehicle activity diagram resulting from the refactorings}
  \label{fig:addCarRef}
 \end{figure}
 
