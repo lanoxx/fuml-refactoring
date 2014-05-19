@@ -120,7 +120,7 @@ as it needs to span over those different types of diagrams and semantics.
 % Behaviour preservation can be tested statically or dynamically UML can be analysed statically fUML is a modelling
 % language for models provided by the OMG that also allows execution and thus can be analysed dynamically
 
-To prove the correctness of models before and after refactoring different approachs exist. One is the static analysis of
+To prove the correctness of models before and after refactoring different approaches exist. One is the static analysis of
 UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13} which can be done via
 OCL \cite{man:OCL}. Another way is to verify that models can be executed and to compare the execution traces of the 
 original and refactored models. The OMG introduced a subset 
@@ -149,7 +149,8 @@ example of a model that is used throughout the paper. Section Y describes a sele
 Fowler \cite{fow99} and Markovic and Baar \cite{DBLP:journals/sosym/MarkovicB08} and their effects on class diagrams as
 well as activity diagrams. In section \ref{sec:fuml-refactoring} we show which pre- and postcondition are needed for the refactorings and
 how we refactor the models. In section \ref{sec:toolchain} we describe the toolchain that we use to define the models, 
-implement a set of refactorings and test them. Related work is covered in section \ref{sec:relatedwork} and a conclusion is drawn in section \ref{sec:conclusion} to summarize the paper.
+implement a set of refactorings and test them. Related work is covered in section \ref{sec:relatedwork} and a conclusion is drawn in 
+section \ref{sec:conclusion} to summarize the paper.
 
 % what is refactoring and what does it mean in the context of models?
 % what is fuml? what does fuml consist for diagram types?
@@ -171,7 +172,7 @@ diagrams.
 Since a refactoring changes the structure of a model it is important to ensure that all changes maintain the original 
 semantics of the model. Violating this requirement can result in models with either a different behavior, or in models 
 which can no longer be executed. To ensure semantic preservation, two main techniques can be used. First, the refactoring 
-can be broken down into smaller steps, each of which either guarantees to preseve the semantics of the model or makes it 
+can be broken down into smaller steps, each of which either guarantees to preserve the semantics of the model or makes it 
 easier to verify that this is the case. Second, logical constraints can be used to limit refactorings on models to only 
 those cases where semantic preservation can be ensured. For this purpose pre- and postconditions are specified with OCL 
 constraints. A refactoring is then only applied if the original model satisfies the precondition before the refactoring is 
@@ -179,7 +180,8 @@ applied and the postcondition after the refactoring has been completed. Such con
 each kind of refactoring that is to be performed, as such a part of this paper will discuss different OCL constraints for 
 the refactorings that we introduce.
 
-In this paper we will present a set of refactorings and give examples of how each refactoring can be applied to a concrete model \todo{it seems we are repeating our selfs about what we will present}.
+In this paper we will present a set of refactorings and give examples of how each refactoring can be applied to a concrete model 
+\todo{it seems we are repeating our selfs about what we will present}.
 
 % Why is it interesting to refactor models
 % Why is it important in fUML that models remain consistent -> to preserve executability
@@ -195,11 +197,14 @@ This section covers some general refactorings of UML class diagrams. As the basi
 domain is used. In the insurance business there are domain objects such as an insurance policy. Cars and trucks can be insured by 
 adding them to the policy. There is an insurance company which has customers and employees and employees may purchase an insurance policy 
 for one of their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance company. This class 
-diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both \lstinline|Car| and \lstinline|Truck| to extract a \lstinline|Vehicle| class. A simple \textit{extract class} can be used on \lstinline|InsurancePolicy| to 
+diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both \lstinline|Car| 
+and \lstinline|Truck| to extract a \lstinline|Vehicle| class. A simple \textit{extract class} can be used on \lstinline|InsurancePolicy| to 
 extract the \lstinline|from| and \lstinline|until| dates into their own \lstinline|InsurancePeriod\lstinline| class. As part of the 
 \textit{extract superclass} refactoring two additional refactorings namely \textit{pull up attribute} and \textit{pull up method} are 
 used to move the identical attributes and methods of both classes to the new superclass. As the 
-attributes \lstinline|weight| and \lstinline|registration| are public, we can use \textit{encapsulate field} to make them private and provide getter and setter implementations. Finally the method addCar can be renamed into \lstinline|addVehicle| with \textit{rename method} and the \lstinline|addTruck| method can be removed with \textit{remove method}.
+attributes \lstinline|weight| and \lstinline|registration| are public, we can use \textit{encapsulate field} to make them private and 
+provide getter and setter implementations. Finally the method addCar can be renamed into \lstinline|addVehicle| with \textit{rename method} 
+and the \lstinline|addTruck| method can be removed with \textit{remove method}.
 
 \begin{figure}[h!t]
  \centering
@@ -242,7 +247,9 @@ more complex, it calculates the insurance premium as follows:
 % abstract syntax of fUML and changes in diagrams
 % ecore and ocl (with code examples)
 
-In the last section we presented some models and their related activity diagrams. We also presented some of the possible refactorings such as \textit{extract superclass} or \textit{extract class}. This section discusses how the models actually need to be transformed in order to realize the refactoring.
+In the last section we presented some models and their related activity diagrams. We also presented some of the possible 
+refactorings such as \textit{extract superclass} or \textit{extract class}. This section discusses how the models actually 
+need to be transformed in order to realize the refactoring.
 
 Every model has two kinds of syntaxes. The concrete syntax, which defines how the model looks like, and the abstract
 syntax, which defines the language elements and the grammar of the model. In order to refactor a model, we need to look at
@@ -252,7 +259,10 @@ A refactoring takes several parameters to configure the parts of the model that 
 the \textit{extract superclass} refactoring takes two parameters, the new name of the extracted superclass as well as
 the list of classes that participate in the refactoring and which will receive the new class as their superclass.
 
-In terms of the abstract syntax of these models, the two classes Car and Truck are instances of type class of the meta-model a superclass named Vehicle would be an instance of type Class as well, and can be associated with these two classes through the recursive attribute \textit{superclass} of the class \textit{Class} to create the inheritance hierarchy. In order to guarantee that the refactoring is possible, we must ensure that each class that participates in the 
+In terms of the abstract syntax of these models, the two classes Car and Truck are instances of type class of the meta-model a 
+superclass named Vehicle would be an instance of type Class as well, and can be associated with these two classes through the 
+recursive attribute \textit{superclass} of the class \textit{Class} to create the inheritance hierarchy. In order to guarantee 
+that the refactoring is possible, we must ensure that each class that participates in the 
 refactoring does not already have a superclass.
 
 \begin{figure}[h!t]
@@ -276,15 +286,15 @@ refactoring does not already have a superclass.
  \label{fig:refactoringlist}
 \end{figure}
 
-In this section\todo{Seems to be a misplaced section} we will present some general refactorings such as the ``extract superclass'' refactoring. A list of example refactorings
-is presented in figure \ref{fig:refactoringlist}.
+In this section\todo{Seems to be a misplaced section} we will present some general refactorings such as the ``extract superclass'' 
+refactoring. A list of example refactorings is presented in figure \ref{fig:refactoringlist}.
 
 \section{Toolchain and implementation}
 \label{sec:toolchain}
 For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
 models in a virtual machine. The models are stored in XMI format and loaded with an EMF ResourceSet. The ResourceSet
 can be used to retrieve a Resource object through an URI, which is then used to access the different objects in the model 
-(see figure \ref{lst:resourceset}). All elements contained in the model are instances of Ecore (the implemententation of
+(see figure \ref{lst:resourceset}). All elements contained in the model are instances of Ecore (the implementation of
 the MOF meta-meta-model) and they represent classes of the UML meta-model, which is implemented with Ecore.
 
 \begin{figure}
@@ -366,9 +376,10 @@ At the time of this writing our GUI integration is not finished, so we cannot de
 \section{Current Limitations}
 Our work currently has several limitations. So far we have designed a set of related class and activity diagrams,
 which are the basis for our refactorings. We have discussed the \textit{extract superclass} refactoring including its
-pre and post conditions and shown how it can be refactored with our toolchain. Until the final version of this
+pre- and post conditions and shown how it can be refactored with our toolchain. Until the final version of this
 paper we will add several more refactorings from the list shown in figure \ref{fig:refactoringlist}, such as the
-\textit{extract class} and the \textit{rename class}, \textit{rename method} and \textit{rename variable} refactorings.
+\textit{extract class}, the \textit{rename method}, the \textit{pullup method}, the \textit{pullup field} and 
+\textit{rename variable} refactorings.
 
 We have also briefly mentioned EMF.Refactor and we plan to extend out toolchain such that our implmented refactorings
 can be invoked from the Eclipse GUI. At least we want to show that this is possible with our toolchain for at least one refactoring.
@@ -386,12 +397,12 @@ refactorings for Java and Ruby which can be be adapted to model refactorings.
 
 Suny{\'e} et. al. \cite{DBLP:conf/uml/SunyePTJ01} described how several refactorings can be applied to \textit{UML}
 diagrams and introduced OCL as a possiblity to specify pre- and postconditions. Gorp et al. \cite{gorp03} extends the
-discussion with the usage of \textit{OCL} for additinal analysis such as code smells of models.
+discussion with the usage of \textit{OCL} for additional analysis such as code smells of models.
 
 % Code execution via fUML
 
 Despite of the further discussion of model refactoring (\cite{DBLP:conf/uml/CorreaW04}, \cite{DBLP:conf/ershov/BaarM06},
-\cite{DBLP:journals/ase/ArendtT13}) most authors concetrate on static analysis and class diagram representations of
+\cite{DBLP:journals/ase/ArendtT13}) most authors concentrate on static analysis and class diagram representations of
 models. Dynamic analysis of models by execution and debugging \textit{fUML} models is discussed by Mayerhofer
 \cite{DBLP:conf/icse/Mayerhofer12} and provides the basis for the approach discussed here. Mayerhofer et al.
 \cite{DBLP:conf/models/MayerhoferLK12} furthermore introduce a runtime model and an
@@ -407,7 +418,7 @@ different languages (Java, OCL \& Henshin) and can be directly extended in \text
 
 \section{Conclusion}
 \label{sec:conclusion}
-Refactoring models is a rather difficult task and it requires a consise knowledge of the involved technologies, with
+Refactoring models is a rather difficult task and it requires a concise knowledge of the involved technologies, with
 the list of involved technologies being rather long. For one a reasonably well understanding of fUML is required, in
 particular how class diagrams and activity diagrams are constructed and how they are related. It is not enough to simply
 be able to draw both class and activity diagrams, as one also needs a good understanding of the meta-meta-model (MOF) and
@@ -418,14 +429,14 @@ Understanding these APIs of Ecore and OCL is required to perform the refactoring
 our toolchain.
 
 With the toolchain in place another challenge was to identify the required steps to perform the actual refactoring work.
-In particular this meant to identify how the activity diagrams needs to change if a change is made in the class
+In particular this meant to identify how the activity diagrams need to change if a change is made in the class
 diagram.
 
 Most of our efforts in the development of this work were focused on gaining a comprehensive understanding of the
-technologies described above, to develop the tool chain and to draw the various diagrams presented in this paper. We
-have presented a comprehensive set of diagrams as the basis for our refactoring work and demonstrated the feasibility
-of our tool chain. However a more comprehensive evaluation of the different refactorings including the specification
-of pre- and postconditions OCL in is still required and will be the focus of our ongoing efforts.
+technologies described above, to develop the tool chain and to draw the various diagrams presented in this paper and make 
+them executable. We have presented a comprehensive set of diagrams as the basis for our refactoring work and demonstrated 
+the feasibility of our tool chain. However a more comprehensive evaluation of the different refactorings including the 
+specification of pre- and postconditions OCL in is still required and will be the focus of our ongoing efforts.
 
 \newpage
 \bibliographystyle{acm}
