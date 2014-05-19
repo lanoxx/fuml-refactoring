@@ -285,7 +285,7 @@ The \lstinline|calculatePremium| activity is more complex, it calculates the ins
  \label{fig:addCar}
 \end{figure}
 
-Figure \ref{fig:calculatePremiumRef} shows how the activity diagram benefit from a refactoring of the corresponding 
+Figure \ref{fig:calculatePremiumRef} shows how the activity diagram benefits from a refactoring of the corresponding 
 class diagram. Additionally a new activity diagram for the \lstinline|addVehicle| method instead of the old 
 \lstinline|addCar| and \lstinline|addTruck| diagrams was created shown in \ref{fig:addCarRef}. It is rather obvious 
 that the complexity of both diagrams decreased on the visual level as well as on the level of execution.
@@ -317,29 +317,41 @@ Every model has two kinds of syntaxes. The concrete syntax, which defines how th
 syntax, which defines the language elements and the grammar of the model. In order to refactor a model, we need to look 
 at its abstract syntax and transform it according to the refactoring rules. In Figure \ref{fig:refactoringlist} the 
 refactorings are classified in order if the refactoring also implies changes in the meta-model representation. In the 
-sections below we describe some examples.
+sections below we describe some examples that range from small to large impacts in the models.
+
+\subsection{Rename refacorings}
+\label{sec:renames}
+A refactoring takes several parameters to configure the parts of the model that change and how they change. Rename 
+refacorings just need the new name as parameter. The respective classes, methods and attributes can then be adapted 
+and the direct references be changed as the abstract syntax representation does not change. However in order to guarantee that the 
+refactoring is possible, we have to ensure that there are no occurrences of the same type with the same name as the 
+new name. In this work we did not take techniques such as method overloading into account. In our example there is 
+no such case explicitly included.
 
 \subsection{Extract superClass}
 \label{sec:extract}
-A refactoring takes several parameters to configure the parts of the model that change and how they change. For example
-the \textit{extract superclass} refactoring takes two parameters, the new name of the extracted superclass as well as
+The \textit{extract superclass} refactoring takes two parameters, the new name of the extracted superclass as well as
 the list of classes that participate in the refactoring and which will receive the new class as their superclass.
 
 In terms of the abstract syntax of these models, the two classes \lstinline|Car| and \lstinline|Truck| are instances of 
 type \textit{Class} of the meta-model a superclass named \lstinline|Vehicle| would be an instance of type \textit{Class} as well, 
-and can be associated with these two classes through the recursive attribute \textit{superclass} of the class \textit{Class} 
-to create the inheritance hierarchy. So the meta-model representation of the diagram does not change. However in order to 
-guarantee that the refactoring is possible, we must ensure that each class that participates in the refactoring does not 
-already have a superclass. The model would also benefit from changing all possible references to the new class.
+and can be associated with these two classes through the recursive attribute \textit{general} of the class \textit{Class} 
+to create the inheritance hierarchy. However the meta-model representation of the diagram does not change. In order to 
+achieve a correct refactoring each class that participates in the refactoring must not already have a superclass. The 
+model would also benefit from changing all possible references to the new class.
 
-\subsection{Pull up attribute}
+\subsection{Pull up attribute \& pull up method}
 \label{sec:pullup}
-There are two cases of the \textit{pull up method} refactoring. It can either be executed for an attribute that occurs in 
+Both refactorings are quite similar which is why we describe the first and explain the specifics for the latter one afterwards. 
+There are two cases of the \textit{pull up attribute} refactoring. It can either be executed for an attribute that occurs in 
 a single class or in multiple classes where the attributes should also be combined and pulled up. In the class diagram 
 the attribute has to be pulled up and the occurrences of the attributes in the subclasses have to be deleted. The 
 activity diagrams needs to change occurrences of the \lstinline|StructuralFeatureValueAction| and use the attribute of 
-the super class. A precondition for this refactoring is that there does not already exist an attribute with the same name 
-in the target class and that the field is not private.
+the super class.
+
+For the \textit{pull up method} refactoring all \lstinline|CallOperationAction| actions have to be adapted like described 
+above. A precondition for both of these refactorings is that there does not already exist an attribute or a method with the same name 
+in the target class and that they is not private.
 
 \subsection{Encapsulate attribute}
 \label{sec:encapsulate}
