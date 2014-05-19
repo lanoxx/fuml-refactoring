@@ -189,19 +189,19 @@ EMF.Refactor as part of our tool chain presentation.
 % Why is it important in fUML that models remain consistent -> to preserve executability
 % It is possible to use pre and post conditions in OCL to guarantee the semantic preservation of models during refactorings.
 
-\section{Refactorings Examples}
+\section{Refactoring Examples}
 \label{refactoring-examples}
 % take model refactorings of markovic paper
 % insurance example
 % create example that supports all proposed refactorings
 
-This section covers some general refactorings of UML class diagrams. As the basis of these refactorings an example from the insurance
+This section covers some general refactorings of UML class diagrams. As the basis for these refactorings an example from the insurance
 domain is used. In the insurance business there are domain objects such as an insurance policy. Cars and trucks can be insured by 
 adding them to the policy. There is an insurance company which has customers and employees and employees may purchase an insurance policy 
 for one of their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance company. This class 
 diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both \lstinline|Car| 
 and \lstinline|Truck| to extract a \lstinline|Vehicle| class. A simple \textit{extract class} can be used on \lstinline|InsurancePolicy| to 
-extract the \lstinline|from| and \lstinline|until| dates into their own \lstinline|InsurancePeriod\lstinline| class. As part of the 
+extract the \lstinline|from| and \lstinline|until| dates into their own \lstinline|InsurancePeriod| class. As part of the 
 \textit{extract superclass} refactoring two additional refactorings namely \textit{pull up attribute} and \textit{pull up method} are 
 used to move the identical attributes and methods of both classes to the new superclass. As the 
 attributes \lstinline|weight| and \lstinline|registration| are public, we can use \textit{encapsulate field} to make them private and 
@@ -210,14 +210,14 @@ and the \lstinline|addTruck| method can be removed with \textit{remove method}.
 
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.7]{images/ClassDiagramComplex.pdf}
- \caption{A car object that could benefit of extract class}
+ \includegraphics[scale=0.5]{images/insurance/Model_Model_ClassDiagram.PDF}
+ \caption{Insurance class diagram without refactorings}
  \label{fig:classdiagramcomplex}
 \end{figure}
 
 For each of the methods in the \lstinline|InsurancePolicy| and \lstinline|Company| classes a separate activity diagram exists
 which defines the semantics of these methods. As some of them are quite similar we will present only the diagrams for
-addCar() in figure \ref{fig:addCar}, sellPolicy(Customer, Car) \ref{fig:sellPolicy} and calculatePremium() figure \ref{fig:calculatePremium}.
+addCar() in figure \ref{fig:addCar} and calculatePremium() figure \ref{fig:calculatePremium}.
 
 
 The activity for the \lstinline|addCar| operation is rather simple. It takes a car as a parameter and uses the
@@ -232,16 +232,37 @@ more complex, it calculates the insurance premium as follows:
 
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.45]{images/calculatePremium.pdf}
- \caption{Activity diagram for calculate premium method}
+ \includegraphics[scale=0.5]{images/insurance/Activity_calculatePremium_calculatePremium}
+ \caption{Calculate premium activity diagram without refactorings}
  \label{fig:calculatePremium}
 \end{figure}
 
 \begin{figure}[ht]
  \centering
- \includegraphics[scale=0.7]{images/addCar-activity_diagram}
- \caption{Add car activity diagram}
+ \includegraphics[scale=0.6]{images/insurance/Activity_addCarActivity_addCarActivity}
+ \caption{Add car activity diagram without refactorings}
  \label{fig:addCar}
+\end{figure}
+
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.5]{images/insurance_ref/Model_Model_ClassDiagram}
+ \caption{Insurance class diagram with refactorings}
+ \label{fig:classdiagramcomplexRef}
+\end{figure}
+
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.5]{images/insurance_ref/Activity_calculatePremium_calculatePremium}
+ \caption{Calculate premium activity diagram without refactorings}
+ \label{fig:calculatePremiumRef}
+\end{figure}
+
+\begin{figure}[ht]
+ \centering
+ \includegraphics[scale=0.6]{images/insurance_ref/Activity_addVehicle_addVehicle}
+ \caption{Add car activity diagram without refactorings}
+ \label{fig:addCarRef}
 \end{figure}
 
 \section{Refactoring of fUML models}
