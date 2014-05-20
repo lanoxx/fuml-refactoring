@@ -28,25 +28,8 @@
 \pagenumbering{roman}
 
 \title{Refactoring UML models}
-
-
-%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-% Name and address of the author
-%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-\author{Kristof Meixner}
-
-\institute{\email{kristof.meixner@fatlenny.net} \\ Registration No. 9725208}
-% \institute{Musterweg 12/3/7, 1040 Wien \\ \email{mustermann@tuwien.ac.at} \\ Registration No.: 0748549}
-
-%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-% Example for more than one authors
-%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-%\author{Max Mustermann\inst{1} and Matthias Mustermann\inst{2}}
-
-%\institute{Musterweg 12/3/7, 1040 Wien \\ \email{mustermann@tuwien.ac.at} \\ MatrNr.: 0748549
-%\and
-%Mustergasse 54/4/3, 1030 Wien \\ \email{matthias@tuwien.ac.at} \\ MatrNr.: 0426553
-%}
+\author{Sebastian Geiger \and Kristof Meixner}
+\institute{\email{sbastig@gmx.at} \\ Registration No. 1127054 \and \email{kristof.meixner@fatlenny.net} \\ Registration No. 9725208}
 
 \maketitle
 
@@ -54,21 +37,34 @@
 Over the last twenty years refactoring advanced to a commonly known and used techniques in modern software engineering. We present an overview from the beginning of refactoring in source code to its actual application in model-driven software development. Furthermore we discuss methods that ensure that refactored source code is sill correct.
 \end{abstract}
 
-%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-% Table of contents
-% Activate or deactivate this according to the guideline instructor
-%&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 \tableofcontents
 %\thispagestyle{plain}
 \newpage
 
 \pagenumbering{arabic}
 
-\section{Refactoring in the beginning}
+\section{Introduction}
+\label{sec:intro}
 
-In his thesis \cite{mast:REFOOF} Opdyke ``defines a set of program restructuring operations'' that ``preserve the behavior of a program'' to increase software quality. This technique became known as refactoring.
+M
 
-The issue he addressed in his work is the problem of changing parts of source code from an object oriented system, grounded in a possibly large code base while also maintaining all the references and dependencies manually. He described this process as ``time consuming, difficult and error prone''. As a solution he proposes ``an approach for providing automated support for the restructuring'', plans to reorganize the source code on an intermediate level without changing the behavior of the program.
+\section{Beginning in Refactoring}
+\label{sec:beginning}
+
+In this section we will present an overview on the beginnings in structured refactoring of source code. In his thesis \cite{mast:REFOOF} Opdyke ``defines a set of program restructuring operations'' that ``preserve the behavior of a program'' to increase software quality. This technique became known as refactoring.
+
+The motivation of his work is on the one hand that software should be reused because of the high costs of development and on the other hand that software needs to be restructured over its lifecycle to maintain this reusability. The issue he addressed in his work is the problem of changing parts of source code from an object oriented system, grounded in a possibly large code base while also maintaining all the references and dependencies manually. He described this process as ``time consuming, difficult and error prone''. As a solution he proposes ``an approach for providing automated support for the restructuring'', plans to reorganize the source code on an intermediate level without changing the behavior of the program.
+
+A section in the thesis covers behavior preserving approaches. In this chapter he first mentions the usage as ``preconditions'' to ensure that a refactoring does not corrupt the syntax and more important does not change the execution behavior of the program. He quickly refuses the approach to use the static compiler to test these issues as the compiler is not able to catch ``some errors that could change the behavior of the program''. In this section also some rules are presented that can be tested beforehand to check if a refactoring is possible on the concepts. A rule to highlight copes with semantic preservation of code and is described as ``Semantically Equivalent References and Operation''. He defines that semantic equivalence as follows: \textit{``let the external interface to the program be via the function main. If the function main is called twice (once before and once after a refactoring) with the same set of inputs, the resulting set of output values must be the same''}. This means that from outside of a specific system circle the refactoring is not visible. The range of this circle however differs from the impact of the refactoring on the system. In the rest of his work he shows some examples of refactorings depending on their level of implication for the source code for \textit{Smalltalk} program concepts and how they could be applied.
+
+Roberts \cite{rob99}, writing his thesis on the same University, builds large parts of his contribution on the work of Opdyke. He criticizes that the refactorings described by Opdyke are to small and ``are rarely performed in isolation'' but in a sequence steps to refactor to a better ``design in mind''.  He also mentions that the ``expensive anaylsis'' for legal code after a refactoring should be eliminated and introduces postconditions along with Opdykes preconditions to guarantee behavior preservation. Besides his contribution of ``a formal definition of refactoring that is based on postconditions'' Roberts presents a dependency definition of refactorings that is based on the commutativity of single changed put in sequence. Furthermore issues an idea, which in our work seems rather interesting, to analyze very complex refactorings not in a static manner but dynamically via refactoring during execution. This in particular fits to our use case in the project that builds on executing and tracing changes due to refactoring before and after the modification. Roberts also redefines the refactorings developed by Opdyke and presents his catalog that can be used as a source for modern refactoring. 
+
+Another extensive catalog of refactorings based on source code modifications in \textit{Java} was developed and described by Fowler in \cite{fow99}. This list is also continuously updated and extended for different programming language and shows also good examples how to refactor in design pattern thinking.
+
+\section{From source code to model refactoring}
+\label{sec:fromto}
+
+In the last section we gave a brief introduction to the early research in refactoring. In this section we will discuss what model refactoring is and how it benefit from from source code refactoring. In modern software development model based or even model driven approaches get more common. 
  
 
 \newpage
