@@ -34,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-Over the last twenty years refactoring advanced to a commonly known and used techniques in modern software engineering. We present an overview from the beginning of refactoring in source code to its actual application in model-driven software development. Furthermore we discuss methods that ensure that refactored source code is sill correct.
+Over the last twenty years refactoring advanced to a commonly known and used techniques in modern software engineering. We present an overview from the beginning of refactoring in source code to its actual application in model-driven software development. Furthermore we discuss methods that ensure that refactored models are still correct after modifications like static and dynamic analysis. We present research on a subset of UML that can be executed and thus tested dynamically. At the end we introduce some works that we will adapt in our project work to implement refactorings that are done on class diagrams and impact corresponding activity diagrams.
 \end{abstract}
 
 \tableofcontents
@@ -93,7 +93,51 @@ In our project work we chose to use this framework for our own implementation be
 \section{From static to dynamic testing}
 \label{sec:todynamics}
 
-In the section above we presented some works that cover refactoring of models and use different methods of static analysis to ensure that the behavior of the models are preserved and to identify models that where not well designed. In this section we will discuss research that adapts the approach presented by \cite{rob99} and uses the execution of systems to dynamically verify the behavior.
+In the section above we presented some works that cover refactoring of models and use different methods of static analysis to ensure that the behavior of the models are preserved and to identify models that where not well designed. In this section we will discuss research that adapts the approach presented by \cite{rob99} and uses the execution of systems to dynamically verify the behavior of models.
+
+\textit{UML} does not provide the semantics to make a model as executable as program code is. This issue was issued in the definition of a subset of \textit{UML} that narrows the semantics of the concepts down to make them executable. This subset is defined in the standard ``Semantics of a Foundational Subset for Executable UML Models'' (\textit{fUML} - \cite{man:FUML}). If you recall Figure \ref{fig:uml} \textit{fUML} supports two diagram types, the class diagram and the activity diagram. The class diagram can be used to model the domain with its concepts, the activity diagram can be used to describe the behavior of the concepts in the class diagram. The abstract syntax of \textit{fUML} differs slightly from the one of \textit{UML}.
+
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.8]{images/fuml1}
+ \caption{Abstract syntax for used class concepts in \textit{fUML}}
+ \label{fig:fuml1}
+\end{figure}
+
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.8]{images/fuml2}
+ \caption{Abstract syntax for used actions in \textit{fUML}}
+ \label{fig:fuml2}
+\end{figure}
+
+In our project work we concentrate on this subset to investigate the changes that are implied in the corresponding diagram if the other diagram changes. For this work we only apply refactorings on the class diagram and observe the changes implied in the activity diagram as this to be the more reasonable use case. In order for the reader to get more insight on the topic we provide a simple \textit{encapsulate field} example refactoring. The refactoring has the following steps:
+
+\begin{itemize}
+ \item Create setters and getters for the attribute.
+ \item Change all occurrences of the attribute to the created setters and getters.
+ \item Change the attribute to private.
+\end{itemize}
+
+In Figure \ref{fig:fuml1} and \ref{fig:fuml2} the abstract classes for the class diagram and the activity diagram are displayed. For the class diagram there are nearly no modifications except to create the new methods and set the attribute to private. In an activity diagram it is not that obvious. Figure \ref{fig:calculatePremiumRef} shows a very simple activity diagram. Each of the actions \lstinline|readNumberOfVehicles|, \lstinline|readCustomer| and \lstinline|readAge| read \lstinline|StructuralFeatures| shown in violet in the figures are actions of type \lstinline|StructuralFeatureAction|. Each of these actions have to be changed to \lstinline|CallOperationActions| as the accessed parts of the class diagram changed to operations shown in turquoise. In this simple model it seems rather easy but in complex models dependencies grow and make necessary changes it hard to target.
+
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.5]{images/insurance_ref/Activity_calculatePremium_calculatePremium}
+ \caption{Calculate premium activity diagram with refactorings}
+ \label{fig:calculatePremiumRef}
+\end{figure}
+
+Mayerhofer proposes in \cite{DBLP:conf/icse/Mayerhofer12} to use common techniques from software development to dynamically verify the behavior of refactored models namely testing and debugging. However some problems come up when taking a deeper look because ``UML models constitute a multiple view specification of a system''. In a further scientific work by Mayerhofer et al. \cite{DBLP:conf/models/MayerhoferLK12} a runtime model is presented that is capable to execute and trace activities. They also implemented\footnote{http://www.modelexecution.org/} a virtual machine that is capable of running \textit{fUML} models and can even convert \textit{UML} model compatible to \textit{fUML} for execution purposes.
+
+For our project work we use this reference work to implement a set of refactorings test the pre- and postconditions on them and run them in the virtual machine after refactoring to verify the preservation of their initial behavior.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a brief overview on the scientific work in the domain of refactoring over the last twenty years. It ranges from simple source code refactoring with pre- and postconditions and developed to the domain of model-driven development where refactoring is equally needed but harder to implement because of the different views on the underlying models and their correlations. Model development tries to take common techniques from source code development and adapt them for its needs. While from the beginning static analysis was taken into account in the later research and especially with the standardization of \textit{fUML} also dynamic analysis like testing and debugging during execution is introduced.
+
+For our project work we are going to use a combined approach and use static as well as dynamic model testing to implement a set of refactorings for class and activity diagrams.
 
 \newpage
 \bibliographystyle{acm}
