@@ -20,6 +20,7 @@ import org.eclipse.ocl.ParserException;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.junit.Before;
@@ -30,7 +31,8 @@ import org.modelexecution.fuml.refactoring.RefactoringException;
 
 public class SimpleModelModificationTest {
     private static final String MODEL_PATH = "models/extractSuperclass/extractSuperclass.uml";
-    private static final String MODEL_RESULT_PATH = "models/extractSuperclass/extractSuperclass_ref.uml";
+    private static final String MODEL_SUPERCLASS_PATH = "models/extractSuperclass/extractSuperclass_ref.uml";
+    private static final String MODEL_RENAME_PATH = "models/extractSuperclass/extractSuperclass_renameAttr_ref.uml";
 
     /** The current resource. */
     private ResourceSet resourceSet;
@@ -78,6 +80,21 @@ public class SimpleModelModificationTest {
         return null;
     }
 
+    private Property getCarRegistrationProperty(Model model) {
+        EList<Element> elements = model.getOwnedElements();
+        for (Element element : elements) {
+            if (element instanceof Class && ((Class) element).getName().equals("Car")) {
+                Class car = (Class) element;
+                for (Property p : car.getAllAttributes()) {
+                    if (p.getName().equals("registration")) {
+                        return p;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     @Test
     public void testSuperclassExtrationWithPreAndPostChecks_shouldSucceed() {
         Model model = loadModel();
@@ -108,7 +125,7 @@ public class SimpleModelModificationTest {
         }
 
         try {
-            resource.save(new FileOutputStream(new File(MODEL_RESULT_PATH)), null);
+            resource.save(new FileOutputStream(new File(MODEL_SUPERCLASS_PATH)), null);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -124,6 +141,42 @@ public class SimpleModelModificationTest {
                 System.out.println(eObject.toString());
             }
         }
+    }
 
+    @Test
+    public void testRenameProperty_shouldSucceed() {
+        Model model = loadModel();
+
+        RefactoringData data = new RefactoringDataImpl();
+        data.set("newAttributeName", "FastCar");
+        data.set("selectedElement", getCarRegistrationProperty(model));
+
+        RenamePropertyRefactorableImpl rename = new RenamePropertyRefactorableImpl(data);
+
+        try {
+            rename.checkPreCondition();
+        } catch (ParserException e) {
+            fail("Precondition error");
+        }
+        try {
+            rename.performRefactoring();
+        } catch (RefactoringException e) {
+            fail("Refactoring error");
+        }
+        try {
+            rename.checkPostCondition();
+        } catch (ParserException e) {
+            fail("Postcondition error");
+        }
+
+        try {
+            resource.save(new FileOutputStream(new File(MODEL_RENAME_PATH)), null);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
