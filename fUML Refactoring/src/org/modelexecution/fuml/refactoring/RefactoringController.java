@@ -1,7 +1,6 @@
 package org.modelexecution.fuml.refactoring;
 
 import java.io.File;
-import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
@@ -47,18 +46,7 @@ public class RefactoringController {
     /**
      * Get a refactoring strategy from the RefactoringFactory
      */
-    public void performRefactoring(String refactoring, String params, List<String> params2)
-        throws RefactoringException {
-        Refactorable refactoringStrategy = RefactoringFactory.getInstance(refactoring);
-        OCL ocl = createAndInitializeOCL(resource);
-        if (!refactoringStrategy.checkPreCondition(ocl, resource, params)) {
-            throw new RefactoringException("Precondition not met.");
-        }
-        refactoringStrategy.performRefactoring(resource, params, params2);
-        if (!refactoringStrategy.checkPostCondition(ocl)) {
-            throw new RefactoringException("Postcondition not met.");
-        }
+    public void performRefactoring(String refactoring, RefactoringData refactoringData) throws RefactoringException {
 
-        // TODO: safe refactored model
     }
 }
