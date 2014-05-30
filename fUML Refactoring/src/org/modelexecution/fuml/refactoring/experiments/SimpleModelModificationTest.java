@@ -80,13 +80,13 @@ public class SimpleModelModificationTest {
         return null;
     }
 
-    private Property getCarRegistrationProperty(Model model) {
+    private Property getProperty(Model model, String className, String propertyName) {
         EList<Element> elements = model.getOwnedElements();
         for (Element element : elements) {
-            if (element instanceof Class && ((Class) element).getName().equals("Car")) {
+            if (element instanceof Class && ((Class) element).getName().equals(className)) {
                 Class car = (Class) element;
                 for (Property p : car.getAllAttributes()) {
-                    if (p.getName().equals("registration")) {
+                    if (p.getName().equals(propertyName)) {
                         return p;
                     }
                 }
@@ -149,7 +149,7 @@ public class SimpleModelModificationTest {
 
         RefactoringData data = new RefactoringDataImpl();
         data.set("newAttributeName", "FastCar");
-        data.set("selectedElement", getCarRegistrationProperty(model));
+        data.set("selectedElement", getProperty(model, "Car", "registration"));
 
         RenamePropertyRefactorableImpl rename = new RenamePropertyRefactorableImpl(data);
 
@@ -166,6 +166,46 @@ public class SimpleModelModificationTest {
         try {
             rename.checkPostCondition();
         } catch (ParserException e) {
+            fail("Postcondition error");
+        }
+
+        try {
+            resource.save(new FileOutputStream(new File(MODEL_RENAME_PATH)), null);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testEncapsulateField_shouldSucceed() {
+        Model model = loadModel();
+
+        RefactoringData data = new RefactoringDataImpl();
+        Property property = getProperty(model, "InsurancePolicy", "policyNumber");
+        data.set("selectedElement", property);
+
+        EncapsulateFieldRefactorableImpl encapsulate = new EncapsulateFieldRefactorableImpl(data);
+
+        try {
+            encapsulate.checkPreCondition();
+        } catch (ParserException e) {
+            e.printStackTrace();
+            fail("Precondition error");
+        }
+        try {
+            encapsulate.performRefactoring();
+        } catch (RefactoringException e) {
+            e.printStackTrace();
+            fail("Refactoring error");
+        }
+        try {
+            encapsulate.checkPostCondition();
+        } catch (ParserException e) {
+            e.printStackTrace();
             fail("Postcondition error");
         }
 
