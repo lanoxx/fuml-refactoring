@@ -21,8 +21,11 @@ import org.eclipse.ocl.expressions.OCLExpression;
 import org.eclipse.ocl.expressions.Variable;
 import org.eclipse.ocl.helper.OCLHelper;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
+import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
@@ -44,15 +47,15 @@ import org.modelexecution.fuml.refactoring.RefactoringException;
 
 public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
-    private OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
-    private OCLHelper<EClassifier, ?, ?, Constraint> helper;
+    private final OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
+    private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
     private static final String OCL_PRE_CONSTRAINT =
         "self.visibility <> uml::VisibilityKind::private"
             + " and self.owner.oclAsType(Class).ownedOperation->forAll(o | o.isDistinguishableFrom(setOperation, self.namespace)"
             + " and o.isDistinguishableFrom(getOperation, self.namespace))";
     private static final String OCL_POST_CONSTRAINT = "";
-    private RefactoringData data;
+    private final RefactoringData data;
     private Operation setOperation;
     private Operation getOperation;
 
@@ -166,56 +169,149 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
         selectedElement.setVisibility(VisibilityKind.PRIVATE_LITERAL);
 
-        // ReadStructuralFeATURE -> calloperation
-        // WriteStructuralFeature -> Calloperation
+        // ReadStructuralFeature -> Calloperation
+        // AddStructuralFeatureValue -> Calloperation
 
-        Activity getActivity = creategetActivity(class_, selectedElement);
-        Activity setActivity = createSetActivity(class_, selectedElement);
+        Activity getActivity = createActivity(class_, selectedElement, false);
+        Activity setActivity = createActivity(class_, selectedElement, true);
 
         class_.getOwnedBehaviors().add(getActivity);
         class_.getOwnedBehaviors().add(setActivity);
 
+        // Get all ReadStructuralFeatureActions from model
+        // Context Package
+        // self.member->select(c|c.oclIsTypeOf(Class)).oclAsType(Class).member->
+        // select(a|a.oclIsTypeOf(Activity)).oclAsType(Activity).node->
+        // select(n|n.oclIsTypeOf(ReadStructuralFeatureAction)).oclAsType(ReadStructuralFeatureAction).structuralFeature
         return true;
     }
 
-    private Activity creategetActivity(Class parent, Property property, boolean set) {
+    /**
+     * Creates an {@link Activity} for the new getter and setter.
+     * 
+     * @param parent the parent {@link Class} of the property to encapsulate.
+     * @param property the {@link Property} to encapsulate.
+     * @param set {@code true} to create a {@code setter} activity, {@code false} to create a {@code getter} activity.
+     * @return the created {@link Activity}.
+     */
+    private Activity createActivity(Class parent, Property property, boolean set) {
         Activity activity = UMLFactory.eINSTANCE.createActivity();
 
+        // Create a ReadSelfAction
         ReadSelfAction selfAction = UMLFactory.eINSTANCE.createReadSelfAction();
         selfAction.setActivity(activity);
 
+        // Create an OutputPin for the ReadSelfAction
         OutputPin selfOutputPin = UMLFactory.eINSTANCE.createOutputPin();
         selfAction.setResult(selfOutputPin);
 
         if (set) {
+            // Creates a setter activity
+            // Create a ParameterNode for activity input
+            ActivityParameterNode parameterNodeIn = UMLFactory.eINSTANCE.createActivityParameterNode();
+            parameterNodeIn.setActivity(activity);
+            parameterNodeIn.setType(property.getType());
 
-        } else {
-            ReadStructuralFeatureAction readFeature = UMLFactory.eINSTANCE.createReadStructuralFeatureAction();
-            readFeature.setStructuralFeature(property);
+            // Create an AddStructuralFeatureValueAction
+            AddStructuralFeatureValueAction addFeature = UMLFactory.eINSTANCE.createAddStructuralFeatureValueAction();
+            addFeature.setStructuralFeature(property);
 
-            OutputPin readFeatureOutputPin = UMLFactory.eINSTANCE.createOutputPin();
-            readFeature.setResult(readFeatureOutputPin);
+            // Create an InputPin for AddStructuralValueAction
+            InputPin addFeatureObjectInputPin = UMLFactory.eINSTANCE.createInputPin();
+            addFeature.setObject(addFeatureObjectInputPin);
 
-            InputPin readFeatureInputPin = UMLFactory.eINSTANCE.createInputPin();
-            readFeature.setObject(readFeatureInputPin);
-
+            // Create ObjectFlow from ReadSelfAction OutputPin to AddStructuralFeatureValueAction InputPin
             ObjectFlow selfToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
+            selfToStructuralFeatureFlow.setSource(selfOutputPin);
+            selfToStructuralFeatureFlow.setTarget(addFeatureObjectInputPin);
+            // Create the Guard for the ObjectFlow
             LiteralBoolean selfToStructuralGuard = UMLFactory.eINSTANCE.createLiteralBoolean();
             selfToStructuralGuard.setValue(true);
             selfToStructuralFeatureFlow.setGuard(selfToStructuralGuard);
-            selfToStructuralFeatureFlow.setTarget(readFeatureInputPin);
+            // Create the Weight for the ObjectFlow
+            LiteralInteger selfToStructuralWeight = UMLFactory.eINSTANCE.createLiteralInteger();
+            selfToStructuralWeight.setValue(1);
+            selfToStructuralFeatureFlow.setWeight(selfToStructuralWeight);
+
+            // Create an InputPin for AddStructuralValueAction
+            InputPin addFeatureValueInputPin = UMLFactory.eINSTANCE.createInputPin();
+            addFeature.setValue(addFeatureValueInputPin);
+
+            // Create ObjectFlow from ParameterNode OutputPin to AddStructuralFeatureValueAction InputPin
+            ObjectFlow parameterNodeToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
+            parameterNodeToStructuralFeatureFlow.setSource(parameterNodeIn);
+            parameterNodeToStructuralFeatureFlow.setTarget(addFeatureObjectInputPin);
+            // Create the Guard for the ObjectFlow
+            LiteralBoolean parameterNodeToStructuralFeatureGuard = UMLFactory.eINSTANCE.createLiteralBoolean();
+            parameterNodeToStructuralFeatureGuard.setValue(true);
+            parameterNodeToStructuralFeatureFlow.setGuard(parameterNodeToStructuralFeatureGuard);
+            // Create the Weight for the ObjectFlow
+            LiteralInteger parameterNodeToStructuralFeatureWeight = UMLFactory.eINSTANCE.createLiteralInteger();
+            parameterNodeToStructuralFeatureWeight.setValue(1);
+            parameterNodeToStructuralFeatureFlow.setWeight(parameterNodeToStructuralFeatureWeight);
+
+            // Create an ActivityFinalNode for the activity
+            ActivityFinalNode finalNode = UMLFactory.eINSTANCE.createActivityFinalNode();
+            finalNode.setActivity(activity);
+
+            ControlFlow controlFlow = UMLFactory.eINSTANCE.createControlFlow();
+            controlFlow.setSource(addFeature);
+            controlFlow.setTarget(finalNode);
+            // Create the Guard for the ObjectFlow
+            LiteralBoolean controlFlowGuard = UMLFactory.eINSTANCE.createLiteralBoolean();
+            controlFlowGuard.setValue(true);
+            controlFlow.setGuard(controlFlowGuard);
+            // Create the Weight for the ObjectFlow
+            LiteralInteger controlFlowWeight = UMLFactory.eINSTANCE.createLiteralInteger();
+            controlFlowWeight.setValue(1);
+            controlFlow.setWeight(controlFlowWeight);
+        } else {
+            // Creates a getter activity
+            // Create a ReadStructuralFeatureAction
+            ReadStructuralFeatureAction readFeature = UMLFactory.eINSTANCE.createReadStructuralFeatureAction();
+            readFeature.setStructuralFeature(property);
+
+            // Create an InputPin for the ReadStructuralFeatureAction
+            InputPin readFeatureInputPin = UMLFactory.eINSTANCE.createInputPin();
+            readFeature.setObject(readFeatureInputPin);
+
+            // Create an OutputPin for the ReadStructuralFeatureAction
+            OutputPin readFeatureOutputPin = UMLFactory.eINSTANCE.createOutputPin();
+            readFeature.setResult(readFeatureOutputPin);
+
+            // Create ObjectFlow from ReadSelfAction OutputPin to ReadStructuralFeatureAction InputPin
+            ObjectFlow selfToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
             selfToStructuralFeatureFlow.setSource(selfOutputPin);
+            selfToStructuralFeatureFlow.setTarget(readFeatureInputPin);
+            // Create the Guard for the ObjectFlow
+            LiteralBoolean selfToStructuralGuard = UMLFactory.eINSTANCE.createLiteralBoolean();
+            selfToStructuralGuard.setValue(true);
+            selfToStructuralFeatureFlow.setGuard(selfToStructuralGuard);
+            // Create the Weight for the ObjectFlow
+            LiteralInteger selfToStructuralWeight = UMLFactory.eINSTANCE.createLiteralInteger();
+            selfToStructuralWeight.setValue(1);
+            selfToStructuralFeatureFlow.setWeight(selfToStructuralWeight);
 
-            ActivityParameterNode parameterNode = UMLFactory.eINSTANCE.createActivityParameterNode();
-            parameterNode.setActivity(activity);
-            parameterNode.setType(property.getType());
-            LiteralInteger integer = UMLFactory.eINSTANCE.createLiteralInteger();
-            integer.setValue(1);
-            parameterNode.setUpperBound(integer);
+            // Create ParameterNode for activity result
+            ActivityParameterNode parameterNodeOut = UMLFactory.eINSTANCE.createActivityParameterNode();
+            parameterNodeOut.setActivity(activity);
+            parameterNodeOut.setType(property.getType());
+            LiteralInteger parameterNodeUpperBound = UMLFactory.eINSTANCE.createLiteralInteger();
+            parameterNodeUpperBound.setValue(1);
+            parameterNodeOut.setUpperBound(parameterNodeUpperBound);
 
-            ObjectFlow readToParameter = UMLFactory.eINSTANCE.createObjectFlow();
-            readToParameter.setSource(readFeatureOutputPin);
-            readToParameter.setTarget(parameterNode);
+            // Create ObjectFlow from ReadStructuralFeatureAction OutputPin to ParameterNode
+            ObjectFlow readFeatureToParameter = UMLFactory.eINSTANCE.createObjectFlow();
+            readFeatureToParameter.setTarget(parameterNodeOut);
+            readFeatureToParameter.setSource(readFeatureOutputPin);
+            // Create the Guard for the ObjectFlow
+            LiteralBoolean readToParameterGuard = UMLFactory.eINSTANCE.createLiteralBoolean();
+            readToParameterGuard.setValue(true);
+            readFeatureToParameter.setGuard(readToParameterGuard);
+            // Create the Weight for the ObjectFlow
+            LiteralInteger readFeatureToParameterWeight = UMLFactory.eINSTANCE.createLiteralInteger();
+            readFeatureToParameterWeight.setValue(1);
+            readFeatureToParameter.setWeight(readFeatureToParameterWeight);
         }
 
         return activity;
