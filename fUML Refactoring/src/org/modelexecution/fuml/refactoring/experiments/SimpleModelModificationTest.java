@@ -7,9 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -18,8 +16,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.ocl.ParserException;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
@@ -30,9 +27,9 @@ import org.modelexecution.fuml.refactoring.RefactoringDataImpl;
 import org.modelexecution.fuml.refactoring.RefactoringException;
 
 public class SimpleModelModificationTest {
-    private static final String MODEL_PATH = "models/extractSuperclass/extractSuperclass.uml";
-    private static final String MODEL_SUPERCLASS_PATH = "models/extractSuperclass/extractSuperclass_ref.uml";
-    private static final String MODEL_RENAME_PATH = "models/extractSuperclass/extractSuperclass_renameAttr_ref.uml";
+    private static final String MODEL_PATH = "models/insurancemodel/insurancemodel.uml";
+    private static final String MODEL_SUPERCLASS_PATH = "models/insurancemodel/insurancemodel_extractClass.uml";
+    private static final String MODEL_RENAME_PATH = "models/insurancemodel/insurancemodel_rename.uml";
 
     /** The current resource. */
     private ResourceSet resourceSet;
@@ -53,43 +50,26 @@ public class SimpleModelModificationTest {
     }
 
     /**
-     * Loads the root {@link Model} of an UML file.
+     * Loads an element with the given {@code name} and {@code clazz} from the model.
      * 
-     * @return the root {@link Model}.
+     * @param qualifiedName the {@code name} of the element.
+     * @param clazz the {@link java.lang.Class} of the model.
+     * @return the first element of the model with the given {@code name} and {@code clazz}.
      */
-    private Model loadModel() {
+    private Object loadElement(String qualifiedName, java.lang.Class<? extends NamedElement> clazz) {
         TreeIterator<EObject> iterator = resource.getAllContents();
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
-            if (eObject instanceof Model) {
-                return (Model) eObject;
+            if (!(eObject instanceof NamedElement)) {
+                continue;
             }
-        }
-        return null;
-    }
-
-    private Class getCar(Model model) {
-        EList<Element> elements = model.getOwnedElements();
-        Iterator<Element> it = elements.iterator();
-        while (it.hasNext()) {
-            Element element = it.next();
-            if (element instanceof Class && ((Class) element).getName().equals("Car")) {
-                return (Class) element;
+            if (!clazz.isAssignableFrom(eObject.getClass())) {
+                // inspected element is not from target class type
+                continue;
             }
-        }
-        return null;
-    }
-
-    private Property getProperty(Model model, String className, String propertyName) {
-        EList<Element> elements = model.getOwnedElements();
-        for (Element element : elements) {
-            if (element instanceof Class && ((Class) element).getName().equals(className)) {
-                Class car = (Class) element;
-                for (Property p : car.getAllAttributes()) {
-                    if (p.getName().equals(propertyName)) {
-                        return p;
-                    }
-                }
+            NamedElement element = (NamedElement) eObject;
+            if (qualifiedName.equals(element.getQualifiedName())) {
+                return eObject;
             }
         }
         return null;
@@ -97,12 +77,12 @@ public class SimpleModelModificationTest {
 
     @Test
     public void testSuperclassExtrationWithPreAndPostChecks_shouldSucceed() {
-        Model model = loadModel();
         String superClassName = "Vehicle";
 
         RefactoringData data = new RefactoringDataImpl();
         data.set("newSuperClassName", superClassName);
-        data.set("selectedElement", getCar(model));
+        Class clazz = (Class) loadElement("Model::insurance::Car", Class.class);
+        data.set("selectedElement", clazz);
         ExtractSuperClassRefactorableImpl extractSuperClassRefactoring = new ExtractSuperClassRefactorableImpl(data);
 
         try {
@@ -145,11 +125,10 @@ public class SimpleModelModificationTest {
 
     @Test
     public void testRenameProperty_shouldSucceed() {
-        Model model = loadModel();
-
         RefactoringData data = new RefactoringDataImpl();
-        data.set("newAttributeName", "FastCar");
-        data.set("selectedElement", getProperty(model, "Car", "registration"));
+        data.set("newAttributeName", "refactoredRegistration");
+        Property property = (Property) loadElement("Model::insurance::Car::registration", Property.class);
+        data.set("selectedElement", property);
 
         RenamePropertyRefactorableImpl rename = new RenamePropertyRefactorableImpl(data);
 
@@ -182,10 +161,8 @@ public class SimpleModelModificationTest {
 
     @Test
     public void testEncapsulateField_shouldSucceed() {
-        Model model = loadModel();
-
         RefactoringData data = new RefactoringDataImpl();
-        Property property = getProperty(model, "InsurancePolicy", "policyNumber");
+        Property property = (Property) loadElement("Model::insurance::InsurancePolicy::policyNumber", Property.class);
         data.set("selectedElement", property);
 
         EncapsulateFieldRefactorableImpl encapsulate = new EncapsulateFieldRefactorableImpl(data);

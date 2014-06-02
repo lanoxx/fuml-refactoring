@@ -28,13 +28,13 @@ import org.modelexecution.fuml.refactoring.RefactoringException;
 
 public class RenamePropertyRefactorableImpl implements Refactorable {
 
-    private OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
-    private OCLHelper<EClassifier, ?, ?, Constraint> helper;
+    private final OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
+    private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
     private static final String OCL_PRE_CONSTRAINT =
         "self.class.allParents().attribute->union(self.class.attribute)->forAll ( a | a . name <> '%s')";
     private static final String OCL_POST_CONSTRAINT = "self.general->includes(newSuperClass)";
-    private RefactoringData data;
+    private final RefactoringData data;
 
     public RenamePropertyRefactorableImpl(RefactoringData data) {
         this.ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
@@ -112,7 +112,7 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
     @Override
     public boolean checkPostCondition() throws ParserException {
         helper.setContext(UMLPackage.eINSTANCE.getProperty());
-
+        // TODO Formulate post condition.
         return true;
     }
 }
