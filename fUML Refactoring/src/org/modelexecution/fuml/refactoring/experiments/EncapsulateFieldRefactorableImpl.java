@@ -41,10 +41,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
     private final OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
     private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
-    private static final String OCL_PRE_CONSTRAINT =
-        "self.visibility <> uml::VisibilityKind::private"
-            + " and self.owner.oclAsType(Class).ownedOperation->forAll(o | o.isDistinguishableFrom(setOperation, self.namespace)"
-            + " and o.isDistinguishableFrom(getOperation, self.namespace))";
+    private static final String OCL_PRE_CONSTRAINT = "self.visibility <> uml::VisibilityKind::private"
+        + " and self.class.ownedOperation->forAll(o | o.isDistinguishableFrom(setOperation, self.namespace)"
+        + " and o.isDistinguishableFrom(getOperation, self.namespace))";
     private static final String OCL_POST_CONSTRAINT = "";
     private final RefactoringData data;
     private Operation setOperation;
@@ -67,7 +66,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
      */
     @Override
     public boolean checkPreCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getClass_());
+        helper.setContext(UMLPackage.eINSTANCE.getProperty());
 
         Property selectedElement = (Property) data.get("selectedElement");
 
