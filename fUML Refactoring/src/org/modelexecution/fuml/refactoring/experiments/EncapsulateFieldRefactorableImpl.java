@@ -165,6 +165,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         if (set) {
             // Creates a setter activity
             // Create a ParameterNode for activity input
+            activity.setName(setOperation.getName());
             ActivityParameterNode parameterNodeIn = UMLFactory.eINSTANCE.createActivityParameterNode();
             parameterNodeIn.setActivity(activity);
             parameterNodeIn.setType(property.getType());
@@ -231,6 +232,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         } else {
             // Creates a getter activity
             // Create a ReadStructuralFeatureAction
+            activity.setName(getOperation.getName());
             ReadStructuralFeatureAction readFeature = UMLFactory.eINSTANCE.createReadStructuralFeatureAction();
             readFeature.setStructuralFeature(property);
 
