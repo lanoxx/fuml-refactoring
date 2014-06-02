@@ -172,10 +172,12 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             // Create an AddStructuralFeatureValueAction
             AddStructuralFeatureValueAction addFeature = UMLFactory.eINSTANCE.createAddStructuralFeatureValueAction();
             addFeature.setStructuralFeature(property);
+            addFeature.setActivity(activity);
 
             // Create an InputPin for AddStructuralValueAction
             InputPin addFeatureObjectInputPin = UMLFactory.eINSTANCE.createInputPin();
             addFeature.setObject(addFeatureObjectInputPin);
+            addFeatureObjectInputPin.setActivity(activity);
 
             // Create ObjectFlow from ReadSelfAction OutputPin to AddStructuralFeatureValueAction InputPin
             ObjectFlow selfToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
@@ -189,10 +191,12 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             LiteralInteger selfToStructuralWeight = UMLFactory.eINSTANCE.createLiteralInteger();
             selfToStructuralWeight.setValue(1);
             selfToStructuralFeatureFlow.setWeight(selfToStructuralWeight);
+            selfToStructuralFeatureFlow.setActivity(activity);
 
             // Create an InputPin for AddStructuralValueAction
             InputPin addFeatureValueInputPin = UMLFactory.eINSTANCE.createInputPin();
             addFeature.setValue(addFeatureValueInputPin);
+            addFeatureValueInputPin.setActivity(activity);
 
             // Create ObjectFlow from ParameterNode OutputPin to AddStructuralFeatureValueAction InputPin
             ObjectFlow parameterNodeToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
@@ -206,6 +210,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             LiteralInteger parameterNodeToStructuralFeatureWeight = UMLFactory.eINSTANCE.createLiteralInteger();
             parameterNodeToStructuralFeatureWeight.setValue(1);
             parameterNodeToStructuralFeatureFlow.setWeight(parameterNodeToStructuralFeatureWeight);
+            parameterNodeToStructuralFeatureFlow.setActivity(activity);
 
             // Create an ActivityFinalNode for the activity
             ActivityFinalNode finalNode = UMLFactory.eINSTANCE.createActivityFinalNode();
@@ -222,6 +227,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             LiteralInteger controlFlowWeight = UMLFactory.eINSTANCE.createLiteralInteger();
             controlFlowWeight.setValue(1);
             controlFlow.setWeight(controlFlowWeight);
+            controlFlow.setActivity(activity);
         } else {
             // Creates a getter activity
             // Create a ReadStructuralFeatureAction
@@ -231,10 +237,12 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             // Create an InputPin for the ReadStructuralFeatureAction
             InputPin readFeatureInputPin = UMLFactory.eINSTANCE.createInputPin();
             readFeature.setObject(readFeatureInputPin);
+            readFeatureInputPin.setActivity(activity);
 
             // Create an OutputPin for the ReadStructuralFeatureAction
             OutputPin readFeatureOutputPin = UMLFactory.eINSTANCE.createOutputPin();
             readFeature.setResult(readFeatureOutputPin);
+            readFeatureOutputPin.setActivity(activity);
 
             // Create ObjectFlow from ReadSelfAction OutputPin to ReadStructuralFeatureAction InputPin
             ObjectFlow selfToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
@@ -248,6 +256,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             LiteralInteger selfToStructuralWeight = UMLFactory.eINSTANCE.createLiteralInteger();
             selfToStructuralWeight.setValue(1);
             selfToStructuralFeatureFlow.setWeight(selfToStructuralWeight);
+            selfToStructuralFeatureFlow.setActivity(activity);
 
             // Create ParameterNode for activity result
             ActivityParameterNode parameterNodeOut = UMLFactory.eINSTANCE.createActivityParameterNode();
@@ -269,6 +278,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             LiteralInteger readFeatureToParameterWeight = UMLFactory.eINSTANCE.createLiteralInteger();
             readFeatureToParameterWeight.setValue(1);
             readFeatureToParameter.setWeight(readFeatureToParameterWeight);
+            readFeatureToParameter.setActivity(activity);
         }
 
         return activity;
