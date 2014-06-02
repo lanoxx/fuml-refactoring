@@ -30,6 +30,7 @@ public class SimpleModelModificationTest {
     private static final String MODEL_PATH = "models/insurancemodel/insurancemodel.uml";
     private static final String MODEL_SUPERCLASS_PATH = "models/insurancemodel/insurancemodel_extractClass.uml";
     private static final String MODEL_RENAME_PATH = "models/insurancemodel/insurancemodel_rename.uml";
+    private static final String MODEL_ENCAPSULATE_PATH = "models/insurancemodel/insurancemodel_encapsulate.uml";
 
     /** The current resource. */
     private ResourceSet resourceSet;
@@ -187,7 +188,7 @@ public class SimpleModelModificationTest {
         }
 
         try {
-            resource.save(new FileOutputStream(new File(MODEL_RENAME_PATH)), null);
+            resource.save(new FileOutputStream(new File(MODEL_ENCAPSULATE_PATH)), null);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
