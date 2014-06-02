@@ -25,6 +25,8 @@ import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OutputPin;
+import org.eclipse.uml2.uml.Parameter;
+import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadSelfAction;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
@@ -90,10 +92,12 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
         setOperation = UMLFactory.eINSTANCE.createOperation();
         setOperation.setName("set" + normalizedName);
-        setOperation.createOwnedParameter("policyNumber", propertyType);
+        setOperation.createOwnedParameter(propertyName, propertyType);
 
         getOperation = UMLFactory.eINSTANCE.createOperation();
         getOperation.setName("get" + normalizedName);
+        Parameter getOutParameter = getOperation.createOwnedParameter(propertyName, propertyType);
+        getOutParameter.setDirection(ParameterDirectionKind.RETURN_LITERAL);
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
         eval.getEvaluationEnvironment().add("getOperation", getOperation);
@@ -178,7 +182,6 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             // Create an InputPin for AddStructuralValueAction
             InputPin addFeatureObjectInputPin = UMLFactory.eINSTANCE.createInputPin();
             addFeature.setObject(addFeatureObjectInputPin);
-            addFeatureObjectInputPin.setActivity(activity);
 
             // Create ObjectFlow from ReadSelfAction OutputPin to AddStructuralFeatureValueAction InputPin
             ObjectFlow selfToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
@@ -197,7 +200,6 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             // Create an InputPin for AddStructuralValueAction
             InputPin addFeatureValueInputPin = UMLFactory.eINSTANCE.createInputPin();
             addFeature.setValue(addFeatureValueInputPin);
-            addFeatureValueInputPin.setActivity(activity);
 
             // Create ObjectFlow from ParameterNode OutputPin to AddStructuralFeatureValueAction InputPin
             ObjectFlow parameterNodeToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
@@ -235,16 +237,16 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             activity.setName(getOperation.getName());
             ReadStructuralFeatureAction readFeature = UMLFactory.eINSTANCE.createReadStructuralFeatureAction();
             readFeature.setStructuralFeature(property);
+            readFeature.setActivity(activity);
+            readFeature.setName("read" + getOperation.getName().substring(3));
 
             // Create an InputPin for the ReadStructuralFeatureAction
             InputPin readFeatureInputPin = UMLFactory.eINSTANCE.createInputPin();
             readFeature.setObject(readFeatureInputPin);
-            readFeatureInputPin.setActivity(activity);
 
             // Create an OutputPin for the ReadStructuralFeatureAction
             OutputPin readFeatureOutputPin = UMLFactory.eINSTANCE.createOutputPin();
             readFeature.setResult(readFeatureOutputPin);
-            readFeatureOutputPin.setActivity(activity);
 
             // Create ObjectFlow from ReadSelfAction OutputPin to ReadStructuralFeatureAction InputPin
             ObjectFlow selfToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
