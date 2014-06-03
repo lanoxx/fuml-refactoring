@@ -1,0 +1,151 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{default}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\begin{document}
+
+\author{Kristof Meixner \\ Sebastian Geiger}
+\date{6 Mai 2014}
+\title{fUML Refactoring with EMF\\\small{Business Informatic Group}}
+
+\begin{frame}
+ \maketitle
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Overview}
+
+%TODO: 25 slides
+
+
+\begin{itemize}
+ \item Refactoring Overview
+ \item UML Models and Refactoring
+ \item fUML Introduction
+ \item Complex Example
+ \item fUML Refactoring
+ \item Semantic Preservation
+ \item Refactoring Constraints with OCL
+ \item Toolchain
+ \item EMF Refactor
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Refactoring Overview}
+\begin{itemize}
+ \item What is refactoring?
+ \begin{itemize}
+  \item ``defines a set of program restructuring operations'' that ``preserve the behavior of a program'' \cite{mast:REFOOF}
+ \end{itemize}
+ \item Why do we need it?
+ \begin{itemize}
+  \item Increases software (or model) quality.
+ \end{itemize}
+ \item There are catalogues with refactorings \cite{fow99}
+ \item Examples: rename class, extract superclass, encapsulate field.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{UML Models and Refactoring}
+\begin{itemize}
+ \item Whats the difference between source code and model refactoring?
+ \item UML defines different interconnected views:
+ \begin{itemize}
+  \item Class diagrams
+  \item Activity diagrams
+  \item Sequence diagrams
+ \end{itemize}
+ \item Refactoring needs to consider all views.
+ \item Refactoring needs to preserve semantics (behavior).
+\end{itemize}
+        
+\end{frame}
+        
+\begin{frame}
+\frametitle{fUML Introduction}
+\begin{itemize}
+ \item fUML = foundational UML
+ \item fUML 1.1 is based on UML 2.4.1
+ \item Subset of UML (Class and Activity diagrams)
+ \item Enhanced with consise semantics
+ \item Turing complete and allows execution or interpretation
+ \item Existing VM to execute models
+ \item Extended VM for testing and debugging (Moliz)
+\end{itemize}
+
+\end{frame}
+        
+\begin{frame}
+\frametitle{Complex Example}
+An insurance company example which sells insurance policies. A policy can insure cars and truck and calculate its price.
+\begin{figure}
+ %\includegraphics{} %TODO: add graphic
+\end{figure}
+\end{frame}
+        
+%USE 2-3 slides for this!
+\begin{frame}
+\frametitle{fUML Refactoring}
+    \begin{itemize}
+     \item Show example of encapsulate field.
+    \end{itemize}
+\end{frame}
+        
+\begin{frame}
+\frametitle{Semantic Preservation}
+\begin{itemize}
+ \item What means semantic preservation?
+ \begin{itemize}
+  \item Same execution trace?
+  \item Same output?
+  \item Same state?
+ \end{itemize}
+ \item Depends on refactoring!
+ \item How to preserve semantics?
+ \begin{itemize}
+  \item Specify pre- and postconditions with OCL constraints
+  \item Validate refactored models.
+  \item Execute models and analyse execution properties (trace).
+ \end{itemize}
+\end{itemize}
+
+\end{frame}
+        
+\begin{frame}
+\frametitle{Refactoring Constraints with OCL}
+
+\end{frame}
+        
+\begin{frame}
+\frametitle{Toolchain}
+        
+\end{frame}
+        
+\begin{frame}
+\frametitle{EMF Refactor}
+        
+\end{frame}
+        
+
+\begin{frame}
+ \begin{center}
+\Huge Questions?
+\end{center}
+\end{frame}
+
+\begin{frame}
+ \frametitle{References}
+ \bibliographystyle{acm}
+ \bibliography{references}
+\end{frame}
+
+\end{document}
