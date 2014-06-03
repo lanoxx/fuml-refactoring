@@ -50,6 +50,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
     private final RefactoringData data;
     private Operation setOperation;
     private Operation getOperation;
+    private Parameter getOutParameter;
 
     public EncapsulateFieldRefactorableImpl(RefactoringData data) {
         this.ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
@@ -96,7 +97,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
         getOperation = UMLFactory.eINSTANCE.createOperation();
         getOperation.setName("get" + normalizedName);
-        Parameter getOutParameter = getOperation.createOwnedParameter(propertyName, propertyType);
+        getOutParameter = getOperation.createOwnedParameter(propertyName, propertyType);
         getOutParameter.setDirection(ParameterDirectionKind.RETURN_LITERAL);
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
@@ -165,6 +166,10 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         // Create an OutputPin for the ReadSelfAction
         OutputPin selfOutputPin = UMLFactory.eINSTANCE.createOutputPin();
         selfAction.setResult(selfOutputPin);
+        LiteralInteger upperBound = UMLFactory.eINSTANCE.createLiteralInteger();
+        upperBound.setValue(1);
+        selfOutputPin.setUpperBound(upperBound);
+        selfOutputPin.setType(parent);
 
         if (set) {
             // Creates a setter activity
@@ -243,10 +248,19 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             // Create an InputPin for the ReadStructuralFeatureAction
             InputPin readFeatureInputPin = UMLFactory.eINSTANCE.createInputPin();
             readFeature.setObject(readFeatureInputPin);
+            LiteralInteger readFeatureInputPinUpperBound = UMLFactory.eINSTANCE.createLiteralInteger();
+            readFeatureInputPinUpperBound.setValue(1);
+            readFeatureInputPin.setUpperBound(readFeatureInputPinUpperBound);
+            readFeatureInputPin.setType(parent);
 
             // Create an OutputPin for the ReadStructuralFeatureAction
             OutputPin readFeatureOutputPin = UMLFactory.eINSTANCE.createOutputPin();
             readFeature.setResult(readFeatureOutputPin);
+            LiteralInteger readFeatureOutputPinUpperBound = UMLFactory.eINSTANCE.createLiteralInteger();
+            readFeatureOutputPinUpperBound.setValue(1);
+            readFeatureOutputPin.setUpperBound(readFeatureOutputPinUpperBound);
+            readFeatureOutputPin.setType(parent);
+            readFeatureOutputPin.setType(property.getType());
 
             // Create ObjectFlow from ReadSelfAction OutputPin to ReadStructuralFeatureAction InputPin
             ObjectFlow selfToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
@@ -269,6 +283,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             LiteralInteger parameterNodeUpperBound = UMLFactory.eINSTANCE.createLiteralInteger();
             parameterNodeUpperBound.setValue(1);
             parameterNodeOut.setUpperBound(parameterNodeUpperBound);
+            parameterNodeOut.setParameter(getOutParameter);
 
             // Create ObjectFlow from ReadStructuralFeatureAction OutputPin to ParameterNode
             ObjectFlow readFeatureToParameter = UMLFactory.eINSTANCE.createObjectFlow();
