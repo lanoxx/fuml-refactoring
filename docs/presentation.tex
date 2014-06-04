@@ -45,29 +45,48 @@
  \end{itemize}
  \item Why do we need it?
  \begin{itemize}
-  \item Increases software (or model) quality.
+  \item Increases software and/or model quality
+  \item Ensures reusability of components
+  \item Supports change management in software lifecycle
  \end{itemize}
- \item There are catalogues with refactorings \cite{fow99}
  \item Examples: rename class, extract superclass, encapsulate field.
+ \item Detailed catalogues with refactorings exist (e.g. \cite{fow99})
 \end{itemize}
 
 \end{frame}
+
+\begin{frame}
+ \frametitle{Recall - UML}
+ \begin{itemize}
+  \item Unified Modeling Language (v2.4.1) standardized by Object Management Group \cite{man:UML}
+  \item General-purpose modeling language in the field of software engineering (Wikipedia)
+  \item Includes different diagram types for architecture structure \& behavior
+ \end{itemize}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.35,angle=270]{images/uml}
+ \caption{\textit{UML} diagram type hierarchy (Derfel73, PMerson)}
+ \label{fig:uml}
+\end{figure}
+\end{frame}
+
 
 
 \begin{frame}
 \frametitle{UML Models and Refactoring}
 \begin{itemize}
  \item Whats the difference between source code and model refactoring?
- \item UML defines different interconnected views:
  \begin{itemize}
-  \item Class diagrams
-  \item Activity diagrams
-  \item Sequence diagrams
+  \item Consider all interconnected views/diagrams
+  \item Consider model constraints
+  \item Consider different accuracy levels
  \end{itemize}
- \item Refactoring needs to consider all views.
- \item Refactoring needs to preserve semantics (behavior).
-\end{itemize}
-        
+ \item How can we preserve behavior/semantics?
+ \begin{itemize}
+  \item Static analysis of models (e.g. ``code smells'' like complexity or dependencies)
+  \item Dynamic analysis of models (e.g. via behavior during execution)
+ \end{itemize}
+\end{itemize}        
 \end{frame}
         
 \begin{frame}
@@ -79,7 +98,7 @@
  \item Enhanced with consise semantics
  \item Turing complete and allows execution or interpretation
  \item Existing VM to execute models
- \item Extended VM for testing and debugging (Moliz)
+ \item Extended VM for testing and debugging (Moliz) \cite{DBLP:conf/models/MayerhoferLK12}
 \end{itemize}
 
 \end{frame}
@@ -87,9 +106,13 @@
 \begin{frame}
 \frametitle{Complex Example}
 An insurance company example which sells insurance policies. A policy can insure cars and truck and calculate its price.
-\begin{figure}
- %\includegraphics{} %TODO: add graphic
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.4]{images/insurance_ref/Model_Model_ClassDiagram}
+ \caption{Insurance class diagram with refactorings}
+ \label{fig:classdiagramcomplexRef}
 \end{figure}
+ %\includegraphics{} %TODO: add graphic
 \end{frame}
         
 %USE 2-3 slides for this!
