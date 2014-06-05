@@ -255,7 +255,7 @@
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_fapxcd9AEeOh45j0uh-KZg" value="1"/>
           </result>
         </node>
-        <node xmi:type="uml:ReadStructuralFeatureAction" xmi:id="_hOvlQN9AEeOh45j0uh-KZg" name="readNumberOfTrucks">
+        <node xmi:type="uml:ReadStructuralFeatureAction" xmi:id="_hOvlQN9AEeOh45j0uh-KZg" name="readNumberOfVehicles">
           <object xmi:type="uml:InputPin" xmi:id="_hOxact9AEeOh45j0uh-KZg" name="policy" incoming="_udqdoN9AEeOh45j0uh-KZg">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_hOxac99AEeOh45j0uh-KZg" value="1"/>
           </object>
