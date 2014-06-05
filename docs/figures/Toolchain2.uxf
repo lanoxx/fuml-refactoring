@@ -231,14 +231,14 @@ creates</panel_attributes>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>910</x>
+      <x>940</x>
       <y>370</y>
-      <w>140</w>
-      <h>330</h>
+      <w>150</w>
+      <h>280</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
      evaluate</panel_attributes>
-    <additional_attributes>60;30;60;180;90;180;90;310</additional_attributes>
+    <additional_attributes>30;30;30;180;130;180;130;260</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
@@ -314,8 +314,8 @@ options</panel_attributes>
     <coordinates>
       <x>660</x>
       <y>550</y>
-      <w>420</w>
-      <h>170</h>
+      <w>470</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>org.eclipse.ocl</panel_attributes>
     <additional_attributes/>
@@ -343,5 +343,40 @@ options</panel_attributes>
  check
  constraints</panel_attributes>
     <additional_attributes>290;220;120;220;120;30;30;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1020</x>
+      <y>630</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Query</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>700</x>
+      <y>630</y>
+      <w>420</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+creates</panel_attributes>
+    <additional_attributes>370;30;370;60;370;90;30;90;30;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>890</x>
+      <y>600</y>
+      <w>150</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+based on</panel_attributes>
+    <additional_attributes>130;50;60;50;60;80</additional_attributes>
   </element>
 </diagram>
