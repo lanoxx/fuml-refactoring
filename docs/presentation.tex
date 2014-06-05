@@ -4,6 +4,7 @@
 \usepackage{default}
 \usepackage{listings}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \begin{document}
 
@@ -112,6 +113,7 @@
 \end{figure}
 \end{frame}
 
+
 \begin{frame}
 \frametitle{fUML Abstract Syntax 2/2}
 \begin{figure}[h!t]
@@ -121,6 +123,55 @@
  \label{fig:behavior}
 \end{figure}
 \end{frame}
+
+\begin{frame}
+ \frametitle{fUML Actions}
+ Actions provide the functionality of activity diagrams. Every behavior is based on an action.
+ \begin{itemize}
+  \item ReadSelfAction
+  \item AddStructuralFeatureAction
+  \item ReadStructuralFeatureAction
+  \item WriteStructuralFeatureAction
+  \item ValueSpecification
+ \end{itemize}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.18]{images/fuml-actions/ReadSelf.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{fUML Actions (2)}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.18]{images/fuml-actions/ReadStructuralFeature.png}
+\end{figure}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.18]{images/fuml-actions/RemoveStructuralFeatureValue.png}
+\end{figure}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.18]{images/fuml-actions/AddStructuralFeatureValue.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+ \frametitle{fUML Actions (3)}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.18]{images/fuml-actions/CreateObject.png}
+\end{figure}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.18]{images/fuml-actions/DestroyObject.png}
+\end{figure}
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.18]{images/fuml-actions/ValueSpecification.png}
+\end{figure}
+\end{frame}
+
 
 \begin{frame}
 \frametitle{Complex Example 1/3}
@@ -153,17 +204,37 @@
  \caption{Add vehicle activity}
  \label{fig:calculatePremium}
 \end{figure}
- %\includegraphics{} %TODO: add graphic
 \end{frame}
 
         
 %USE 2-3 slides for this!
 \begin{frame}
 \frametitle{fUML Refactoring}
-    \begin{itemize}
-     \item Show example of encapsulate field.
-    \end{itemize}
+Public field (property) \textbf{policyNumber}:
+\begin{figure}
+ \centering
+ \includegraphics[scale=0.3]{images/fuml-refactorings/property-prerefactoring.png}
+\end{figure}
+\begin{figure}
+ \centering
+ \includegraphics[scale=0.3]{images/fuml-refactorings/activity-prerefactoring.png}
+\end{figure}
 \end{frame}
+
+\begin{frame}
+ \frametitle{Encapsulate Superclass refactored}
+Property is private:
+\begin{figure}
+ \centering
+ \includegraphics[scale=0.3]{images/fuml-refactorings/property-postrefactoring.png}
+\end{figure}
+Operations added:
+\begin{figure}
+ \centering
+ \includegraphics[scale=0.3]{images/fuml-refactorings/getter-setter-treeview.png}
+\end{figure}
+\end{frame}
+
         
 \begin{frame}
 \frametitle{Semantic Preservation}
@@ -185,19 +256,52 @@
 
 \end{frame}
         
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{Refactoring Constraints with OCL}
+Constaints ensure that the model is in a good state
+before and after the refactoring.
+
+Example:
+\begin{lstlisting}
+pre : self.owner.ownedElement
+      ->select(class | class.oclIsTypeOf(Class))
+      .oclAsType(Class).name
+      ->forAll(o | o <> newSuperClass.name)
+post : self.general->contains(superClass)
+\end{lstlisting}
 
 \end{frame}
         
 \begin{frame}
 \frametitle{Toolchain}
-        
+\begin{itemize}
+ \item Used Eclipse Modeling Framework and Ecore
+ \item Java implementation of UML 2.4.1 (org.eclipse.uml2.uml)
+ \item Created constraints with Eclipse OCL Console
+ \item Evaluate constraints with OCL Java API (org.eclipse.ocl)
+ \item Model transformation is performed through UML's abstract syntax.
+\end{itemize}
 \end{frame}
+
+\begin{frame}
+\frametitle{Toolchain}
+ \begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.35]{figures/Toolchain2}
+\end{figure}
+\end{frame}
+
         
 \begin{frame}
 \frametitle{EMF Refactor}
-        
+\begin{itemize}
+ \item Framework to build refactorings.
+ \item Allows generation of Java stubs
+ \item Comes with metrics for model smell detection
+ \item Suggests refactorings based on metrics.
+ \item Gui/Wizard based.
+\end{itemize}
+
 \end{frame}
         
 
