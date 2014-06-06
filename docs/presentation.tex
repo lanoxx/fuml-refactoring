@@ -88,10 +88,11 @@
   \item Unified Modeling Language (v2.4.1) standardized by Object Management Group \cite{man:UML}
   \item General-purpose modeling language in the field of software engineering (Wikipedia)
   \item Includes different diagram types for architecture structure \& behavior
+  \item Allows contraint definition via OCL \cite{man:OCL}
  \end{itemize}
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.35,angle=270]{images/uml}
+ \includegraphics[scale=0.3,angle=270]{images/uml}
  \caption{\textit{UML} diagram type hierarchy (Derfel73, PMerson)}
  \label{fig:uml}
 \end{figure}
@@ -174,7 +175,7 @@
 \begin{frame}
 \frametitle{fUML Introduction}
 \begin{itemize}
- \item fUML = foundational UML
+ \item fUML = foundational UML \cite{man:FUML}
  \item fUML 1.1 is based on UML 2.4.1
  \item Subset of UML (Class and Activity diagrams)
  \item Enhanced with consise semantics
@@ -284,7 +285,7 @@ The activity for the getter:
         
 \begin{frame}[fragile]
 \frametitle{Refactoring Constraints with OCL}
-Constaints ensure that the model is in a good state
+Constraint ensure that the model is in a good state
 before and after the refactoring.
 
 Example:
@@ -301,7 +302,26 @@ pre : self.visibility <>
 \end{lstlisting}
 
 \end{frame}
-        
+
+\begin{frame}[fragile]
+\frametitle{Refactoring Constraints with OCL}
+Constraint for searching parts of the model that need to be adapted.
+
+Example:
+\begin{lstlisting}[morekeywords={self,forAll,uml,VisibilityKind,o,oclAsType,oclIsTypeOf}]
+context Package:
+self.member->select(c|c.oclIsTypeOf(Class)).
+    oclAsType(Class).member->
+    select(a|a.oclIsTypeOf(Activity)).
+    oclAsType(Activity).node->
+    select(n|n.oclIsTypeOf(
+    ReadStructuralFeatureAction)).
+    oclAsType(ReadStructuralFeatureAction).
+    structuralFeature
+\end{lstlisting}
+
+\end{frame}
+
 \begin{frame}
 \frametitle{Toolchain}
 \begin{itemize}
