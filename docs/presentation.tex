@@ -325,11 +325,20 @@ pre : self.visibility <>
 \begin{frame}
 \frametitle{EMF Refactor}
 \begin{itemize}
- \item Framework to build refactorings.
- \item Allows generation of Java stubs
- \item Comes with metrics for model smell detection
- \item Suggests refactorings based on metrics.
- \item Gui/Wizard based.
+ \item Framework for Eclipse to
+ \begin{itemize}
+  \item check for ``model smells'' and show metrics (e.g. complexity)
+  \item refactor models and their properties
+  \item define your own refactorings/metrics
+ \end{itemize}
+ \item Suggests refactorings based on metrics
+ \item Generates new stubs for Java, OCL, Henshin and ComRel
+ \item Is Gui/Wizard based and works for
+ \begin{itemize}
+  \item Papyrus
+  \item EMF Treeeditor
+ \end{itemize}
+
 \end{itemize}
 
 \end{frame}
