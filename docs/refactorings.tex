@@ -330,32 +330,36 @@ no such case explicitly included.
 \\ \\
 \textbf{OCL for rename attribute:}
 \begin{lstlisting}
-pre: self.allParents().attribute
-     ->union(self.attribute)
+context Property:
+
+pre: self.class.attribute->union(
+         self.class.allParents().attribute)
      ->forAll(a | a.name <> 'newAttributeName')
-post: self.attribute->exists(a | a.name = 'passengers')
-activity-diagram-post:
-      self.structuralFeature.name = 'newAttributeName'
+post: self.class.member->selectByType(Activity).node
+      ->selectByKind(StructuralFeatureAction)
+      .structuralFeature.name->select(n|n='newAttributeName')
+      ->isEmpty()
 \end{lstlisting}
+
 \textbf{OCL for rename operation:}
 \begin{lstlisting}
-pre: self.getAllOperations()
-     ->forAll(operation | operation.name
-              <> 'newOperationName')
-post: self.ownedOperation
-      ->exists(op  | op.name = 'newOperationName')
-activity-diagram-post:
-     self.name = 'newOperationName'
+context Operation:
+pre: self.class.ownedOperation
+     ->union(self.class.allParents()
+             ->selectByType(Class).ownedOperation)
+     .isDistinguishableFrom(newOperation, self.namespace)
+post: self.class.member->selectByType(Activity).node
+      ->selectByType(CallOperationAction).operation
+      ->forAll(o | o.name <> 'newOperationName')
 \end{lstlisting}
 \textbf{OCL for rename class:}
 \begin{lstlisting}
-pre: self.owner.ownedElement
-     ->select(o | o.oclIsTypeOf(Class))
-     .oclAsType(Class).name
-     ->forAll(name | name <> 'newSuperClass')
-post: self.owner.ownedElement
-     ->select(o | o.oclIsTypeOf(Class))
-     .oclAsType(Class).name
+context Class:
+pre: self.namespace.member
+     ->selectByType(Class)
+     ->forAll(c | c.name <> 'newClassName')
+post: self.namespace.member
+     ->selectByType(Class)
      ->exists(name | name = 'newSuperClass')
 \end{lstlisting}
 
@@ -363,7 +367,6 @@ The post conditions for rename attribute apply to all \lstinline|StructuralFeatu
 which reference the renamed attribute. For rename operation it applies to all \lstinline|CallOperationAction| objects which
 call the renamed operation. For rename class all elements which reference objects of the renamed class must reference
 the new class name, that includes objects such as \lstinline|Parameter| or \lstinline|Pins| (InputPin, OutputPin).
-
 
 \subsection{Extract superclass}
 \label{sec:extract}
@@ -416,6 +419,7 @@ for value usage. For the activity diagram the \lstinline|WriteStructuralFeatureV
 \lstinline|CallOperationAction| which is a \lstinline|BehavioralFeature| class instead of a \lstinline|StructuralFeature| class in 
 the meta-model. Finally the affected attribute has to be set to private. The precondition for this refactoring is that there are no 
 methods with the same name in the classes that use the attribute.
+
 
 \section{Toolchain and implementation}
 \label{sec:toolchain}
