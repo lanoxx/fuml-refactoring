@@ -26,7 +26,7 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
         "self.class.attribute->union(self.class.allParents().attribute)->forAll(a | a.name <> '%s')";
 
     private static final String OCL_POST_CONSTRAINT = "self.class.member->selectByType(Activity).node"
-        + "->selectByKind(StructuralFeatureAction).structuralFeature.name->select(n|n='%s')->isEmpty()";
+        + "->selectByKind(StructuralFeatureAction).structuralFeature->forAll(n | n.name <> '%s')";
     private final RefactoringData data;
 
     public RenamePropertyRefactorableImpl(RefactoringData data) {
