@@ -151,7 +151,7 @@
             <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_RJ8YMN0MEeOzQ81W41Dz0A" value="1"/>
           </result>
         </node>
-        <node xmi:type="uml:AddStructuralFeatureValueAction" xmi:id="_eyrewN0MEeOzQ81W41Dz0A" name="addCar" visibility="public" outgoing="_wVztgN3sEeOFRK8JlLpj3Q" structuralFeature="_DQA7UN0JEeOzQ81W41Dz0A">
+        <node xmi:type="uml:AddStructuralFeatureValueAction" xmi:id="_eyrewN0MEeOzQ81W41Dz0A" name="addCar" outgoing="_wVztgN3sEeOFRK8JlLpj3Q" structuralFeature="_DQA7UN0JEeOzQ81W41Dz0A">
           <object xmi:id="_eyvwMN0MEeOzQ81W41Dz0A" name="policy" incoming="__lTUUN3dEeORMctkWXHAOw" type="_xuewgN0DEeOkD5x5qlp0bA">
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="_eyvwMd0MEeOzQ81W41Dz0A" value="1"/>
           </object>
@@ -174,7 +174,7 @@
           </result>
         </node>
         <node xmi:type="uml:ValueSpecificationAction" xmi:id="_mzGeoN3gEeORMctkWXHAOw" name="one">
-          <result xmi:id="_1gijcN3gEeORMctkWXHAOw" name="1" visibility="public" outgoing="_BEwioN3jEeOFRK8JlLpj3Q">
+          <result xmi:id="_1gijcN3gEeORMctkWXHAOw" name="1" outgoing="_BEwioN3jEeOFRK8JlLpj3Q">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
             <upperBound xmi:type="uml:LiteralInteger" xmi:id="__ykiAN3iEeOFRK8JlLpj3Q" value="1"/>
           </result>
