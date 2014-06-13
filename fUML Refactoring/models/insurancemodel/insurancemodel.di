@@ -8,12 +8,6 @@
       <emfPageIdentifier href="insurancemodel.notation#_Kj01QN0LEeOzQ81W41Dz0A"/>
     </availablePage>
     <availablePage>
-      <emfPageIdentifier href="insurancemodel.notation#_dEIx8N0PEeOzHM6HJlEjnQ"/>
-    </availablePage>
-    <availablePage>
-      <emfPageIdentifier href="insurancemodel.notation#_t6aykN0PEeOzHM6HJlEjnQ"/>
-    </availablePage>
-    <availablePage>
       <emfPageIdentifier href="insurancemodel.notation#_5YG_AN3tEeOFRK8JlLpj3Q"/>
     </availablePage>
     <availablePage>
