@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.ocl.ParserException;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
@@ -29,7 +30,10 @@ import org.modelexecution.fuml.refactoring.RefactoringException;
 public class SimpleModelModificationTest {
     private static final String MODEL_PATH = "models/insurancemodel/insurancemodel.uml";
     private static final String MODEL_SUPERCLASS_PATH = "models/insurancemodel/insurancemodel_extractClass.uml";
-    private static final String MODEL_RENAME_PATH = "models/insurancemodel/insurancemodel_rename.uml";
+    private static final String MODEL_RENAME_PROPERTY_PATH =
+        "models/insurancemodel/insurancemodel_renameProperty.uml";
+    private static final String MODEL_RENAME_OPERATION_PATH =
+        "models/insurancemodel/insurancemodel_renameOperation.uml";
     private static final String MODEL_ENCAPSULATE_PATH = "models/insurancemodel/insurancemodel_encapsulate.uml";
 
     /** The current resource. */
@@ -127,8 +131,8 @@ public class SimpleModelModificationTest {
     @Test
     public void testRenameProperty_shouldSucceed() {
         RefactoringData data = new RefactoringDataImpl();
-        data.set("newAttributeName", "refactoredRegistration");
-        Property property = (Property) loadElement("Model::insurance::Car::registration", Property.class);
+        data.set("newAttributeName", "refactorednumberOfCars");
+        Property property = (Property) loadElement("Model::insurance::InsurancePolicy::numberOfCars", Property.class);
         data.set("selectedElement", property);
 
         RenamePropertyRefactorableImpl rename = new RenamePropertyRefactorableImpl(data);
@@ -150,7 +154,7 @@ public class SimpleModelModificationTest {
         }
 
         try {
-            resource.save(new FileOutputStream(new File(MODEL_RENAME_PATH)), null);
+            resource.save(new FileOutputStream(new File(MODEL_RENAME_PROPERTY_PATH)), null);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -189,6 +193,45 @@ public class SimpleModelModificationTest {
 
         try {
             resource.save(new FileOutputStream(new File(MODEL_ENCAPSULATE_PATH)), null);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testRenameOperation_shouldSucceed() {
+        RefactoringData data = new RefactoringDataImpl();
+        Operation operation =
+            (Operation) loadElement("Model::insurance::InsurancePolicy::calculatePremium", Operation.class);
+        data.set("selectedElement", operation);
+
+        RenameOperationRefactorableImpl renameOperation = new RenameOperationRefactorableImpl(data);
+
+        try {
+            renameOperation.checkPreCondition();
+        } catch (ParserException e) {
+            e.printStackTrace();
+            fail("Precondition error");
+        }
+        try {
+            renameOperation.performRefactoring();
+        } catch (RefactoringException e) {
+            e.printStackTrace();
+            fail("Refactoring error");
+        }
+        try {
+            renameOperation.checkPostCondition();
+        } catch (ParserException e) {
+            e.printStackTrace();
+            fail("Postcondition error");
+        }
+
+        try {
+            resource.save(new FileOutputStream(new File(MODEL_RENAME_OPERATION_PATH)), null);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

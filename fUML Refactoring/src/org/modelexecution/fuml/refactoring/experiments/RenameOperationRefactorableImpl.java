@@ -11,31 +11,32 @@ import org.eclipse.ocl.ecore.Constraint;
 import org.eclipse.ocl.ecore.EcoreEnvironmentFactory;
 import org.eclipse.ocl.expressions.OCLExpression;
 import org.eclipse.ocl.helper.OCLHelper;
-import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.modelexecution.fuml.refactoring.Refactorable;
 import org.modelexecution.fuml.refactoring.RefactoringData;
 import org.modelexecution.fuml.refactoring.RefactoringException;
 
-public class RenamePropertyRefactorableImpl implements Refactorable {
+public class RenameOperationRefactorableImpl implements Refactorable {
 
     private final OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
     private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
-    private static final String OCL_PRE_CONSTRAINT =
-        "self.class.attribute->union(self.class.allParents().attribute)->forAll(a | a.name <> '%s')";
+    private static final String OCL_PRE_CONSTRAINT = "self.class.ownedOperation->union(self.class.allParents()"
+        + "->selectByType(Class).ownedOperation)->union(self.class.allParents()"
+        + "->selectByType(Interface).ownedOperation)->forAll(a | a.name <> '%s')";
 
     private static final String OCL_POST_CONSTRAINT = "self.class.namespace.member->selectByType(Class).member"
-        + "->selectByType(Activity).node->selectByKind(StructuralFeatureAction).structuralFeature"
+        + "->selectByType(Activity).node->selectByType(CallOperationAction).operation"
         + "->forAll(n | n.qualifiedName <> '%s')";
     private final RefactoringData data;
 
-    public RenamePropertyRefactorableImpl(RefactoringData data) {
+    public RenameOperationRefactorableImpl(RefactoringData data) {
         this.ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
         this.helper = ocl.createOCLHelper();
         this.data = data;
 
-        assert (data.get("newAttributeName") != null);
+        assert (data.get("newOperationName") != null);
         assert (data.get("selectedElement") != null);
     }
 
@@ -50,11 +51,11 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
     public boolean checkPreCondition() throws ParserException {
         helper.setContext(UMLPackage.eINSTANCE.getProperty());
 
-        Property selectedElement = (Property) data.get("selectedElement");
-        String newAttributeName = (String) data.get("newAttributeName");
+        Operation selectedElement = (Operation) data.get("selectedElement");
+        String newOperationName = (String) data.get("newOperationName");
 
         OCLExpression<EClassifier> query;
-        query = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newAttributeName));
+        query = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newOperationName));
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
 
@@ -73,10 +74,10 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
      */
     @Override
     public boolean performRefactoring() throws RefactoringException {
-        Property selectedElement = (Property) data.get("selectedElement");
-        String newAttributeName = (String) data.get("newAttributeName");
+        Operation selectedElement = (Operation) data.get("selectedElement");
+        String newOperationName = (String) data.get("newOperationName");
 
-        selectedElement.setName(newAttributeName);
+        selectedElement.setName(newOperationName);
 
         return true;
     }
@@ -85,7 +86,7 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
     public boolean checkPostCondition() throws ParserException {
         helper.setContext(UMLPackage.eINSTANCE.getProperty());
 
-        Property selectedElement = (Property) data.get("selectedElement");
+        Operation selectedElement = (Operation) data.get("selectedElement");
 
         OCLExpression<EClassifier> query;
         query = helper.createQuery(String.format(OCL_POST_CONSTRAINT, selectedElement.getQualifiedName()));

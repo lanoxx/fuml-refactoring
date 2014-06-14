@@ -1,5 +1,7 @@
 package org.modelexecution.fuml.refactoring.experiments;
 
+import java.util.Collection;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
@@ -17,6 +19,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
+import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InputPin;
@@ -49,8 +52,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
     private static final String OCL_POST_CONSTRAINT = "";
     private final RefactoringData data;
     private Operation setOperation;
+    private Parameter setOperationInParameter;
     private Operation getOperation;
-    private Parameter getOutParameter;
+    private Parameter getOperationOutParameter;
 
     public EncapsulateFieldRefactorableImpl(RefactoringData data) {
         this.ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
@@ -93,12 +97,13 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
         setOperation = UMLFactory.eINSTANCE.createOperation();
         setOperation.setName("set" + normalizedName);
-        setOperation.createOwnedParameter(propertyName, propertyType);
+        setOperationInParameter = setOperation.createOwnedParameter(propertyName, propertyType);
+        setOperationInParameter.setDirection(ParameterDirectionKind.IN_LITERAL);
 
         getOperation = UMLFactory.eINSTANCE.createOperation();
         getOperation.setName("get" + normalizedName);
-        getOutParameter = getOperation.createOwnedParameter(propertyName, propertyType);
-        getOutParameter.setDirection(ParameterDirectionKind.RETURN_LITERAL);
+        getOperationOutParameter = getOperation.createOwnedParameter(propertyName, propertyType);
+        getOperationOutParameter.setDirection(ParameterDirectionKind.RETURN_LITERAL);
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
         eval.getEvaluationEnvironment().add("getOperation", getOperation);
@@ -136,15 +141,61 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
         // Get all ReadStructuralFeatureActions from model
         // Context Package
-        // self.member->select(c|c.oclIsTypeOf(Class)).oclAsType(Class).member->
-        // select(a|a.oclIsTypeOf(Activity)).oclAsType(Activity).node->
-        // select(n|n.oclIsTypeOf(ReadStructuralFeatureAction)).oclAsType(ReadStructuralFeatureAction).structuralFeature
+        // self.member->selectByType(Class).member->selectByType(Activity).node->selectByType(ReadStructuralFeatureAction).structuralFeature.qualifiedName
 
         // Get all AddStructuralFeatureValueActions
         // Context Package
-        // self.member->select(c|c.oclIsTypeOf(Class)).oclAsType(Class).member->
-        // select(a|a.oclIsTypeOf(Activity)).oclAsType(Activity).node->
-        // select(n|n.oclIsTypeOf(AddStructuralFeatureValueAction)).oclAsType(AddStructuralFeatureValueAction).structuralFeature
+        // self.member->selectByType(Class).member->selectByType(Activity).node->selectByType(AddStructuralFeatureValueAction).structuralFeature.qualifiedName
+
+        OCLExpression<EClassifier> query01 = null;
+        try {
+            query01 =
+                helper.createQuery(String
+                        .format("self.class.namespace.member->selectByType(Class).member->selectByType(Activity).node"
+                            + "->selectByType(ReadStructuralFeatureAction)->select(r|r.structuralFeature.qualifiedName='%s')",
+                                selectedElement.getQualifiedName()));
+        } catch (ParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query01);
+        Collection<ReadStructuralFeatureAction> object =
+            (Collection<ReadStructuralFeatureAction>) eval.evaluate(selectedElement);
+        for (ReadStructuralFeatureAction a : object) {
+            a.getObject();
+            a.getResult();
+            CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
+            coa.setActivity(getActivity);
+            coa.setOperation(getOperation);
+            coa.getArguments().add(a.getObject());
+            coa.getResults().add(a.getResult());
+            a.destroy();
+        }
+
+        OCLExpression<EClassifier> query02 = null;
+        try {
+            query02 =
+                helper.createQuery(String
+                        .format("self.class.namespace.member->selectByType(Class).member->selectByType(Activity).node"
+                            + "->selectByType(AddStructuralFeatureValueAction)->select(r|r.structuralFeature.qualifiedName='%s')",
+                                selectedElement.getQualifiedName()));
+        } catch (ParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        eval = ocl.createQuery(query02);
+        Collection<AddStructuralFeatureValueAction> actions =
+            (Collection<AddStructuralFeatureValueAction>) eval.evaluate(selectedElement);
+        for (AddStructuralFeatureValueAction b : actions) {
+            b.getObject();
+            b.getValue();
+            CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
+            coa.setActivity(setActivity);
+            coa.setOperation(setOperation);
+            coa.getArguments().add(b.getObject());
+            coa.getArguments().add(b.getValue());
+            b.destroy();
+        }
         return true;
     }
 
@@ -178,6 +229,10 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             ActivityParameterNode parameterNodeIn = UMLFactory.eINSTANCE.createActivityParameterNode();
             parameterNodeIn.setActivity(activity);
             parameterNodeIn.setType(property.getType());
+            parameterNodeIn.setParameter(setOperationInParameter);
+            LiteralInteger parameterNodeInUpper = UMLFactory.eINSTANCE.createLiteralInteger();
+            parameterNodeInUpper.setValue(1);
+            parameterNodeIn.setUpperBound(parameterNodeInUpper);
 
             // Create an AddStructuralFeatureValueAction
             AddStructuralFeatureValueAction addFeature = UMLFactory.eINSTANCE.createAddStructuralFeatureValueAction();
@@ -186,6 +241,8 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
             // Create an InputPin for AddStructuralValueAction
             InputPin addFeatureObjectInputPin = UMLFactory.eINSTANCE.createInputPin();
+            LiteralInteger addFeatureObjectInputPinUpper = UMLFactory.eINSTANCE.createLiteralInteger();
+            addFeatureObjectInputPinUpper.setValue(1);
             addFeature.setObject(addFeatureObjectInputPin);
 
             // Create ObjectFlow from ReadSelfAction OutputPin to AddStructuralFeatureValueAction InputPin
@@ -204,6 +261,8 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
             // Create an InputPin for AddStructuralValueAction
             InputPin addFeatureValueInputPin = UMLFactory.eINSTANCE.createInputPin();
+            LiteralInteger addFeatureValueInputPinUpper = UMLFactory.eINSTANCE.createLiteralInteger();
+            addFeatureValueInputPinUpper.setValue(1);
             addFeature.setValue(addFeatureValueInputPin);
 
             // Create ObjectFlow from ParameterNode OutputPin to AddStructuralFeatureValueAction InputPin
@@ -283,7 +342,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             LiteralInteger parameterNodeUpperBound = UMLFactory.eINSTANCE.createLiteralInteger();
             parameterNodeUpperBound.setValue(1);
             parameterNodeOut.setUpperBound(parameterNodeUpperBound);
-            parameterNodeOut.setParameter(getOutParameter);
+            parameterNodeOut.setParameter(getOperationOutParameter);
 
             // Create ObjectFlow from ReadStructuralFeatureAction OutputPin to ParameterNode
             ObjectFlow readFeatureToParameter = UMLFactory.eINSTANCE.createObjectFlow();
@@ -324,7 +383,6 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
         eval.getEvaluationEnvironment().add("getOperation", getOperation);
         eval.getEvaluationEnvironment().add("setOperation", setOperation);
-
         return eval.check(selectedElement);
     }
 }
