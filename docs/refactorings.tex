@@ -65,7 +65,7 @@
 \pagestyle{plain}
 \pagenumbering{roman}
 
-\title{fUML Refactoring with EMF}
+\title{Refactoring fUML models and co-refactoring dependencies}
 
 
 \author{Sebastian Geiger (1127054) \and Kristof Meixner (9725208)}
@@ -91,16 +91,19 @@ can be made available in the Eclipse GUIs such as the UML tree editor or Papyrus
 % INTRODUCTION Models are getting more important in model-based software development, model-driven software development,
 % model-driven architecture Models thus need to have a good quality
 
-Model-based software development or model-driven software development is not only an extensive field of research but
-receives also more and more attention from the industry. Nowadays models are not only used as visual explanations of
+Model-based software development or model-driven software development is not only an extensive field for research but
+also receives more and more attention from the industry. Nowadays models are not only used as visual explanations of
 software concepts but as source for the development process itself. Thus models need to provide an abstraction of
-the represented domains in a high quality. Mohagheghi et al. \cite{DBLP:journals/infsof/MohagheghiDN09} discussed possible 
-quality attributes of models in their work.
+the represented domains in a high quality. Mohagheghi et al. \cite{DBLP:journals/infsof/MohagheghiDN09} discussed 
+quality attributes like \textit{Correctness}, \textit{Completeness} and \textit{Consistency} of models in their work.
 
 % UML is a modelling language for models provided by the OMG that supports various types of models
 
-To represent formal models the OMG developed UML \cite{man:UML} which by now advanced to an industry standard for 
-modeling. With these common semantics enriched models can be preserved over time and even reused. Nevertheless models 
+To represent models in a more formal way the Object Management Group (OMG) developed the Unified Modeling Language (UML) 
+\cite{man:UML} which by now advanced to an industry standard for 
+modeling. UML provides an abstract syntax of the modeling concepts and the rules how to combine them, an explanation 
+of the semantics of the concepts as well as a specification of the notation elements in human-readable form.
+With these common concepts enriched models can be preserved over time and even be reused. Nevertheless models 
 might have to be revised over the lifecycle of the software. With todays trend to more agile software 
 development such as eXtreme Programming \cite{DBLP:journals/computer/Beck99} or Scrum \cite{DBLP:journals/software/RisingJ00} 
 changes on models have to be even more efficient which brings refactoring of models into the focus of research.
@@ -122,34 +125,36 @@ as it needs to span over those different types of diagrams and semantics.
 
 To prove the correctness of models before and after refactoring different approaches exist. One is the static analysis of
 UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13} which can be done via
-OCL \cite{man:OCL}. Another way is to verify that models can be executed and to compare the execution traces of the 
-original and refactored models. The OMG introduced a subset 
-of UML named fUML \cite{man:FUML} which precisely defines semantics for class and activity diagrams to make them 
-executable. 
-Furthermore in \cite{DBLP:conf/icse/Mayerhofer12} Mayerhofer proposed a framework based on fUML that is able to execute
-and debug those models.
+the Object Constraint Language (OCL) \cite{man:OCL}. Another way is to verify that models can be executed and to compare 
+different attributes of the execution like input and output parameters, execution traces or states of the 
+original and refactored models. The OMG therefore introduced a foundational subset 
+of UML metamodel concepts abbreviated fUML \cite{man:FUML} and precisely defined the semantics for their execution.
+Furthermore in \cite{DBLP:conf/icse/Mayerhofer12} Mayerhofer et al. proposed a framework based on fUML that is able to execute
+and debug models that conform to fUML.
 
 % our approach is to combine both
 
 The goal of this work is to introduce refactorings for fUML models, examine the requirements for co-refactoring of the
 corresponding diagram types and define which co-changes have to be performed to preserve the behavior. Our approach to
 verify
-the correctness of the models after refactoring is twofold. On the one hand we use pre- and postconditions
+the correctness of the models after refactoring is twofold. On the one hand we use OCL pre- and postconditions
 \cite{rob99} to define if the specific changes can be applied and that the models are semantically correct afterwards.
-On the other hand the models have to stay executable as well as traceable after the changes.
+On the other hand the models have to stay executable after the changes.
 
 % we present a motivating example (class and activity diagrams) we provide some refactorings that target bothe diagram
 % types we provide a how to test statically and dynamically, then refator and retest we provide a toolchain
 
 % we provide some related work we provide a conclusion
 
-The rest of the work is structured as follows. In section \ref{refactoring-examples} we give an overview over fUML and provide
-a motivating
-example of a model that is used throughout the paper. Section Y describes a selection of useful refactorings inspired by
-Fowler \cite{fow99} and Markovic and Baar \cite{DBLP:journals/sosym/MarkovicB08} and their effects on class diagrams as
-well as activity diagrams. In section \ref{sec:fuml-refactoring} we show which pre- and postcondition are needed for the refactorings and
+The rest of the work is structured as follows. Section \ref{sec:motivation} gives an introduction to fUML and shows how 
+the preservation of semantics can be achieved during refacoring. 
+Section \ref{refactoring-examples} describes a selection of useful refactorings inspired by Fowler \cite{fow99} and 
+Markovic and Baar \cite{DBLP:journals/sosym/MarkovicB08} and their effects on class diagrams as
+well as activity diagrams we also provide a motivating example of a model that is used throughout the paper. In section 
+\ref{sec:fuml-refactoring} we show which pre- and postcondition are needed for the refactorings and
 how we refactor the models. In section \ref{sec:toolchain} we describe the toolchain that we use to define the models, 
-implement a set of refactorings and test them. Related work is covered in section \ref{sec:relatedwork} and a conclusion is drawn in 
+implement a set of refactorings and test them. Section \ref{sec:limitations} describes which limitations our work has. 
+Related work is covered in section \ref{sec:relatedwork} and a conclusion is drawn in 
 section \ref{sec:conclusion} to summarize the paper.
 
 % what is refactoring and what does it mean in the context of models?
@@ -161,9 +166,13 @@ section \ref{sec:conclusion} to summarize the paper.
 %such as activity diagrams.
 
 \section{Motivation}
+\label{sec:motivation}
 % what do we want to achieve?
-fUML is an extension of UML which builds on a subset of UML classes with the purpose of adding semantics to UML models 
-such that they can be executed on the model level. The dominant concept for this is the activity diagram. If a refactoring 
+fUML is a subset of UML for which additional semantics are defined such that the model can be executed. fUML contains the \textit{Classes}, 
+\textit{CommonBehaviors}, \textit{Activities} and \textit{Actions} concepts which basically means someone can create 
+\textit{Class diagrams} and \textit{Activity diagrams}.
+
+If a refactoring 
 is performed on a UML model such as a class diagram, then any activity diagram which is releated to the class diagram, has 
 to be checked and possibly changed as well. In section \ref{sec:fuml-refactoring} we will present some examples of fUML 
 activity diagrams and present the implications that result from changing class 
@@ -178,7 +187,7 @@ those cases where semantic preservation can be ensured. For this purpose pre- an
 constraints. A refactoring is then only applied if the original model satisfies the precondition before the refactoring is 
 applied and the postcondition after the refactoring has been completed. Such constraints must be individually specified 
 for each kind of refactoring that is to be performed. In this paper will introduce and discuss different OCL constraints 
-for  the refactorings that we introduce.
+for the refactorings that we introduce.
 
 Refactorings are only useful if they can be easily applied to the models through an easy to use process such as a 
 graphical front end. EMF Refactor allows the integration of refactorings into editors such as the UML tree editor or 
@@ -202,19 +211,19 @@ refactorings which we plan to evaluate and implement is shown in Figure \ref{fig
 
 \begin{figure}[h!t]
  \centering
- \begin{tabular}[]{l | c}
-  & abstract syntax changes\\
+ \begin{tabular}[]{l | c | c}
+  & abstract syntax changes & co-refacoring\\
   \hline
-  Encapsulate Field & Yes\\
-  Extract class & Yes\\
-  Extract superclass & Yes\\
-  Pull up association end & Yes\\
-  Pull up attribute & Yes\\
-  Pull up operation & Yes\\
-  Remove unused class & No\\
-  Rename Class & No\\
-  Rename Method & No\\
-  Rename Variable & No\\
+  Encapsulate Field & Yes & Yes\\
+  Extract class & Yes & Yes\\
+  Extract superclass & Yes & No\\
+  Pull up association end & Yes & Yes\\
+  Pull up attribute & Yes & Yes\\
+  Pull up operation & Yes & Yes\\
+  Remove unused class & No & No\\
+  Rename Class & No & No\\
+  Rename Method & No & No\\
+  Rename Variable & No & No\\
  \end{tabular}
  \caption{Refactoring examples}
  \label{fig:refactoringlist}
@@ -562,6 +571,7 @@ refactorings with a module wizard in Eclipse.} and the various implementation po
 supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit{Henshin} a transformation language.}.
 
 \section{Current Limitations}
+\label{sec:limitations}
 Our work currently has several limitations. So far we have designed a set of related class and activity diagrams,
 which are the basis for our refactorings. We have discussed the \textit{extract superclass} refactoring including its
 pre- and post conditions and shown how it can be refactored with our toolchain. Until the final version of this
