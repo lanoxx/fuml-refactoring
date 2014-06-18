@@ -92,7 +92,7 @@ can be made available in the Eclipse GUIs such as the UML tree editor or Papyrus
 % model-driven architecture Models thus need to have a good quality
 
 Model-based software development or model-driven software development is not only an extensive field for research but
-also receives more and more attention from the industry. Nowadays models are not only used as visual explanations of
+also receives increased attention from the industry. Nowadays models are not only used as visual explanations of
 software concepts but as source for the development process itself. Thus models need to provide an abstraction of
 the represented domains in a high quality. Mohagheghi et al. \cite{DBLP:journals/infsof/MohagheghiDN09} discussed 
 quality attributes like \textit{Correctness}, \textit{Completeness} and \textit{Consistency} of models in their work.
@@ -123,8 +123,8 @@ as it needs to span over those different types of diagrams and semantics.
 % Behaviour preservation can be tested statically or dynamically UML can be analysed statically fUML is a modelling
 % language for models provided by the OMG that also allows execution and thus can be analysed dynamically
 
-To prove the correctness of models before and after refactoring different approaches exist. One is the static analysis of
-UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13} which can be done via
+Different approaches exist to prove the correctness of models before and after refactoring. One is the static analysis of
+UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13}, this can be done with
 the Object Constraint Language (OCL) \cite{man:OCL}. Another way is to verify that models can be executed and to compare 
 different attributes of the execution like input and output parameters, execution traces or states of the 
 original and refactored models. The OMG therefore introduced a foundational subset 
@@ -174,7 +174,7 @@ fUML is a subset of UML for which additional semantics are defined such that the
 
 If a refactoring 
 is performed on a UML model such as a class diagram, then any activity diagram which is releated to the class diagram, has 
-to be checked and possibly changed as well. In section \ref{sec:fuml-refactoring} we will present some examples of fUML 
+to be checked and possibly changed as well. In Section \ref{sec:fuml-refactoring} we will present some examples of fUML 
 activity diagrams and present the implications that result from changing class 
 diagrams (a procedure called co-refactoring).
 
@@ -186,13 +186,15 @@ easier to verify that this is the case. Second, logical constraints can be used 
 those cases where semantic preservation can be ensured. For this purpose pre- and postconditions are specified with OCL 
 constraints. A refactoring is then only applied if the original model satisfies the precondition before the refactoring is 
 applied and the postcondition after the refactoring has been completed. Such constraints must be individually specified 
-for each kind of refactoring that is to be performed. In this paper will introduce and discuss different OCL constraints 
+for each kind of refactoring that is to be performed. In this paper we introduce and discuss different OCL constraints 
 for the refactorings that we introduce.
 
 Refactorings are only useful if they can be easily applied to the models through an easy to use process such as a 
 graphical front end. EMF Refactor allows the integration of refactorings into editors such as the UML tree editor or 
-papyrus. It provides a Java API as well as a module concept to integrate refactorings. We will discuss the use of 
-EMF Refactor as part of our tool chain presentation.
+Papyrus. EMF.Refactor provides a Java API as well as a module concept to integrate refactorings. We will discuss the use 
+of EMF Refactor as part of our tool chain presentation.
+
+%TODO: Maybe discuss emf.refactor as part of future work?
 
 % Why is it interesting to refactor models
 % Why is it important in fUML that models remain consistent -> to preserve executability
@@ -204,26 +206,35 @@ EMF Refactor as part of our tool chain presentation.
 % insurance example
 % create example that supports all proposed refactorings
 
-This section covers some refactorings of UML models as well as a model which we use as an example for this work. 
-Markovic \cite{DBLP:journals/sosym/MarkovicB08} presented a list of refactorings which is relevant for changes in combination with class 
-diagrams and OCL constraints. We use this catalog as an input and adapt it for our use case. The resulting list of 
-refactorings which we plan to evaluate and implement is shown in Figure \ref{fig:refactoringlist}.
+This section covers some refactorings of UML models as well as a fUML model which we use as an example for this work. 
+Markovic \cite{DBLP:journals/sosym/MarkovicB08} presented a list of refactorings which are relevant for changes in 
+combination with class 
+diagrams and OCL co-refactorings. However they do not consider other diagram types and possible co-refactorings between 
+them. Never the less we use this catalog as an input and adapt it for our use case. The resulting list of 
+refactorings which we plan to evaluate and implement is shown in Figure \ref{fig:refactoringlist}. The first column shows 
+if a change in the abstract syntax tree is necessary for this refactoring. No means that the change does not directly 
+affect the structure of the abstract syntax. For example because it does not change cross references between objects or 
+only modifies properties of the objects. A refactoring of a class 
+diagram can make corresponding changes in the associated activity diagrams necessary. These so called co-refactorings are 
+necessary if the abstract syntax tree changes in such a way, that references in activity diagrams become invalid. This is 
+for example the case if properties or operations are removed or become private. A more detailed explanation of
+co-refactorings is given in Section \ref{sec:fuml-refactoring} together with the introduction of each refactoring.
 
 \begin{figure}[h!t]
  \centering
  \begin{tabular}[]{l | c | c}
-  & abstract syntax changes & co-refacoring\\
+  & Abstract syntax changes & Co-refacoring\\
   \hline
-  Encapsulate Field & Yes & Yes\\
+  Encapsulate property & Yes & Yes\\
   Extract class & Yes & Yes\\
   Extract superclass & Yes & No\\
   Pull up association end & Yes & Yes\\
-  Pull up attribute & Yes & Yes\\
+  Pull up property & Yes & Yes\\
   Pull up operation & Yes & Yes\\
   Remove unused class & No & No\\
-  Rename Class & No & No\\
-  Rename Method & No & No\\
-  Rename Variable & No & No\\
+  Rename class & No & No\\
+  Rename operation & No & No\\
+  Rename property & No & No\\
  \end{tabular}
  \caption{Refactoring examples}
  \label{fig:refactoringlist}
@@ -236,18 +247,18 @@ refactorings which we plan to evaluate and implement is shown in Figure \ref{fig
  \label{fig:classdiagramcomplex}
 \end{figure}
 
-As the basis for these refactorings an example from the insurance
-domain is used. In the insurance business there are domain objects such as an insurance policy. Cars and trucks can be insured by 
-adding them to the policy. There is an insurance company which has customers and employees where customers may purchase an insurance policy 
+In order to demonstrate how the presented refactorings affect both class and activity diagrams we will present an example 
+model from the insurance domain. In the insurance business there are domain objects such as an insurance policy. Cars and 
+trucks can be insured by adding them to the policy. There is an insurance company which has customers and employees where customers may purchase an insurance policy 
 for their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance company. This class 
 diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both \lstinline|Car| 
 and \lstinline|Truck| to extract a \lstinline|Vehicle| class. A simple \textit{extract class} can be used on \lstinline|InsurancePolicy| to 
 extract the \lstinline|from| and \lstinline|until| dates into their own \lstinline|InsurancePeriod| class. As part of the 
-\textit{extract superclass} refactoring two additional refactorings namely \textit{pull up attribute} and \textit{pull up method} are 
-used to move the identical attributes and methods of both classes to the new superclass. As the 
-attributes \lstinline|weight| and \lstinline|registration| are public, we can use \textit{encapsulate field} to make them private and 
-provide getter and setter implementations. Finally the method \lstinline|addCar| can be renamed into \lstinline|addVehicle| with \textit{rename method} 
-and the \lstinline|addTruck| method can be removed with \textit{remove method}. Finally figure \ref{fig:classdiagramcomplexRef} shows 
+\textit{extract superclass} refactoring two additional refactorings namely \textit{pull up property} and \textit{pull up operation} are 
+used to move the identical properties and operations of both classes to the new superclass. As the 
+properties \lstinline|weight| and \lstinline|registration| are public, we can use \textit{encapsulate field} to make them private and 
+provide getter and setter implementations. Finally the operation \lstinline|addCar| can be renamed into \lstinline|addVehicle| with \textit{rename operation} 
+and the \lstinline|addTruck| operation can be removed with \textit{remove operation}\footnote{\textit{remove operation is not covered by our paper}}. Finally figure \ref{fig:classdiagramcomplexRef} shows 
 the refactored class diagram.
 
 \begin{figure}[h!t]
@@ -257,14 +268,14 @@ the refactored class diagram.
  \label{fig:classdiagramcomplexRef}
 \end{figure}
 
-For each of the methods in the \lstinline|InsurancePolicy| class a separate activity diagram exists which defines the semantics 
-of these methods. As some of them are quite similar we will present only the diagrams for \lstinline|addCar| in figure 
+For each of the operations in the \lstinline|InsurancePolicy| class a separate activity diagram exists which defines the semantics 
+of these operations. As some of them are quite similar we will present only the diagrams for \lstinline|addCar| in figure 
 \ref{fig:addCar} and \lstinline|calculatePremium| in  figure \ref{fig:calculatePremium}.
 
-The activity for the \lstinline|addCar| operation works as follows. Read the policy with a \lstinline|ReadSelfAction|, take the 
-car as a parameter and use the \lstinline|AddStructuralFeatureValueAction| to add the car to the insurance policy. In parallel 
+The activity for the \lstinline|addCar| operation works as follows. It reads the policy with a \lstinline|ReadSelfAction|, takes the 
+car as a parameter and uses the \lstinline|AddStructuralFeatureValueAction| to add the car to the insurance policy. In parallel 
 it reads the number of cars in the policy with \lstinline|ReadStructuralFeatureValueAction|, specifies an integer
-with the value of one with 
+with a value of '1' with 
 a \lstinline|ValueSpecificationAction|, adds the numbers with a \lstinline|CallBehaviorAction| and writes it back to the 
 \lstinline|numberOfCars| variable with another \lstinline|AddStructuralFeatureValueAction| that replaces the old value.
 
@@ -273,10 +284,10 @@ The \lstinline|calculatePremium| activity is more complex, it calculates the ins
 \begin{itemize}
  \item Read the policy with a \lstinline|ReadSelfAction|.
  \item Read the number of cars and trucks with \lstinline|ReadStructuralFeatureValueAction|.
- \item Add the two numbers up with a \lstinline|CallBehaviorAction|.
+ \item Add the two numbers up with a \lstinline|CallBehaviorAction|, which invokes the opaque behavior 'add'.
  \item Multiply the result in a \lstinline|CallBehaviorAction| with a base premium value specified in a \lstinline|ValueSpecificationAction|.
  \item Read the age of customer of the policy with two actions of type \lstinline|ReadStructuralFeatureValueAction| in a row.
- \item Decide whether the age of a customer is below a certain age and define a or a base value or supplement with a \lstinline|ValueSpecificationAction|.
+ \item Decide whether the age of a customer is below a certain age and define a base value or supplement with a \lstinline|ValueSpecificationAction|.
  \item Multiply the value and the result of the calculation above and return it.
 \end{itemize}
 
@@ -295,7 +306,7 @@ The \lstinline|calculatePremium| activity is more complex, it calculates the ins
 \end{figure}
 
 Figure \ref{fig:calculatePremiumRef} shows how the activity diagram benefits from a refactoring of the corresponding 
-class diagram. Additionally a new activity diagram for the \lstinline|addVehicle| method instead of the old 
+class diagram. Additionally a new activity diagram for the \lstinline|addVehicle| operation instead of the old 
 \lstinline|addCar| and \lstinline|addTruck| diagrams was created shown in \ref{fig:addCarRef}. It is rather obvious 
 that the complexity of both diagrams decreased on the visual level as well as on the level of execution.
 
@@ -306,7 +317,7 @@ that the complexity of both diagrams decreased on the visual level as well as on
  \label{fig:calculatePremiumRef}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[h!t]
  \centering
  \includegraphics[scale=0.6]{images/insurance_ref/Activity_addVehicle_addVehicle}
  \caption{Add vehicle activity diagram resulting from the refactorings}
@@ -322,7 +333,7 @@ In the last section we presented an example model and its related activity diagr
 refactorings such as \textit{extract superclass} on the class diagram and their impact on the activity diagrams. This 
 section discusses how the models actually need to be transformed in order to realize the refactoring.
 
-Every model has two kinds of syntaxes. The concrete syntax, which defines how the model looks like, and the abstract
+Every model has two kinds of syntaxes. The concrete syntax (or notation), which defines how the model looks like, and the abstract
 syntax, which defines the language elements and the grammar of the model. In order to refactor a model, we need to look 
 at its abstract syntax and transform it according to the refactoring rules. In Figure \ref{fig:refactoringlist} the 
 refactorings are classified in order if the refactoring also implies changes in the meta-model representation. In the 
@@ -331,13 +342,13 @@ sections below we describe some examples that range from small to large impacts 
 \subsection{Rename refacorings}
 \label{sec:renames}
 A refactoring takes several parameters to configure the parts of the model that change and how they change. Rename 
-refacorings just need the new name as parameter. The respective classes, methods and attributes can then be adapted 
+refacorings just need the new name as parameter. The respective classes, operations and properties can then be adapted 
 and the direct references be changed as the abstract syntax representation does not change. However in order to guarantee that the 
 refactoring is possible, we have to ensure that there are no occurrences of the same type with the same name as the 
-new name. In this work we did not take techniques such as method overloading into account. In our example there is 
+new name. In this work we did not take techniques such as operation overloading into account. In our example there is 
 no such case explicitly included.
 \\ \\
-\textbf{OCL for rename attribute:}
+\textbf{OCL for rename property:}
 \begin{lstlisting}
 context Property:
 
@@ -372,8 +383,8 @@ post: self.namespace.member
      ->exists(name | name = 'newSuperClass')
 \end{lstlisting}
 
-The post conditions for rename attribute apply to all \lstinline|StructuralFeatureAction| objects
-which reference the renamed attribute. For rename operation it applies to all \lstinline|CallOperationAction| objects which
+The post conditions for rename property apply to all \lstinline|StructuralFeatureAction| objects
+which reference the renamed property. For rename operation it applies to all \lstinline|CallOperationAction| objects which
 call the renamed operation. For rename class all elements which reference objects of the renamed class must reference
 the new class name, that includes objects such as \lstinline|Parameter| or \lstinline|Pins| (InputPin, OutputPin).
 
@@ -407,28 +418,42 @@ Multiple Inheritance:
    post: self.general->contains(superClass)
 \end{lstlisting}
 
-\subsection{Pull up attribute \& pull up method}
+\subsection{Pull up property \& pull up operation}
 \label{sec:pullup}
 Both refactorings are quite similar which is why we describe the first and explain the specifics for the latter one afterwards. 
-There are two cases of the \textit{pull up attribute} refactoring. It can either be executed for an attribute that occurs in 
-a single class or in multiple classes where the attributes should also be combined and pulled up. In the class diagram 
-the attribute has to be pulled up and the occurrences of the attributes in the subclasses have to be deleted. The 
-activity diagrams needs to change occurrences of the \lstinline|StructuralFeatureValueAction| and use the attribute of 
+There are two cases of the \textit{pull up property} refactoring. It can either be executed for a property that occurs in 
+a single class or in multiple classes where the properties should also be combined and pulled up. In the class diagram 
+the property has to be pulled up and the occurrences of the properties in the subclasses have to be deleted. The 
+activity diagrams needs to change occurrences of the \lstinline|StructuralFeatureValueAction| and use the property of 
 the super class.
 
-For the \textit{pull up method} refactoring all \lstinline|CallOperationAction| actions have to be adapted like described 
-above. A precondition for both of these refactorings is that there does not already exist an attribute or a method with the same name 
+For the \textit{pull up operation} refactoring all \lstinline|CallOperationAction| actions have to be adapted like described 
+above. A precondition for both of these refactorings is that there does not already exist an property or a operation with the same name 
 in the target class and that they are not private.
 
-\subsection{Encapsulate attribute}
+\subsection{Encapsulate property}
 \label{sec:encapsulate}
-The \textit{encapsulate attribute} refactoring is a rather complex one. At first setter and getter methods for the attribute have to be 
-created. Afterwards the occurrences of the attribute have to be changed either to the setter for value assignments and to the getter 
+The \textit{encapsulate property} refactoring is a rather complex one. At first setter and getter operations for the property have to be 
+created. Afterwards the occurrences of the property have to be changed either to the setter for value assignments and to the getter 
 for value usage. For the activity diagram the \lstinline|WriteStructuralFeatureValueAction| has to be changed to a 
 \lstinline|CallOperationAction| which is a \lstinline|BehavioralFeature| class instead of a \lstinline|StructuralFeature| class in 
-the meta-model. Finally the affected attribute has to be set to private. The precondition for this refactoring is that there are no 
-methods with the same name in the classes that use the attribute.
+the meta-model. Finally the affected property has to be set to private. The precondition for this refactoring is that there are no 
+operations with the same name in the classes that use the property.
 
+\textbf{OCL Preconstraint:}
+\begin{lstlisting}
+context Property:
+ self.visibility <> uml::VisibilityKind::private and
+ self.class.ownedOperation
+ ->forAll(o | o.isDistinguishableFrom(setOperation,
+                                      self.namespace) and
+      o.isDistinguishableFrom(getOperation, self.namespace))
+\end{lstlisting}
+
+%TODO: explain and state ocl constraints for: 
+%   * Extract class
+%   * Pull up association end
+%   * Remove unused class
 
 \section{Toolchain and implementation}
 \label{sec:toolchain}
@@ -457,7 +482,7 @@ URI uri = URI.createFileURI(file.getAbsolutePath());
 
 \subsection{Model refactoring}
 Our refactorings are implemented with a strategy pattern, where each refactoring implements a \lstinline|Refactorable|
-interface that has three methods \lstinline|checkPrecondition|, \lstinline|performRefactoring|, and \lstinline|checkPostcondition|. 
+interface that has three operations \lstinline|checkPrecondition|, \lstinline|performRefactoring|, and \lstinline|checkPostcondition|. 
 Each refactoring identifies the model objects that participate in the refactoring and then creates and evaluates the \textit{OCL} 
 constraints on these objects. An object to type \lstinline|OCL| from the org.eclipse.ocl package is used to create and evaluate the 
 queries as can be seen in figure \ref{lst:ocl}.
@@ -489,7 +514,16 @@ and not use the \textit{OCL} validation facilities. One example is the constrain
 yet exist in the model.
 
 If the preconditions are satisfied the actual refactoring is performed through a direct modification of the model object.
-A new \lstinline|Class| instance with the name of the new superclass is created and added to the model. Then the existing
+A new \lstinline|Class| instance with the name of the new superclass is created and added to the model. 
+
+%TODO: give a one line example of how a class is created?
+\begin{lstlisting}
+Class superClass = UMLFactory.eINSTANCE.createClass();
+superClass.setName(newSuperClassName);
+\end{lstlisting}
+
+
+Then the existing
 classes of the model are filtered to select the ones that receive the new generalization, and the newly create superclass
 is added.
 
@@ -549,24 +583,27 @@ getExecutionContext().getTrace(executionID);
  \label{lst:execution}
 \end{figure}
 In the process of refactoring before and after each model change the corresponding activities are executed to prove that 
-the refactoring did not corrupt the model. Further testing can be implemented by going through the trace and verifying 
+the refactoring did not corrupt the model. 
+%TODO: we cannot actually prove anything. Because we cannot show that the execution trace goes through all branches that 
+%have been affected by the changes. Or can we?
+Further testing can be implemented by going through the trace and verifying 
 that every node of the trace has the expected values.
 
 \subsection{GUI Integration}
 \label{sec:guiintegration}
 In this section we discuss how we can integrate the defined refactorings to the Eclipse framework. For our further 
 research we plan to implement some the refactorings in EMF Refactor. EMF Refactor is an Eclipse incubation project 
-which focuses on static model analysis refactoring.
+which focuses on static model analysis and refactoring.
 
 EMF Refactor analyses a project for so called code smells and calculates common model metrics. Those two project quality 
-indicators reflect in a very convenient way which could be improved in a model. From a report view different refactorings 
-already implemented in EMF Refactor can be applied to change the model. The refactorings work in the UML tree editor as
-well as in several graphical editors based on EMF.
+indicators reflect in a very convenient way which parts of a model could be improved. From a report view different 
+refactorings already implemented in EMF Refactor can be applied to change the model. The refactorings work in the UML tree 
+editor as well as in several graphical editors based on EMF.
 
 However EMF Refactor mainly supports the refactoring of class diagrams. The effects that can be seen in activity diagrams 
 when refactoring class diagrams are error prone and seem to happen more or less by accident. Nevertheless we intend to 
 implement our above mentioned catalog in EMF Refactor because of the good integration with the Eclipse framework, the 
-easy generation of simple refactorings\footnote{The framework support the generation of new smells, metrics and 
+easy generation of simple refactorings\footnote{The framework supports the generation of new smells, metrics and 
 refactorings with a module wizard in Eclipse.} and the various implementation possibilities\footnote{EMF Refactor 
 supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit{Henshin} a transformation language.}.
 
@@ -577,12 +614,12 @@ which are the basis for our refactorings. We have discussed the \textit{extract 
 pre- and post conditions and shown how it can be refactored with our toolchain. Until the final version of this
 paper we will formulate the pre- and postconditions for some of the refactorings that have not yet been discussed.
 Furthermore we will implement several more refactorings from the list shown in Figure \ref{fig:refactoringlist}, such as the
-\textit{extract class}, the \textit{rename method}, the \textit{pullup method}, the \textit{pullup field} and 
+\textit{extract class}, the \textit{rename operation}, the \textit{pullup operation}, the \textit{pullup field} and 
 \textit{rename variable} refactorings.
 
 When the paper was written the refactorings were not yet implemented in EMF Refactor.
 We plan to create the whole refactoring chain for \textit{extractSuperclass} in EMF Refactor which includes extracting 
-a super class and pulling up the attributes and methods programmatically. We also take the co-refactoring of the activity 
+a super class and pulling up the properties and operations programmatically. We also take the co-refactoring of the activity 
 diagrams into account. If this works as intended we plan to rewrite the creation wizard which allows only refactorings 
 on a single class. The code should ideally be carried to the EMF Refactor repository after a quality review.
 
@@ -630,9 +667,10 @@ modeling concepts and languages respectively, EMF contains implementations for t
 Understanding these APIs of Ecore and OCL is required to perform the refactorings and was a prerequisite to build
 our toolchain.
 
-With the toolchain in place another challenge was to identify the required steps to perform the actual refactoring work.
-In particular this meant to identify how the activity diagrams need to change if a change is made in the class
-diagram.
+While it took a considerable amount of time to get familiar with all these technologies, we were eventually able to
+create a tool chain for model refactoring. With the toolchain in place another challenge was to identify the required 
+steps to perform the actual refactoring work. In particular this meant to identify how the activity diagrams need to 
+change if a change is made in the class diagram.
 
 Most of our efforts in the development of this work were focused on gaining a comprehensive understanding of the
 technologies described above, to develop the tool chain and to draw the various diagrams presented in this paper and make 
