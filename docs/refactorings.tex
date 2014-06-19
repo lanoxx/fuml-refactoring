@@ -11,7 +11,6 @@
 \usepackage{todonotes}          % Package for working draft comments
 \usepackage{hyperref}           % Package for hyperlink references in the document
 
-
 \usepackage[english]{babel}
 
 \setcounter{secnumdepth}{2}
@@ -36,7 +35,7 @@
    basicstyle=\small\ttfamily,        % the size of the fonts that are used for the code
 %   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
 %   breaklines=true,                 % sets automatic line breaking
-%   captionpos=b,                    % sets the caption-position to bottom
+  captionpos=b,                    % sets the caption-position to bottom
   commentstyle=\color{mygreen},    % comment style
 %   deletekeywords={...},            % if you want to delete keywords from the given language
 %   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
@@ -44,8 +43,8 @@
    frame=lines,                    % adds a frame around the code
 %   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
   columns=fixed,
-  keywordstyle=\color{blue},       % keyword style
-   language=Java,                 % the language of the code
+  keywordstyle=\color{mymauve},       % keyword style
+  stringstyle=\color{blue},
 %   morekeywords={*,...},            % if you want to add more keywords to the set
   numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
   numbersep=5pt,                   % how far the line-numbers are from the code
@@ -55,13 +54,13 @@
  showstringspaces=false,          % underline spaces within strings only
  showtabs=false,                  % show tabs within strings adding particular underscores
 %   stepnumber=2,                    % the step between two line-numbers. If it is 1, each line will be numbered
-  stringstyle=\color{mymauve},     % string literal style
   tabsize=2,                       % sets default tabsize to 2 spaces
 %   title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
 }
 
 
 \begin{document}
+\renewcommand{\thelstlisting}{\arabic{lstlisting}}
 \pagestyle{plain}
 \pagenumbering{roman}
 
@@ -347,22 +346,20 @@ and the direct references be changed as the abstract syntax representation does 
 refactoring is possible, we have to ensure that there are no occurrences of the same type with the same name as the 
 new name. In this work we did not take techniques such as operation overloading into account. In our example there is 
 no such case explicitly included.
-\\ \\
-\textbf{OCL for rename property:}
-\begin{lstlisting}
+
+\begin{lstlisting}[language=OCL,caption=OCL for rename property,label=lst:renameproperty]
 context Property:
 
 pre: self.class.attribute->union(
          self.class.allParents().attribute)
-     ->forAll(a | a.name <> 'newAttributeName')
+     ->forAll(a|a.name <> 'newAttributeName')
 post: self.class.member->selectByType(Activity).node
       ->selectByKind(StructuralFeatureAction)
       .structuralFeature.name->select(n|n='newAttributeName')
       ->isEmpty()
 \end{lstlisting}
 
-\textbf{OCL for rename operation:}
-\begin{lstlisting}
+\begin{lstlisting}[language=OCL,caption=OCL for rename operation,label=lst:renameoperation]
 context Operation:
 pre: self.class.ownedOperation
      ->union(self.class.allParents()
@@ -372,8 +369,8 @@ post: self.class.member->selectByType(Activity).node
       ->selectByType(CallOperationAction).operation
       ->forAll(o | o.name <> 'newOperationName')
 \end{lstlisting}
-\textbf{OCL for rename class:}
-\begin{lstlisting}
+
+\begin{lstlisting}[language=OCL,caption=OCL for rename class,label=lst:renameclass]
 context Class:
 pre: self.namespace.member
      ->selectByType(Class)
@@ -400,8 +397,7 @@ to create the inheritance hierarchy. However the abstract syntax representation 
 achieve a correct refactoring each class that participates in the refactoring must not already have a superclass. The 
 model would also benefit from changing all possible references to the new class.
 
-\textbf{OCL for extract superclass:}
-\begin{lstlisting}
+\begin{lstlisting}[language=OCL,caption=OCL for rename operation,label=lst:extractsuperclass]
 Single Inheritance:
     pre: self.superClass->isEmpty() and 
          self.owner.ownedElement
@@ -440,8 +436,7 @@ for value usage. For the activity diagram the \lstinline|WriteStructuralFeatureV
 the meta-model. Finally the affected property has to be set to private. The precondition for this refactoring is that there are no 
 operations with the same name in the classes that use the property.
 
-\textbf{OCL Preconstraint:}
-\begin{lstlisting}
+\begin{lstlisting}[language=OCL,caption=OCL for encapsulate property,label=lst:encapsulateproperty]
 context Property:
  self.visibility <> uml::VisibilityKind::private and
  self.class.ownedOperation
@@ -460,11 +455,10 @@ context Property:
 For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
 models in a virtual machine. The models are stored in XMI format and loaded with an EMF ResourceSet. The ResourceSet
 can be used to retrieve a Resource object through an URI, which is then used to access the different objects in the model 
-(see Figure \ref{lst:resourceset}). All elements contained in the model are instances of Ecore (the implementation of
+(see Listing \ref{lst:resourceset}). All elements contained in the model are instances of Ecore (the implementation of
 the MOF meta-meta-model) and they represent classes of the UML meta-model, which is implemented with Ecore.
 
-\begin{figure}
- \begin{lstlisting}
+\begin{lstlisting}[language=Java,caption=Getting the resourceset,label=lst:resourceset]
 resourceSet = new ResourceSetImpl();
 resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI,
                                      UMLPackage.eINSTANCE);
@@ -475,20 +469,16 @@ resourceSet.getResourceFactoryRegistry()
 File file = new File(umlModelFile);
 URI uri = URI.createFileURI(file.getAbsolutePath());
     resource = resourceSet.getResource(uri, true);
- \end{lstlisting}
- \caption{Loading a UML model into a resource set}.
- \label{lst:resourceset}
-\end{figure}
+\end{lstlisting}
 
 \subsection{Model refactoring}
 Our refactorings are implemented with a strategy pattern, where each refactoring implements a \lstinline|Refactorable|
 interface that has three operations \lstinline|checkPrecondition|, \lstinline|performRefactoring|, and \lstinline|checkPostcondition|. 
 Each refactoring identifies the model objects that participate in the refactoring and then creates and evaluates the \textit{OCL} 
 constraints on these objects. An object to type \lstinline|OCL| from the org.eclipse.ocl package is used to create and evaluate the 
-queries as can be seen in Figure \ref{lst:ocl}.
+queries as can be seen in Listing \ref{lst:ocl}.
 
-\begin{figure}
-\begin{lstlisting}
+\begin{lstlisting}[language=Java,caption=OCL validation in Java,label=lst:ocl]
 variable = ExpressionsFactory.eINSTANCE.createVariable();
 variable.setName("newSuperClass");
 variable.setType(UMLPackage.Literals.CLASSIFIER);
@@ -502,9 +492,6 @@ eval.getEvaluationEnvironment()
 if (!eval.check(clazz))
     return false;
 \end{lstlisting}
-\caption{OCL validation in Java}
-\label{lst:ocl}
-\end{figure}
 
 % how to apply queries and changes?
 % how to load models?
@@ -517,7 +504,7 @@ If the preconditions are satisfied the actual refactoring is performed through a
 A new \lstinline|Class| instance with the name of the new superclass is created and added to the model. 
 
 %TODO: give a one line example of how a class is created?
-\begin{lstlisting}
+\begin{lstlisting}[language=Java,caption=UML element creation,label=lst:createclass]
 Class superClass = UMLFactory.eINSTANCE.createClass();
 superClass.setName(newSuperClassName);
 \end{lstlisting}
@@ -536,28 +523,23 @@ is applicable. In this section we will show how the models can be tested dynamic
 reference implementation as described in \cite{DBLP:conf/models/MayerhoferLK12} to execute the activity diagrams of 
 our models.
 
-\begin{figure}
- \begin{lstlisting}
+\begin{lstlisting}[language=Java,caption=Converting the UML diagram to fUML,label=lst:conversion]
 NamedElement namedElement = obtainFirstNamedElement();
 IConverter converter = getConverter(namedElement);
 IConversionResult conversionResult = converter
   .convert(namedElement);
 Activity activity = conversionResult.getActivity(name);
- \end{lstlisting}
- \caption{Converting the UML diagram to fUML}
- \label{lst:conversion}
-\end{figure}
+\end{lstlisting}
 
 Our models are formally created in \textit{UML} and are converted to \textit{fUML} with the \lstinline|UML2fUML| converter 
-provided by the implementation as shown in Figure \ref{lst:conversion}. The resulting \textit{fUML} diagram is executed in the 
+provided by the implementation as shown in Listing \ref{lst:conversion}. The resulting \textit{fUML} diagram is executed in the 
 virtual machine for model execution. 
-We test our models by examining if a complete execution trace is possible for the chosen activity. Figure \ref{lst:execution} 
+We test our models by examining if a complete execution trace is possible for the chosen activity. Listing \ref{lst:execution} 
 shows how the activity is executed step by step. The \lstinline|EventListener| catches the event which is created for each 
 activity step and builds up a trace. If a trace is created and the process of execution is not interrupted we consider the 
 test as successful. Testing more than one trace as some kind of branching is not part of this work and may be included in future studies.
 
-\begin{figure}
- \begin{lstlisting}
+\begin{lstlisting}[language=Java,caption=Executing the activity stepwise and getting the execution trace,label=lst:execution]
 getExecutionContext().addEventListener(
   new ExecutionEventListener() {
   @Override
@@ -578,10 +560,8 @@ getExecutionContext().addEventListener(
 getExecutionContext().executeStepwise(activity, null, 
   new ParameterValueList());
 getExecutionContext().getTrace(executionID);
- \end{lstlisting}
- \caption{Executing the activity stepwise and getting the execution trace}
- \label{lst:execution}
-\end{figure}
+\end{lstlisting}
+
 In the process of refactoring before and after each model change the corresponding activities are executed to prove that 
 the refactoring did not corrupt the model. 
 %TODO: we cannot actually prove anything. Because we cannot show that the execution trace goes through all branches that 
