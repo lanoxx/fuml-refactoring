@@ -27,7 +27,7 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
 
     private static final String OCL_POST_CONSTRAINT = "self.class.namespace.member->selectByType(Class).member"
         + "->selectByType(Activity).node->selectByKind(StructuralFeatureAction).structuralFeature"
-        + "->forAll(n | n.qualifiedName <> '%s')";
+        + "->forAll(n | n.qualifiedName <> '%s')"; // %s is the old name.
     private final RefactoringData data;
 
     public RenamePropertyRefactorableImpl(RefactoringData data) {

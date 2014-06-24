@@ -195,6 +195,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             coa.getArguments().add(b.getObject());
             coa.getArguments().add(b.getValue());
             b.destroy();
+
         }
         return true;
     }
