@@ -22,6 +22,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.modelexecution.fuml.refactoring.RefactoringData;
 import org.modelexecution.fuml.refactoring.RefactoringDataImpl;
@@ -35,6 +36,8 @@ public class SimpleModelModificationTest {
     private static final String MODEL_RENAME_OPERATION_PATH =
         "models/insurancemodel/insurancemodel_renameOperation.uml";
     private static final String MODEL_ENCAPSULATE_PATH = "models/insurancemodel/insurancemodel_encapsulate.uml";
+    private static final String MODEL_REMOVE_UNUSED_CLASS_PATH =
+        "models/insurancemodel/insurancemodel_removeunusedclass.uml";
 
     /** The current resource. */
     private ResourceSet resourceSet;
@@ -91,7 +94,7 @@ public class SimpleModelModificationTest {
         ExtractSuperClassRefactorableImpl extractSuperClassRefactoring = new ExtractSuperClassRefactorableImpl(data);
 
         try {
-            assertTrue(extractSuperClassRefactoring.checkPreCondition());
+            assertTrue("Precondition not met!", extractSuperClassRefactoring.checkPreCondition());
         } catch (ParserException pre) {
             fail("Preconstraints failed with ParserException");
         }
@@ -103,7 +106,7 @@ public class SimpleModelModificationTest {
         }
 
         try {
-            assertTrue(extractSuperClassRefactoring.checkPostCondition());
+            assertTrue("Post condition not met!", extractSuperClassRefactoring.checkPostCondition());
         } catch (ParserException post) {
             post.printStackTrace();
             fail("Postconstraints failed with ParserException");
@@ -137,8 +140,10 @@ public class SimpleModelModificationTest {
 
         RenamePropertyRefactorableImpl rename = new RenamePropertyRefactorableImpl(data);
 
+        String originalName = property.getQualifiedName();
+        data.set("originalName", originalName);
         try {
-            rename.checkPreCondition();
+            assertTrue("Precondition not met!", rename.checkPreCondition());
         } catch (ParserException e) {
             fail("Precondition error");
         }
@@ -148,7 +153,7 @@ public class SimpleModelModificationTest {
             fail("Refactoring error");
         }
         try {
-            rename.checkPostCondition();
+            assertTrue("Post condition not met!", rename.checkPostCondition());
         } catch (ParserException e) {
             fail("Postcondition error");
         }
@@ -173,7 +178,7 @@ public class SimpleModelModificationTest {
         EncapsulateFieldRefactorableImpl encapsulate = new EncapsulateFieldRefactorableImpl(data);
 
         try {
-            encapsulate.checkPreCondition();
+            assertTrue("Precondition not met!", encapsulate.checkPreCondition());
         } catch (ParserException e) {
             e.printStackTrace();
             fail("Precondition error");
@@ -185,7 +190,7 @@ public class SimpleModelModificationTest {
             fail("Refactoring error");
         }
         try {
-            encapsulate.checkPostCondition();
+            assertTrue("Post condition not met!", encapsulate.checkPostCondition());
         } catch (ParserException e) {
             e.printStackTrace();
             fail("Postcondition error");
@@ -212,7 +217,7 @@ public class SimpleModelModificationTest {
         RenameOperationRefactorableImpl renameOperation = new RenameOperationRefactorableImpl(data);
 
         try {
-            renameOperation.checkPreCondition();
+            assertTrue("Precondition not met!", renameOperation.checkPreCondition());
         } catch (ParserException e) {
             e.printStackTrace();
             fail("Precondition error");
@@ -224,7 +229,7 @@ public class SimpleModelModificationTest {
             fail("Refactoring error");
         }
         try {
-            renameOperation.checkPostCondition();
+            assertTrue("Post condition not met!", renameOperation.checkPostCondition());
         } catch (ParserException e) {
             e.printStackTrace();
             fail("Postcondition error");
@@ -232,6 +237,44 @@ public class SimpleModelModificationTest {
 
         try {
             resource.save(new FileOutputStream(new File(MODEL_RENAME_OPERATION_PATH)), null);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testRemoveUnusedClass_shouldSucceed() {
+        RefactoringData data = new RefactoringDataImpl();
+        Class operation = (Class) loadElement("Model::insurance::UnusedClass", Class.class);
+        data.set("selectedElement", operation);
+
+        RemoveUnusedClassRefactorableImpl removeClass = new RemoveUnusedClassRefactorableImpl(data);
+
+        try {
+            assertTrue("Precondition not met!", removeClass.checkPreCondition());
+        } catch (ParserException e) {
+            e.printStackTrace();
+            fail("Precondition error");
+        }
+        try {
+            removeClass.performRefactoring();
+        } catch (RefactoringException e) {
+            e.printStackTrace();
+            fail("Refactoring error");
+        }
+        try {
+            assertTrue("Post condition not met!", removeClass.checkPostCondition());
+        } catch (ParserException e) {
+            e.printStackTrace();
+            fail("Postcondition error");
+        }
+
+        try {
+            resource.save(new FileOutputStream(new File(MODEL_REMOVE_UNUSED_CLASS_PATH)), null);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

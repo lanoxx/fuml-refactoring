@@ -88,7 +88,7 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
         Property selectedElement = (Property) data.get("selectedElement");
 
         OCLExpression<EClassifier> query;
-        query = helper.createQuery(String.format(OCL_POST_CONSTRAINT, selectedElement.getQualifiedName()));
+        query = helper.createQuery(String.format(OCL_POST_CONSTRAINT, data.get("originalName")));
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
 
