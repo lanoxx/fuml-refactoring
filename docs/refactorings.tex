@@ -90,19 +90,19 @@ can be made available in the Eclipse GUIs such as the UML tree editor or Papyrus
 % INTRODUCTION Models are getting more important in model-based software development, model-driven software development,
 % model-driven architecture Models thus need to have a good quality
 
-Model-based software development or model-driven software development is not only an extensive field for research but
+Model-based software development or model-driven software development is not only an extensive field of research but
 also receives increased attention from the industry. Nowadays models are not only used as visual explanations of
 software concepts but as source for the development process itself. Thus models need to provide an abstraction of
-the represented domains in a high quality. Mohagheghi et al. \cite{DBLP:journals/infsof/MohagheghiDN09} discussed 
+the represented domains in a high quality. Mohagheghi \textit{et al.} \cite{DBLP:journals/infsof/MohagheghiDN09} discussed 
 quality attributes like \textit{Correctness}, \textit{Completeness} and \textit{Consistency} of models in their work.
 
 % UML is a modelling language for models provided by the OMG that supports various types of models
 
 To represent models in a more formal way the Object Management Group (OMG) developed the Unified Modeling Language (UML) 
 \cite{man:UML} which by now advanced to an industry standard for 
-modeling. UML provides an abstract syntax of the modeling concepts and the rules how to combine them, an explanation 
+modeling. UML provides an abstract syntax of the modeling concepts and rules how to combine them, an explanation 
 of the semantics of the concepts as well as a specification of the notation elements in human-readable form.
-With these common concepts enriched models can be preserved over time and even be reused. Nevertheless models 
+Build on these common concepts models can be preserved over time and even be reused. Nevertheless models 
 might have to be revised over the lifecycle of the software. With todays trend to more agile software 
 development such as eXtreme Programming \cite{DBLP:journals/computer/Beck99} or Scrum \cite{DBLP:journals/software/RisingJ00} 
 changes on models have to be even more efficient which brings refactoring of models into the focus of research.
@@ -122,13 +122,13 @@ as it needs to span over those different types of diagrams and semantics.
 % Behaviour preservation can be tested statically or dynamically UML can be analysed statically fUML is a modelling
 % language for models provided by the OMG that also allows execution and thus can be analysed dynamically
 
-Different approaches exist to prove the correctness of models before and after refactoring. One is the static analysis of
+Different approaches exist to prove the semantic preservation of refactorings. One is the static analysis of
 UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13}, this can be done with
 the Object Constraint Language (OCL) \cite{man:OCL}. Another way is to verify that models can be executed and to compare 
 different attributes of the execution like input and output parameters, execution traces or states of the 
 original and refactored models. The OMG therefore introduced a foundational subset 
 of UML metamodel concepts abbreviated fUML \cite{man:FUML} and precisely defined the semantics for their execution.
-Furthermore in \cite{DBLP:conf/icse/Mayerhofer12} Mayerhofer et al. proposed a framework based on fUML that is able to execute
+Furthermore in \cite{DBLP:conf/icse/Mayerhofer12} Mayerhofer \textit{et al.} proposed a framework based on fUML that is able to execute
 and debug models that conform to fUML.
 
 % our approach is to combine both
@@ -136,7 +136,7 @@ and debug models that conform to fUML.
 The goal of this work is to introduce refactorings for fUML models, examine the requirements for co-refactoring of the
 corresponding diagram types and define which co-changes have to be performed to preserve the behavior. Our approach to
 verify
-the correctness of the models after refactoring is twofold. On the one hand we use OCL pre- and postconditions
+the semantic preservation of the models is twofold. On the one hand we use OCL pre- and postconditions
 \cite{rob99} to define if the specific changes can be applied and that the models are semantically correct afterwards.
 On the other hand the models have to stay executable after the changes.
 
@@ -199,7 +199,7 @@ of EMF Refactor as part of our tool chain presentation.
 % Why is it important in fUML that models remain consistent -> to preserve executability
 % It is possible to use pre and post conditions in OCL to guarantee the semantic preservation of models during refactorings.
 
-\section{Refactoring Examples}
+\section{Refactoring examples}
 \label{refactoring-examples}
 % take model refactorings of markovic paper
 % insurance example
@@ -338,7 +338,7 @@ at its abstract syntax and transform it according to the refactoring rules. In F
 refactorings are classified in order if the refactoring also implies changes in the meta-model representation. In the 
 sections below we describe some examples that range from small to large impacts in the models.
 
-\subsection{Rename refacorings}
+\subsection{Rename class, rename property \& rename operation}
 \label{sec:renames}
 A refactoring takes several parameters to configure the parts of the model that change and how they change. Rename 
 refacorings just need the new name as parameter. The respective classes, operations and properties can then be adapted 
@@ -575,7 +575,7 @@ the refactoring did not corrupt the model.
 Further testing can be implemented by going through the trace and verifying 
 that every node of the trace has the expected values.
 
-\subsection{GUI Integration}
+\subsection{Eclipse Integration}
 \label{sec:guiintegration}
 In this section we discuss how we can integrate the defined refactorings to the Eclipse framework. For our further 
 research we plan to implement some the refactorings in EMF Refactor. EMF Refactor is an Eclipse incubation project 
@@ -593,7 +593,7 @@ easy generation of simple refactorings\footnote{The framework supports the gener
 refactorings with a module wizard in Eclipse.} and the various implementation possibilities\footnote{EMF Refactor 
 supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit{Henshin} a transformation language.}.
 
-\section{Current Limitations}
+\section{Current limitations}
 \label{sec:limitations}
 Our work currently has several limitations. So far we have designed a set of related class and activity diagrams,
 which are the basis for our refactorings. We have discussed the \textit{extract superclass} refactoring including its
@@ -609,7 +609,7 @@ a super class and pulling up the properties and operations programmatically. We 
 diagrams into account. If this works as intended we plan to rewrite the creation wizard which allows only refactorings 
 on a single class. The code should ideally be carried to the EMF Refactor repository after a quality review.
 
-\section{Related Work}
+\section{Related work}
 \label{sec:relatedwork}
 % Refactoring of prgram code
 
@@ -621,7 +621,7 @@ refactorings for Java and Ruby which can be be adapted to model refactorings.
 % Refactoring of models and OCL Code analysis via OCL
 
 Suny{\'e} et. al. \cite{DBLP:conf/uml/SunyePTJ01} described how several refactorings can be applied to \textit{UML}
-diagrams and introduced OCL as a possiblity to specify pre- and postconditions. Gorp et al. \cite{gorp03} extends the
+diagrams and introduced OCL as a possiblity to specify pre- and postconditions. Gorp \textit{et al.} \cite{gorp03} extends the
 discussion with the usage of \textit{OCL} for additional analysis such as code smells of models.
 
 % Code execution via fUML
@@ -629,7 +629,7 @@ discussion with the usage of \textit{OCL} for additional analysis such as code s
 Despite of the further discussion of model refactoring (\cite{DBLP:conf/uml/CorreaW04}, \cite{DBLP:conf/ershov/BaarM06},
 \cite{DBLP:journals/ase/ArendtT13}) most authors concentrate on static analysis and class diagram representations of
 models. Dynamic analysis of models by execution and debugging \textit{fUML} models is discussed by Mayerhofer
-\cite{DBLP:conf/icse/Mayerhofer12} and provides the basis for the approach discussed here. Mayerhofer et al.
+\cite{DBLP:conf/icse/Mayerhofer12} and provides the basis for the approach discussed here. Mayerhofer \textit{et al.}
 \cite{DBLP:conf/models/MayerhoferLK12} furthermore introduce a runtime model and an
 implementation\footnote{http://www.modelexecution.org} that is capable to test the models and directly show impacts of
 refactorings.

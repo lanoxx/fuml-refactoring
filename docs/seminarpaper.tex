@@ -38,6 +38,7 @@ executed and thus tested dynamically. At the end we introduce some works that we
 implement refactorings that are done on class diagrams and impact corresponding activity diagrams.
 \end{abstract}
 
+
 \tableofcontents
 %\thispagestyle{plain}
 \newpage
@@ -47,37 +48,39 @@ implement refactorings that are done on class diagrams and impact corresponding 
 \section{Introduction}
 \label{sec:intro}
 
-Model-based software development or model-driven software development is not only an extensive field for research but
+Model-based software development or model-driven software development is not only an extensive field of research but
 receives also more and more attention from the industry. Nowadays models are not only used as visual explanations of
-software concepts but as source for the development process itself. Thus models need to provide an abstraction of the
-represented concepts in high quality. To provide quality assured software artifacts that last over the software
-lifecycle a technique called refactoring is often used to restructure in our case models. Refactorings should improve
-the quality and also the understandability of the models as well as adapt the models to changes coming from from the
-domain. The most important requirement for refactorings is that the preserve the behavior of the model. In our project
+the underlying concepts but as source for the software development process itself. Thus models need to provide an abstraction of the
+represented concepts in high quality. To provide quality assured software artifacts that can be used during the complete software development
+life-cycle a technique called refactoring is often used to restructure in our case models. Refactorings should improve
+the quality and also the understandability of the models as well as adapt the models to changes coming from the
+domain. The most important requirement for refactorings is that they preserve the behavior of the model. In our project
 work we focus on an set of refactorings that should be implemented taking the correlations between different model types
 as well as static and dynamic analysis into account. In this work we concentrate on the related work in a broader sense
 and present them in a chronological manner.
 
-The paper is structured as follows. Section \ref{sec:beginning} copes with the early steps of refactoring in the domain
-of source code development. The following section discusses how commonly known refactorings from source code where
-adapted in theoretical works to models.
+The paper is structured as follows. Section \ref{sec:beginning} copes with the early works on refactoring in the domain
+of source code development. Section \ref{sec:fromto} presents how commonly known refactorings from source code where
+adapted in theoretical works to models and how they can be tested for correctness with static methods. Section 
+\ref{sec:todynamics} discusses actual research on how models can also be tested dynamically by executing and debugging 
+the models. Finally Section \ref{sec:conclusion} summarizes the presented research.
 
 \section{Beginning in Refactoring}
 \label{sec:beginning}
 
 In this section we will present an overview on the beginnings in structured refactoring of source code. In his thesis
-\cite{mast:REFOOF} Opdyke defines refactoring as a set of operations that restructure an artifact but in the same time
+Opdyke \cite{mast:REFOOF} defines refactoring as a set of operations that restructure an artifact but at the same time
 preserve the behavior to increase software quality. This technique became known as refactoring.
 
 The motivation of his work is on the one hand that software should be reused because of the high costs of development
-and on the other hand that software needs to be restructured over its lifecycle to maintain this reusability. The issue
+and on the other hand that software needs to be restructured over its life-cycle to maintain this reusability. The issue
 he addressed in his work is the problem of changing parts of source code from an object oriented system, grounded in a
 possibly large code base while also maintaining all the references and dependencies manually. He described this a time
 consuming process which is difficult and leaves room for further errors. As a solution he proposes an automated support
 for refactoring which means plans to reorganize the source code on an intermediate level without changing the behavior
 of the program.
 
-A section in the thesis covers behavior preserving approaches. In this chapter he first mentions the usage of
+A section in the thesis covers behavior preserving approaches. In this section he first mentions the usage of
 \textit{preconditions} to ensure that a refactoring does not corrupt the syntax and more important does not change the
 execution behavior of the program. He quickly refuses the approach to use the static compiler to test these issues as
 the compiler is not capable to catch errors that change the behavior. In this section also some rules are presented that
