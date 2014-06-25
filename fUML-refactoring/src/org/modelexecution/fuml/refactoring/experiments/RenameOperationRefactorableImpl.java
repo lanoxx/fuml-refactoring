@@ -88,7 +88,7 @@ public class RenameOperationRefactorableImpl implements Refactorable {
 
     @Override
     public boolean checkPostCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getProperty());
+        helper.setContext(UMLPackage.eINSTANCE.getOperation());
 
         Operation selectedElement = (Operation) data.get("selectedElement");
 
