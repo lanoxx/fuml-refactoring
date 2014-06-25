@@ -9,63 +9,60 @@ import org.eclipse.ocl.ParserException;
 import org.eclipse.ocl.Query;
 import org.eclipse.ocl.ecore.Constraint;
 import org.eclipse.ocl.ecore.EcoreEnvironmentFactory;
+import org.eclipse.ocl.expressions.ExpressionsFactory;
 import org.eclipse.ocl.expressions.OCLExpression;
+import org.eclipse.ocl.expressions.Variable;
 import org.eclipse.ocl.helper.OCLHelper;
-import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.modelexecution.fuml.refactoring.Refactorable;
 import org.modelexecution.fuml.refactoring.RefactoringData;
 import org.modelexecution.fuml.refactoring.RefactoringException;
 
-public class RenameOperationRefactorableImpl implements Refactorable {
+public class RemoveUnusedClassRefactorableImpl implements Refactorable {
 
     private final OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
     private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
-    private static final String OCL_PRE_CONSTRAINT = "self.class.ownedOperation->union(self.class.allParents()"
-        + "->selectByType(Class).ownedOperation)->union(self.class.allParents()"
-        + "->selectByType(Interface).ownedOperation)->forAll(a | a.name <> '%s')";
-
-    private static final String OCL_POST_CONSTRAINT = ""
-        + "self.class.namespace.member->selectByType(Class).member->selectByType(Activity).node"
-        + "->selectByType(CallOperationAction)->isEmpty() or "
-        + "self.class.namespace.member->selectByType(Class).member"
-        + "->selectByType(Activity).node->selectByType(CallOperationAction).operation"
-        + "->forAll(n | n.qualifiedName <> '%s')";
+    private static final String OCL_PRE_CONSTRAINT =
+        "(uml::Property.allInstances() - classToRemove.attribute).type.conformsTo(classToRemove)->forAll(atom | atom = false)";
+    private static final String OCL_POST_CONSTRAINT = "";
     private final RefactoringData data;
 
-    public RenameOperationRefactorableImpl(RefactoringData data) {
+    public RemoveUnusedClassRefactorableImpl(RefactoringData data) {
         this.ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
         this.helper = ocl.createOCLHelper();
         this.data = data;
 
-        assert (data.get("newOperationName") != null);
         assert (data.get("selectedElement") != null);
     }
 
     /**
-     * Checks the preconstraints for the superclass extraction.
+     * Checks the preconstraints for remove unused class.
      * 
-     * @param name of the new class to be created.
      * @return {@code true} if the preconstraints are met.
      * @throws ParserException an exception if the preconditions are incorrectly formulated.
      */
     @Override
     public boolean checkPreCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getOperation());
+        helper.setContext(UMLPackage.eINSTANCE.getClass_());
+        Class selectedElement = (Class) data.get("selectedElement");
 
-        Operation selectedElement = (Operation) data.get("selectedElement");
-        String newOperationName = (String) data.get("newOperationName");
+        Variable<EClassifier, EParameter> variable = ExpressionsFactory.eINSTANCE.createVariable();
+        variable.setName("classToRemove");
+        variable.setType(UMLPackage.Literals.CLASSIFIER);
+        ocl.getEnvironment().addElement(variable.getName(), variable, true);
 
         OCLExpression<EClassifier> query;
-        String queryString = String.format(OCL_PRE_CONSTRAINT, newOperationName);
-        query = helper.createQuery(queryString);
+        query = helper.createQuery(OCL_PRE_CONSTRAINT);
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+        eval.getEvaluationEnvironment().add("classToRemove", selectedElement);
 
         if (!eval.check(selectedElement)) {
             return false;
         }
+
         return true;
     }
 
@@ -78,29 +75,13 @@ public class RenameOperationRefactorableImpl implements Refactorable {
      */
     @Override
     public boolean performRefactoring() throws RefactoringException {
-        Operation selectedElement = (Operation) data.get("selectedElement");
-        String newOperationName = (String) data.get("newOperationName");
+        Class selectedElement = (Class) data.get("selectedElement");
 
-        selectedElement.setName(newOperationName);
-
-        return true;
+        return false;
     }
 
     @Override
     public boolean checkPostCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getProperty());
-
-        Operation selectedElement = (Operation) data.get("selectedElement");
-
-        OCLExpression<EClassifier> query;
-        String queryString = String.format(OCL_POST_CONSTRAINT, data.get("originalName"));
-        query = helper.createQuery(queryString);
-
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-
-        if (!eval.check(selectedElement)) {
-            return false;
-        }
         return true;
     }
 }

@@ -169,6 +169,7 @@ public class SimpleModelModificationTest {
         }
     }
 
+    @Ignore
     @Test
     public void testEncapsulateField_shouldSucceed() {
         RefactoringData data = new RefactoringDataImpl();
@@ -213,6 +214,9 @@ public class SimpleModelModificationTest {
         Operation operation =
             (Operation) loadElement("Model::insurance::InsurancePolicy::calculatePremium", Operation.class);
         data.set("selectedElement", operation);
+        data.set("newOperationName", "calculatePremiumRefactored");
+        String originalName = operation.getQualifiedName();
+        data.set("originalName", originalName);
 
         RenameOperationRefactorableImpl renameOperation = new RenameOperationRefactorableImpl(data);
 
