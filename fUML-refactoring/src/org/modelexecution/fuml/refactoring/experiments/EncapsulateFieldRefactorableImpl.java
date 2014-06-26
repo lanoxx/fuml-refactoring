@@ -51,14 +51,27 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
     private static final String OCL_PRE_CONSTRAINT = "self.visibility <> uml::VisibilityKind::private"
         + " and self.class.ownedOperation->forAll(o | o.isDistinguishableFrom(setOperation, self.namespace)"
         + " and o.isDistinguishableFrom(getOperation, self.namespace))";
-    private static final String OCL_POST_CONSTRAINT =
-        "uml::ReadStructuralFeatureAction.allInstances().structuralFeature->forAll(feature|feature.name <> 'foo') and "
-            + "uml::WriteStructuralFeatureAction.allInstances().structuralFeature->forAll(feature|feature.name <> 'foo')";
+    private static final String OCL_POST_CONSTRAINT_COUNT =
+        "UML::CallOperationAction.allInstances()->select(action | action.operation = self)->collect(target)"
+            + "->union(UML::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(input))->select(pin | pin <> null)->size() = pinCount";
+    private static final String OCL_POST_CONSTRAINT_TARGET =
+        "UML::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(target)->forAll(target | target.type = self.class)";
+    private static final String OCL_POST_CONSTRAINT_ARGUMENT =
+        "UML::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(argument)->forAll(argument | argument.type = property.type)";
+    private static final String OCL_POST_CONSTRAINT_RESULT =
+        "UML::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(result)->forAll(result | result.type = property.type)";
+    // Check that for each call operation, the target of the operation is the class of the structural feature
+    // Check that the number of read/write structural feature actions
     private final RefactoringData data;
     private Operation setOperation;
     private Parameter setOperationInParameter;
     private Operation getOperation;
     private Parameter getOperationOutParameter;
+    private Object outputPinCounter;
+    private Object inputPinCounter;
+    private int getterInputCount;
+    private int getterResultCount;
+    private int setterInputCount;
 
     public EncapsulateFieldRefactorableImpl(RefactoringData data) {
         this.ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
@@ -162,6 +175,8 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        getterInputCount = 0;
+        getterResultCount = 0;
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query01);
         Collection<ReadStructuralFeatureAction> object =
             (Collection<ReadStructuralFeatureAction>) eval.evaluate(selectedElement);
@@ -172,6 +187,8 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             coa.setTarget(a.getObject());
             coa.getResults().add(a.getResult());
             EcoreUtil.delete(a, true);
+            getterInputCount += 1;
+            getterResultCount += 1;
         }
 
         OCLExpression<EClassifier> query02 = null;
@@ -185,6 +202,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        setterInputCount = 0;
         eval = ocl.createQuery(query02);
         Collection<WriteStructuralFeatureAction> actions =
             (Collection<WriteStructuralFeatureAction>) eval.evaluate(selectedElement);
@@ -195,7 +213,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             coa.setTarget(b.getObject());
             coa.getArguments().add(b.getValue());
             EcoreUtil.delete(b, true);
+            setterInputCount += 2;
         }
+
         return true;
     }
 
@@ -369,20 +389,32 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         Property selectedElement = (Property) data.get("selectedElement");
 
         Variable<EClassifier, EParameter> getVariable = ExpressionsFactory.eINSTANCE.createVariable();
-        getVariable.setName("getOperation");
+        getVariable.setName("operation");
         getVariable.setType(UMLPackage.Literals.PROPERTY);
         ocl.getEnvironment().addElement(getVariable.getName(), getVariable, true);
 
         Variable<EClassifier, EParameter> setVariable = ExpressionsFactory.eINSTANCE.createVariable();
-        setVariable.setName("setOperation");
+        setVariable.setName("operation");
         setVariable.setType(UMLPackage.Literals.PROPERTY);
         ocl.getEnvironment().addElement(setVariable.getName(), setVariable, true);
 
-        OCLExpression<EClassifier> query = helper.createQuery(OCL_POST_CONSTRAINT);
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+        Variable<EClassifier, EParameter> inputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
+        inputPinCount.setName("inputPinCounter");
+        inputPinCount.setType(UMLPackage.Literals.LITERAL_INTEGER);
+        ocl.getEnvironment().addElement(inputPinCount.getName(), inputPinCount, true);
 
-        eval.getEvaluationEnvironment().add("getOperation", getOperation);
-        eval.getEvaluationEnvironment().add("setOperation", setOperation);
+        Variable<EClassifier, EParameter> outputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
+        outputPinCount.setName("outputPinCounter");
+        outputPinCount.setType(UMLPackage.Literals.LITERAL_INTEGER);
+        ocl.getEnvironment().addElement(outputPinCount.getName(), outputPinCount, true);
+
+        OCLExpression<EClassifier> query = helper.createQuery(OCL_POST_CONSTRAINT_COUNT);
+        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+        eval.getEvaluationEnvironment().add("inputPinCounter", inputPinCounter);
+        eval.getEvaluationEnvironment().add("outputPinCount", outputPinCounter);
+
+        // eval.getEvaluationEnvironment().add("operation", getOperation);
+        // eval.getEvaluationEnvironment().add("operation", setOperation);
         return eval.check(selectedElement);
     }
 }

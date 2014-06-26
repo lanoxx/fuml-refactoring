@@ -27,6 +27,7 @@ public class RemoveUnusedClassRefactorableImpl implements Refactorable {
 
     private static final String OCL_PRE_CONSTRAINT =
         "(uml::Property.allInstances() - classToRemove.attribute).type.conformsTo(classToRemove)->forAll(atom | atom = false)";
+    // TODO: operations
     private static final String OCL_POST_CONSTRAINT = "";
     private final RefactoringData data;
 
