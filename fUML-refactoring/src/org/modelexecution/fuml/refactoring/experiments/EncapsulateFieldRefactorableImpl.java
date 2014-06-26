@@ -6,6 +6,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EParameter;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.ocl.OCL;
 import org.eclipse.ocl.ParserException;
 import org.eclipse.ocl.Query;
@@ -169,7 +170,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             coa.setOperation(getOperation);
             coa.getArguments().add(a.getObject());
             coa.getResults().add(a.getResult());
-            a.destroy();
+            EcoreUtil.delete(a, true);
         }
 
         OCLExpression<EClassifier> query02 = null;
@@ -194,8 +195,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             coa.setOperation(setOperation);
             coa.getArguments().add(b.getObject());
             coa.getArguments().add(b.getValue());
-            b.destroy();
-
+            EcoreUtil.delete(b, true);
         }
         return true;
     }

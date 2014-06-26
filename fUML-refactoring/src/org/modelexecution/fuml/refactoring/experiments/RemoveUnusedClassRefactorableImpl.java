@@ -4,6 +4,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EParameter;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.ocl.OCL;
 import org.eclipse.ocl.ParserException;
 import org.eclipse.ocl.Query;
@@ -76,6 +77,8 @@ public class RemoveUnusedClassRefactorableImpl implements Refactorable {
     @Override
     public boolean performRefactoring() throws RefactoringException {
         Class selectedElement = (Class) data.get("selectedElement");
+
+        EcoreUtil.delete(selectedElement, true);
 
         return false;
     }

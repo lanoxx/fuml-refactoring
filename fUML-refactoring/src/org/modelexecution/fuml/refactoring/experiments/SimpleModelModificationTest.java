@@ -22,7 +22,6 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.modelexecution.fuml.refactoring.RefactoringData;
 import org.modelexecution.fuml.refactoring.RefactoringDataImpl;
@@ -171,7 +170,6 @@ public class SimpleModelModificationTest {
         }
     }
 
-    @Ignore
     @Test
     public void testEncapsulateField_shouldSucceed() {
         RefactoringData data = new RefactoringDataImpl();
