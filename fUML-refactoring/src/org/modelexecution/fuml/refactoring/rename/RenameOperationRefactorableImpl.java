@@ -1,4 +1,4 @@
-package org.modelexecution.fuml.refactoring.experiments;
+package org.modelexecution.fuml.refactoring.rename;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;

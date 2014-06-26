@@ -98,11 +98,11 @@ quality attributes like \textit{Correctness}, \textit{Completeness} and \textit{
 
 % UML is a modelling language for models provided by the OMG that supports various types of models
 
-To represent models in a more formal way the Object Management Group (OMG) developed the Unified Modeling Language (UML) 
+To represent models in a more formal way the \textit{Object Management Group} (OMG) developed the \textit{Unified Modeling Language} (UML) 
 \cite{man:UML} which by now advanced to an industry standard for 
 modeling. UML provides an abstract syntax of the modeling concepts and rules how to combine them, an explanation 
 of the semantics of the concepts as well as a specification of the notation elements in human-readable form.
-Build on these common concepts models can be preserved over time and even be reused. Nevertheless models 
+Build on these common concepts models can be preserved over time and even be reused due to their formalized semantics. Nevertheless models 
 might have to be revised over the lifecycle of the software. With todays trend to more agile software 
 development such as eXtreme Programming \cite{DBLP:journals/computer/Beck99} or Scrum \cite{DBLP:journals/software/RisingJ00} 
 changes on models have to be even more efficient which brings refactoring of models into the focus of research.
@@ -123,11 +123,12 @@ as it needs to span over those different types of diagrams and semantics.
 % language for models provided by the OMG that also allows execution and thus can be analysed dynamically
 
 Different approaches exist to prove the semantic preservation of refactorings. One is the static analysis of
-UML models via metrics and the attempt to find model smells \cite{DBLP:conf/models/ArendtTW13}, this can be done with
-the Object Constraint Language (OCL) \cite{man:OCL}. Another way is to verify that models can be executed and to compare 
-different attributes of the execution like input and output parameters, execution traces or states of the 
-original and refactored models. The OMG therefore introduced a foundational subset 
-of UML metamodel concepts abbreviated fUML \cite{man:FUML} and precisely defined the semantics for their execution.
+UML models via metrics which can be done with
+the \textit{Object Constraint Language} (OCL) \cite{man:OCL}. Another way is to verify that models can be executed and to compare 
+different attributes of the execution like input and output values, execution traces or states of the 
+original and refactored models. The OMG introduced a foundational subset 
+of UML metamodel concepts abbreviated fUML \cite{man:FUML} and precisely defined the semantics for their execution. Thanks 
+to this standard compliant UML models can be transformed to an executable form. 
 Furthermore in \cite{DBLP:conf/icse/Mayerhofer12} Mayerhofer \textit{et al.} proposed a framework based on fUML that is able to execute
 and debug models that conform to fUML.
 
@@ -167,7 +168,7 @@ Section \ref{sec:conclusion} to summarize the paper.
 \section{Motivation}
 \label{sec:motivation}
 % what do we want to achieve?
-fUML is a subset of UML for which additional semantics are defined such that the model can be executed. fUML contains subsets 
+fUML is a subset of UML for which additional semantics are defined such that models can be executed. The subset contains concepts
 of the packages \textit{Classes}, 
 \textit{CommonBehaviors}, \textit{Activities} and \textit{Actions}, which basically means someone can create 
 \textit{class diagrams} and \textit{activity diagrams} with fUML.
@@ -176,7 +177,7 @@ If a refactoring
 is performed on a UML model such as a class diagram, then any activity diagram which is releated to the class diagram, has 
 to be checked and possibly changed as well. In Section \ref{sec:fuml-refactoring} we will present some examples of fUML 
 activity diagrams and present the implications that result from changing class 
-diagrams (a procedure called co-refactoring).
+diagrams (a procedure called \textit{co-refactoring}).
 
 Since a refactoring changes the structure of a model it is important to ensure that all changes maintain the original 
 semantics of the model. Violating this requirement can result in models with either a different behavior, or in models 
@@ -309,7 +310,7 @@ The \texttt{calculatePremium} activity is more complex, it calculates the insura
 Figure \ref{fig:calculatePremiumRef} shows how the activity diagram of the operation \texttt{calculatePremium} benefits from a refactoring of the corresponding 
 class diagram. Additionally a new activity diagram for the \texttt{addVehicle} operation instead of the old 
 \texttt{addCar} and \texttt{addTruck} diagrams was created shown in Figure \ref{fig:addCarRef}. It is rather obvious 
-that the complexity of both diagrams decreased on the visual level as well as on the level of execution.
+that the complexity of both diagrams decreased on the visual level.
 
 \begin{figure}[h!t]
  \centering
@@ -331,14 +332,13 @@ that the complexity of both diagrams decreased on the visual level as well as on
 % ecore and ocl (with code examples
 
 In the last section we presented an example fUML model comprising a class diagrams and several activity diagrams. We also presented some of the possible 
-refactorings such as \textit{extract superclass} on the class diagram and their impact on the activity diagrams. This 
-section discusses how the models actually need to be transformed in order to realize the refactoring.
+refactorings such as \textit{extract superclass} on the class diagram and their impact on the activity diagrams. In this 
+section we discuss how the syntax of the models actually need to be transformed in order to realize the refactoring. Furthermore we describe 
+the refacorings from the prior section in detail.
 
 Every model has two kinds of syntaxes. The concrete syntax (or notation), which defines how the model is visualized, and the abstract
-syntax, which defines the language elements and the grammar of the model. In order to refactor a model, we need to look 
-at its abstract syntax and transform it according to the refactoring rules. In Figure \ref{fig:refactoringlist} the 
-refactorings are classified in order if the refactoring also implies changes in the meta-model representation. In the 
-sections below we describe some examples that range from small to large impacts in the models.
+syntax, which defines the UML language elements and the grammar of the model. In order to refactor a model, we need to look 
+at its abstract syntax and transform it according to the refactoring rules.
 
 \subsection{Rename class, rename property \& rename operation}
 \label{sec:renames}
@@ -351,35 +351,24 @@ no such case explicitly included.
 
 \begin{lstlisting}[language=OCL,caption=OCL for rename property,label=lst:renameproperty]
 context Property:
-
-pre: self.class.attribute->union(
-         self.class.allParents().attribute)
-     ->forAll(a|a.name <> 'newAttributeName')
-post: self.class.member->selectByType(Activity).node
-      ->selectByKind(StructuralFeatureAction)
-      .structuralFeature.name->select(n|n='newAttributeName')
-      ->isEmpty()
+pre:  self.class.attribute->union(
+          self.class.allParents().attribute)
+      ->forAll(a|a.name <> 'newAttributeName')
 \end{lstlisting}
 
 \begin{lstlisting}[language=OCL,caption=OCL for rename operation,label=lst:renameoperation]
 context Operation:
-pre: self.class.ownedOperation
-     ->union(self.class.allParents()
-             ->selectByType(Class).ownedOperation)
-     .isDistinguishableFrom(newOperation, self.namespace)
-post: self.class.member->selectByType(Activity).node
-      ->selectByType(CallOperationAction).operation
-      ->forAll(o | o.name <> 'newOperationName')
+pre:  self.class.ownedOperation
+      ->union(self.class.allParents()
+              ->selectByType(Class).ownedOperation)
+      .isDistinguishableFrom(newOperation, self.namespace)
 \end{lstlisting}
 
 \begin{lstlisting}[language=OCL,caption=OCL for rename class,label=lst:renameclass]
 context Class:
-pre: self.namespace.member
-     ->selectByType(Class)
-     ->forAll(c | c.name <> 'newClassName')
-post: self.namespace.member
-     ->selectByType(Class)
-     ->exists(name | name = 'newSuperClass')
+pre:  self.namespace.member
+      ->selectByType(Class)
+      ->forAll(c | c.name <> 'newClassName')
 \end{lstlisting}
 
 The post conditions for rename property apply to all \texttt{Structural\-Feature\-Action} objects
@@ -399,21 +388,13 @@ to create the inheritance hierarchy. However the abstract syntax representation 
 achieve a correct refactoring each class that participates in the refactoring must not already have a superclass. The 
 model would also benefit from changing all possible references to the new class.
 
-\begin{lstlisting}[language=OCL,caption=OCL for rename operation,label=lst:extractsuperclass]
-Single Inheritance:
-    pre: self.superClass->isEmpty() and 
-         self.owner.ownedElement
-            ->select(class|class.oclIsTypeOf(Class))
-            .oclAsType(Class).name
-            ->forAll(o | o<>newSuperClass.name)
-    post: self.superClass->size() = 1
-
-Multiple Inheritance:
-   pre: self.owner.ownedElement
-            ->select(class|class.oclIsTypeOf(Class))
-            .oclAsType(Class).name
-            ->forAll(o | o<>newSuperClass.name)
-   post: self.general->contains(superClass)
+\begin{lstlisting}[language=OCL,caption=OCL for extractSuperclass refactoring,label=lst:extractsuperclass]
+context Class:
+pre:  self.namespace.member
+      ->selectByType(Class).name
+      ->forAll(o | o <> 'nameOfClassToExtract')
+post: newSuperClass.visibility = uml::VisibilityKind::public
+      and self.general->includes(newSuperClass)
 \end{lstlisting}
 
 % Fehlende Constraints hinzufuegen
@@ -446,10 +427,10 @@ operations with the same name in the classes that use the property.
 
 \begin{lstlisting}[language=OCL,caption=OCL for encapsulate property,label=lst:encapsulateproperty]
 context Property:
- self.visibility <> uml::VisibilityKind::private and
- self.class.ownedOperation
- ->forAll(o | o.isDistinguishableFrom(setOperation,
-                                      self.namespace) and
+pre:  self.visibility <> uml::VisibilityKind::private and
+      self.class.ownedOperation
+      ->forAll(o | o.isDistinguishableFrom(setOperation,
+              self.namespace) and
       o.isDistinguishableFrom(getOperation, self.namespace))
 \end{lstlisting}
 

@@ -27,6 +27,8 @@ import org.junit.Test;
 import org.modelexecution.fuml.refactoring.RefactoringData;
 import org.modelexecution.fuml.refactoring.RefactoringDataImpl;
 import org.modelexecution.fuml.refactoring.RefactoringException;
+import org.modelexecution.fuml.refactoring.rename.RenameOperationRefactorableImpl;
+import org.modelexecution.fuml.refactoring.rename.RenamePropertyRefactorableImpl;
 
 public class SimpleModelModificationTest {
     private static final String MODEL_PATH = "models/insurancemodel/insurancemodel.uml";
