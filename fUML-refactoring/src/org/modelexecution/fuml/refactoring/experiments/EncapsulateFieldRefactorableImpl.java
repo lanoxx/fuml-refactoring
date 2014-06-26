@@ -52,8 +52,8 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         + " and self.class.ownedOperation->forAll(o | o.isDistinguishableFrom(setOperation, self.namespace)"
         + " and o.isDistinguishableFrom(getOperation, self.namespace))";
     private static final String OCL_POST_CONSTRAINT =
-        "UML::ReadStructuralFeatureAction.allInstances().structuralFeature->forAll(feature|feature.name <> 'foo') and"
-            + "UML::WriteStructuralFeatureAction.allInstances().structuralFeature ->forAll(feature|feature.name <> 'foo')";
+        "uml::ReadStructuralFeatureAction.allInstances().structuralFeature->forAll(feature|feature.name <> 'foo') and "
+            + "uml::WriteStructuralFeatureAction.allInstances().structuralFeature->forAll(feature|feature.name <> 'foo')";
     private final RefactoringData data;
     private Operation setOperation;
     private Parameter setOperationInParameter;
@@ -169,7 +169,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
             coa.setActivity(getActivity);
             coa.setOperation(getOperation);
-            coa.getArguments().add(a.getObject());
+            coa.setTarget(a.getObject());
             coa.getResults().add(a.getResult());
             EcoreUtil.delete(a, true);
         }
@@ -192,7 +192,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
             coa.setActivity(setActivity);
             coa.setOperation(setOperation);
-            coa.getArguments().add(b.getObject());
+            coa.setTarget(b.getObject());
             coa.getArguments().add(b.getValue());
             EcoreUtil.delete(b, true);
         }
