@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
+import org.eclipse.uml2.uml.WriteStructuralFeatureAction;
 import org.modelexecution.fuml.refactoring.Refactorable;
 import org.modelexecution.fuml.refactoring.RefactoringData;
 import org.modelexecution.fuml.refactoring.RefactoringException;
@@ -50,7 +51,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
     private static final String OCL_PRE_CONSTRAINT = "self.visibility <> uml::VisibilityKind::private"
         + " and self.class.ownedOperation->forAll(o | o.isDistinguishableFrom(setOperation, self.namespace)"
         + " and o.isDistinguishableFrom(getOperation, self.namespace))";
-    private static final String OCL_POST_CONSTRAINT = "";
+    private static final String OCL_POST_CONSTRAINT =
+        "UML::ReadStructuralFeatureAction.allInstances().structuralFeature->forAll(feature|feature.name <> 'foo') and"
+            + "UML::WriteStructuralFeatureAction.allInstances().structuralFeature ->forAll(feature|feature.name <> 'foo')";
     private final RefactoringData data;
     private Operation setOperation;
     private Parameter setOperationInParameter;
@@ -163,8 +166,6 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         Collection<ReadStructuralFeatureAction> object =
             (Collection<ReadStructuralFeatureAction>) eval.evaluate(selectedElement);
         for (ReadStructuralFeatureAction a : object) {
-            a.getObject();
-            a.getResult();
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
             coa.setActivity(getActivity);
             coa.setOperation(getOperation);
@@ -185,11 +186,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             e.printStackTrace();
         }
         eval = ocl.createQuery(query02);
-        Collection<AddStructuralFeatureValueAction> actions =
-            (Collection<AddStructuralFeatureValueAction>) eval.evaluate(selectedElement);
-        for (AddStructuralFeatureValueAction b : actions) {
-            b.getObject();
-            b.getValue();
+        Collection<WriteStructuralFeatureAction> actions =
+            (Collection<WriteStructuralFeatureAction>) eval.evaluate(selectedElement);
+        for (WriteStructuralFeatureAction b : actions) {
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
             coa.setActivity(setActivity);
             coa.setOperation(setOperation);
