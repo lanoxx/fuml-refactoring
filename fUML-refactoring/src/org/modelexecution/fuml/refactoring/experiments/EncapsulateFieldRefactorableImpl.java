@@ -51,15 +51,17 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
     private static final String OCL_PRE_CONSTRAINT = "self.visibility <> uml::VisibilityKind::private"
         + " and self.class.ownedOperation->forAll(o | o.isDistinguishableFrom(setOperation, self.namespace)"
         + " and o.isDistinguishableFrom(getOperation, self.namespace))";
-    private static final String OCL_POST_CONSTRAINT_COUNT =
-        "UML::CallOperationAction.allInstances()->select(action | action.operation = self)->collect(target)"
-            + "->union(UML::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(input))->select(pin | pin <> null)->size() = pinCount";
+    private static final String OCL_POST_CONSTRAINT_COUNT_INPUT =
+        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)"
+            + "->collect(input)->select(pin | pin <> null)->size() = inputPinCounter";
+    private static final String OCL_POST_CONSTRAINT_COUNT_OUTPUT =
+        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(result)->select(pin | pin <> null)->size() = outputPinCounter";
     private static final String OCL_POST_CONSTRAINT_TARGET =
-        "UML::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(target)->forAll(target | target.type = self.class)";
+        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(target)->forAll(target | target.type = self.class)";
     private static final String OCL_POST_CONSTRAINT_ARGUMENT =
-        "UML::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(argument)->forAll(argument | argument.type = property.type)";
+        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(argument)->forAll(argument | argument.type = property.type)";
     private static final String OCL_POST_CONSTRAINT_RESULT =
-        "UML::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(result)->forAll(result | result.type = property.type)";
+        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(result)->forAll(result | result.type = property.type)";
     // Check that for each call operation, the target of the operation is the class of the structural feature
     // Check that the number of read/write structural feature actions
     private final RefactoringData data;
@@ -67,8 +69,6 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
     private Parameter setOperationInParameter;
     private Operation getOperation;
     private Parameter getOperationOutParameter;
-    private Object outputPinCounter;
-    private Object inputPinCounter;
     private int getterInputCount;
     private int getterResultCount;
     private int setterInputCount;
@@ -384,37 +384,90 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
     @Override
     public boolean checkPostCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getClass_());
-
         Property selectedElement = (Property) data.get("selectedElement");
 
-        Variable<EClassifier, EParameter> getVariable = ExpressionsFactory.eINSTANCE.createVariable();
-        getVariable.setName("operation");
-        getVariable.setType(UMLPackage.Literals.PROPERTY);
-        ocl.getEnvironment().addElement(getVariable.getName(), getVariable, true);
+        boolean success = checkSetterCount(selectedElement);
+        success = success && checkGetterCount(selectedElement);
 
-        Variable<EClassifier, EParameter> setVariable = ExpressionsFactory.eINSTANCE.createVariable();
-        setVariable.setName("operation");
-        setVariable.setType(UMLPackage.Literals.PROPERTY);
-        ocl.getEnvironment().addElement(setVariable.getName(), setVariable, true);
-
-        Variable<EClassifier, EParameter> inputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
-        inputPinCount.setName("inputPinCounter");
-        inputPinCount.setType(UMLPackage.Literals.LITERAL_INTEGER);
-        ocl.getEnvironment().addElement(inputPinCount.getName(), inputPinCount, true);
-
-        Variable<EClassifier, EParameter> outputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
-        outputPinCount.setName("outputPinCounter");
-        outputPinCount.setType(UMLPackage.Literals.LITERAL_INTEGER);
-        ocl.getEnvironment().addElement(outputPinCount.getName(), outputPinCount, true);
-
-        OCLExpression<EClassifier> query = helper.createQuery(OCL_POST_CONSTRAINT_COUNT);
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-        eval.getEvaluationEnvironment().add("inputPinCounter", inputPinCounter);
-        eval.getEvaluationEnvironment().add("outputPinCount", outputPinCounter);
-
-        // eval.getEvaluationEnvironment().add("operation", getOperation);
-        // eval.getEvaluationEnvironment().add("operation", setOperation);
-        return eval.check(selectedElement);
+        return success;
     }
+
+    public boolean checkSetterCount(Property selectedElement) {
+        /**
+         * only check input count: assert(object == target) for input and assert(result == result) for output
+         */
+        try {
+            helper.setContext(UMLPackage.eINSTANCE.getOperation());
+            Variable<EClassifier, EParameter> inputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
+            inputPinCount.setName("inputPinCounter");
+            inputPinCount.setType(UMLPackage.Literals.LITERAL_INTEGER);
+            ocl.getEnvironment().addElement(inputPinCount.getName(), inputPinCount, true);
+
+            Variable<EClassifier, EParameter> outputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
+            outputPinCount.setName("operation");
+            outputPinCount.setType(UMLPackage.Literals.OPERATION);
+            ocl.getEnvironment().addElement(outputPinCount.getName(), outputPinCount, true);
+
+            OCLExpression<EClassifier> query;
+            query = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_INPUT);
+            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+            eval.getEvaluationEnvironment().add("inputPinCounter", setterInputCount);
+            eval.getEvaluationEnvironment().add("operation", setOperation);
+
+            boolean success = eval.check(selectedElement);
+
+            return success;
+
+        } catch (ParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean checkGetterCount(Property selectedElement) {
+        /**
+         * check input and output count: assert(object + value == target + arguments)
+         */
+        try {
+            Variable<EClassifier, EParameter> inputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
+            inputPinCount.setName("inputPinCounter");
+            inputPinCount.setType(UMLPackage.Literals.LITERAL_INTEGER);
+            ocl.getEnvironment().addElement(inputPinCount.getName(), inputPinCount, true);
+
+            Variable<EClassifier, EParameter> operation = ExpressionsFactory.eINSTANCE.createVariable();
+            operation.setName("operation");
+            operation.setType(UMLPackage.Literals.OPERATION);
+            ocl.getEnvironment().addElement(operation.getName(), operation, true);
+
+            OCLExpression<EClassifier> query;
+            query = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_INPUT);
+            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+            eval.getEvaluationEnvironment().add("inputPinCounter", getterInputCount);
+            eval.getEvaluationEnvironment().add("operation", getOperation);
+
+            boolean success = eval.check(selectedElement);
+
+            Variable<EClassifier, EParameter> outputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
+            outputPinCount.setName("outputPinCounter");
+            outputPinCount.setType(UMLPackage.Literals.LITERAL_INTEGER);
+            ocl.getEnvironment().addElement(outputPinCount.getName(), outputPinCount, true);
+
+            query = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_OUTPUT);
+            eval = ocl.createQuery(query);
+            eval.getEvaluationEnvironment().add("outputPinCounter", getterResultCount);
+            eval.getEvaluationEnvironment().add("operation", getOperation);
+
+            success = success && eval.check(selectedElement);
+            return success;
+
+        } catch (ParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
 }

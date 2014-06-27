@@ -191,8 +191,7 @@ public class SimpleModelModificationTest {
             fail("Refactoring error");
         }
         try {
-            // assertTrue("Post condition not met!", encapsulate.checkPostCondition());
-            encapsulate.checkPostCondition();
+            assertTrue("Post condition not met!", encapsulate.checkPostCondition());
         } catch (ParserException e) {
             e.printStackTrace();
             fail("Postcondition error");
