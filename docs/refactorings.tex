@@ -138,16 +138,16 @@ The goal of this work is to introduce refactorings for fUML models, examine the 
 corresponding diagram types and define which co-changes have to be performed to preserve the behavior. Our approach to
 verify
 the semantic preservation of the models is twofold. On the one hand we use OCL pre- and postconditions
-\cite{rob99} to determine whether a refacoring can be applied and whether the models are semantically correct afterwards.
+\cite{rob99} to determine whether a refactoring can be applied and whether the models are semantically correct afterwards.
 On the other hand the models have to stay executable after the changes.
 
 % we present a motivating example (class and activity diagrams) we provide some refactorings that target bothe diagram
-% types we provide a how to test statically and dynamically, then refator and retest we provide a toolchain
+% types we provide a how to test statically and dynamically, then refactor and retest we provide a toolchain
 
 % we provide some related work we provide a conclusion
 
 The rest of the work is structured as follows. Section \ref{sec:motivation} gives an introduction to fUML and shows how 
-the preservation of semantics can be achieved during refacoring. 
+the preservation of semantics can be achieved during refactoring. 
 Section \ref{refactoring-examples} describes a selection of useful refactorings inspired by Fowler \cite{fow99} and 
 Markovic and Baar \cite{DBLP:journals/sosym/MarkovicB08} and their effects on class diagrams as
 well as activity diagrams. We also provide a motivating example of a model that is used throughout the paper. In Section 
@@ -212,20 +212,12 @@ of EMF Refactor as part of our tool chain presentation.
 This section covers some refactorings of fUML models as well as a fUML model which we use as an example for this work. 
 Markovic \cite{DBLP:journals/sosym/MarkovicB08} presented a list of refactorings for class 
 diagrams and co-refactoring of OCL constraints. However they do not consider other diagram types and possible co-refactorings between 
-them. Nevertheless we use this catalog as an input and adapt it for our use case. The resulting list of 
-refactorings which we plan to evaluate and implement is shown in Figure \ref{fig:refactoringlist}. The first column shows 
-whether a change in the abstract syntax tree is necessary for this refactoring. No means that the change does not directly 
-affect the structure of the abstract syntax, for example because it does not change cross references between objects or 
-only modifies properties of the objects. A refactoring of a class 
-diagram can make corresponding changes in the associated activity diagrams necessary. These so called co-refactorings are 
-necessary if the abstract syntax tree changes in such a way, that references in activity diagrams become invalid. This is 
-for example the case if properties or operations are removed or become private. A more detailed explanation of
-co-refactorings is given in Section \ref{sec:fuml-refactoring} together with the introduction of each refactoring.
+them. Nevertheless we use this catalog as an input and adapt it for our use case. 
 
 \begin{figure}[h!t]
  \centering
  \begin{tabular}[]{l | c | c}
-  Class diagram refacoring & Abstract syntax changes & Activity diagram co-refacoring\\
+  Class diagram refactoring & Abstract syntax changes & Activity diagram co-refactoring\\
   \hline
   Encapsulate property & Yes & Yes\\
   Extract class & Yes & Yes\\
@@ -242,30 +234,74 @@ co-refactorings is given in Section \ref{sec:fuml-refactoring} together with the
  \label{fig:refactoringlist}
 \end{figure}
 
+The resulting list of 
+refactorings which we plan to evaluate and implement is shown in Figure \ref{fig:refactoringlist}. 
+The first column (\textit{Class diagram refactoring}) displays the name of the refactoring as used in \cite{DBLP:journals/sosym/MarkovicB08}, but adapted to the 
+concept names used in UML\footnote{E.g. instead of \textit{attribute} we use the \textit{property} in the name of the refactoring}. 
+The second column (\textit{Abstract syntax change}) indicates whether the abstract syntax changes due to the refactoring.
+Finally the third column (\textit{Activity diagram co-refactoring}) shows whether we need to co-refactor the corresponding activity diagrams 
+in parallel to the changes in the class diagram.
+
+If we apply for example a rename refactoring the abstract syntax does not change because the concepts are linked 
+by reference and the new name will automatically ``propagated'' to the other concepts. Thus there is no need to 
+co-refactor the activity dagrams. An other example would be the \textit{encapsulate property} refactoring which 
+changes the abstract syntax as new operations are introduced and the visibility of the property is changed. This 
+has also effects on the activity diagram where several action accessing the property might have to be changed. 
+A more detailed explanation of
+co-refactorings is given in Section \ref{sec:fuml-refactoring} together with the introduction of each refactoring.
+
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.5]{images/insurance/Model_Model_ClassDiagram.PDF}
+ \includegraphics[scale=0.8]{images/Model_Model_Classifiers}
+ \caption{Abstract syntax for used class concepts in \textit{fUML}}
+ \label{fig:fuml1}
+\end{figure}
+
+In order to demonstrate how the presented refactorings affect both class and activity diagrams we will present an example 
+model from the insurance domain. For a better understanding of the abstract syntax we first show the relevant parts of the fUML 
+subset for our example. Figure \ref{fig:fuml1} explain how the meta-model concepts \texttt{Property}, which is a subclass of 
+\texttt{Structural\-Feature}, and \texttt{Operation}, which is a \texttt{Behavioral\-Feature}, are linked to the \texttt{Class}. 
+Furthermore is shows that \texttt{Operation} owns zero or more \texttt{Parameter}. Figure \ref{fig:fuml2} shows the hierarchy of 
+the most relevant actions. Important to mention is the \texttt{Call\-Operation\-Action} which holds a single \texttt{Operation}, 
+and the \texttt{Structural\-Feature\-Action}, which holds a single \texttt{Structural\-Feature}.
+
+\begin{figure}[h!t]
+ \centering
+ \includegraphics[scale=0.8]{images/Model_Model_Behavior}
+ \caption{Abstract syntax for used actions in \textit{fUML}}
+ \label{fig:fuml2}
+\end{figure}
+
+Figure \ref{fig:classdiagramcomplex} shows our example class diagram of an insurance company with relevant properties and operations. 
+In our case there are different domain objects. A company administers different customers and employs some employees. Further the company 
+sells insurance policies where trucks and cars can be added and insured for a certain period. Customers can hold such insurance 
+policies that are signed by an employee to verify the correctness.
+
+\begin{figure}[h!t]
+ \centering
+ \makebox[\textwidth]{
+ \includegraphics[scale=0.65]{images/insurance/Model_Model_ClassDiagram.PDF}
+ }
  \caption{Insurance class diagram before refactoring}
  \label{fig:classdiagramcomplex}
 \end{figure}
 
-In order to demonstrate how the presented refactorings affect both class and activity diagrams we will present an example 
-model from the insurance domain. In the insurance business there are domain objects such as an insurance policy. Cars and 
-trucks can be insured by adding them to the policy. There is an insurance company which has customers and employees where customers may purchase an insurance policy 
-for their cars or trucks. Figure \ref{fig:classdiagramcomplex} shows a class diagram of such an insurance company. This class 
+This class 
 diagram would benefit from several possible refactorings such as an \textit{extract superclass} which can be applied to both \texttt{Car} 
-and \texttt{Truck} to extract a \texttt{Vehicle} class. A simple \textit{extract class} can be used on \texttt{InsurancePolicy} to 
+and \texttt{Truck} to extract a \texttt{Vehicle} class. An \textit{extract class} refactoring can be used on \texttt{InsurancePolicy} to 
 extract the \texttt{from} and \texttt{until} dates into an own \texttt{InsurancePeriod} class. As part of the 
 \textit{extract superclass} refactoring two additional refactorings namely \textit{pull up property} and \textit{pull up operation} are 
 used to move the identical properties and operations of both classes to the new superclass. As the 
-properties \texttt{weight} and \texttt{registration} are public, we can use \textit{encapsulate field} to make them private and 
-provide getter and setter implementations. Finally the operation \texttt{addCar} can be renamed into \texttt{addVehicle} with \textit{rename operation} 
-and the \texttt{addTruck} operation can be removed with \textit{remove operation}\footnote{\textit{remove operation is not covered by our paper}}. Finally Figure \ref{fig:classdiagramcomplexRef} shows 
-the refactored class diagram.
+properties \texttt{weight} and \texttt{registration} are public, we can use \textit{encapsulate field} to set their visibility to private and 
+provide getter and setter operations. Finally a new operation \texttt{addVehicle} can be introduced and the \texttt{addTruck} as well as 
+the \texttt{addCar} operation can be removed with \textit{remove operation}\footnote{\textit{add operation} and \textit{remove operation} are not covered by our paper}. 
+Figure \ref{fig:classdiagramcomplexRef} shows the class diagram resulting from the refactoring.
 
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.5]{images/insurance_ref/Model_Model_ClassDiagram}
+ \makebox[\textwidth]{
+ \includegraphics[scale=0.65]{images/insurance_ref/Model_Model_ClassDiagram}
+ }
  \caption{Insurance class diagram after refactoring}
  \label{fig:classdiagramcomplexRef}
 \end{figure}
@@ -296,36 +332,41 @@ The \texttt{calculatePremium} activity is more complex, it calculates the insura
 \begin{figure}[h!t]
  \centering
 \makebox[\textwidth]{
- \includegraphics[scale=0.5]{images/insurance/Activity_calculatePremium_calculatePremium}
-}
- \caption{Activity diagram of the operation \texttt{calculatePremium} before co-refacoring}
- \label{fig:calculatePremium}
-\end{figure}
-
-\begin{figure}[ht]
- \centering
-\makebox[\textwidth]{
- \includegraphics[scale=0.6]{images/insurance/Activity_addCarActivity_addCarActivity}
+ \includegraphics[scale=0.7]{images/insurance/Activity_addCarActivity_addCarActivity}
 }
  \caption{Activity diagram of operation \texttt{addCar} before refactoring}
  \label{fig:addCar}
 \end{figure}
 
+\begin{figure}[h!t]
+ \centering
+\makebox[\textwidth]{
+ \includegraphics[scale=0.6]{images/insurance/Activity_calculatePremium_calculatePremium}
+}
+ \caption{Activity diagram of the operation \texttt{calculatePremium} before co-refactoring}
+ \label{fig:calculatePremium}
+\end{figure}
+
 Figure \ref{fig:calculatePremiumRef} shows how the activity diagram of the operation \texttt{calculatePremium} benefits from a refactoring of the corresponding 
 class diagram. Additionally a new activity diagram for the \texttt{addVehicle} operation instead of the old 
 \texttt{addCar} and \texttt{addTruck} diagrams was created shown in Figure \ref{fig:addCarRef}. It is rather obvious 
-that the complexity of both diagrams decreased on the visual level.
+that the complexity of both diagrams decreased on the visual level which helps interested parties to better understand the 
+model.
 
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.5]{images/insurance_ref/Activity_calculatePremium_calculatePremium}
+ \makebox[\textwidth]{
+ \includegraphics[scale=0.6]{images/insurance_ref/Activity_calculatePremium_calculatePremium}
+ }
  \caption{Activity diagram of the operation \texttt{calculatePremium} after co-refactoring}
  \label{fig:calculatePremiumRef}
 \end{figure}
 
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.6]{images/insurance_ref/Activity_addVehicle_addVehicle}
+ \makebox[\textwidth]{
+ \includegraphics[scale=0.7]{images/insurance_ref/Activity_addVehicle_addVehicle}
+ }
  \caption{Activity diagram of operation \texttt{addVehicle} resulting from the refactoring}
  \label{fig:addCarRef}
 \end{figure}
@@ -338,20 +379,26 @@ that the complexity of both diagrams decreased on the visual level.
 In the last section we presented an example fUML model comprising a class diagrams and several activity diagrams. We also presented some of the possible 
 refactorings such as \textit{extract superclass} on the class diagram and their impact on the activity diagrams. In this 
 section we discuss how the syntax of the models actually need to be transformed in order to realize the refactoring. Furthermore we describe 
-the refacorings from the prior section in detail.
+the refactorings from the prior section in detail.
 
-Every model has two kinds of syntaxes. The concrete syntax (or notation), which defines how the model is visualized, and the abstract
+Every model has two kinds of syntaxes. The concrete syntax (or notation), which defines how the model is visualized, and as described the abstract
 syntax, which defines the UML language elements and the grammar of the model. In order to refactor a model, we need to look 
-at its abstract syntax and transform it according to the refactoring rules.
+at its abstract syntax and transform it according to the refactoring rules. Adopting the concrete syntax of co-refactored activity diagrams 
+is out of the scope of this work.
 
 \subsection{Rename class, rename property \& rename operation}
 \label{sec:renames}
 A refactoring takes several parameters to configure the parts of the model that change. Rename 
-refacorings need the model element that shall be refactored as well as the new name as parameter. The respective classes, operations and properties can then be adapted 
-and the direct references be changed as the abstract syntax representation does not change. However in order to guarantee that the 
+refactorings need the model element that shall be refactored as well as the new name as parameter. As the abstract syntax 
+is not changed the respective classes, operations and properties can then be adapted 
+and the changes are automatically propagated. As refactoring is trivial in our example there is no such case explicitly 
+included. However in order to guarantee that the 
 refactoring is possible, we have to ensure that there are no occurrences of the same type with the same name as the 
-new name. In this work we did not take techniques such as operation overloading into account. In our example there is 
-no such case explicitly included.
+new name. In this work we did not take techniques such as operation overloading into account.
+
+Listing \ref{lst:renameproperty} shows the OCL constraint that has to be checked prior to the \textit{rename property} 
+refactoring. All properties of the class and its parents have to be check such that any property name does not match 
+with the indicted new name.
 
 \begin{lstlisting}[language=OCL,caption=OCL for rename property,label=lst:renameproperty]
 context Property:
@@ -359,6 +406,12 @@ pre:  self.class.attribute->union(
           self.class.allParents().attribute)
       ->forAll(a|a.name <> 'newAttributeName')
 \end{lstlisting}
+
+Listing \ref{lst:renameoperation} shows the OCL precondition for the \textit{rename operation} refactoring. As operations 
+might have same name but different parameter declarations we use the OCL function \texttt{isDistinguishableFrom} on the 
+united operations of the class and its parents. This precondition is not a pure OCL constraint as the operation \texttt{newOperation} 
+is constructed in Java before and checked against the existing ones in the model. We will show an example of this in 
+Section \ref{sec:toolchain}.
 
 \begin{lstlisting}[language=OCL,caption=OCL for rename operation,label=lst:renameoperation]
 context Operation:
@@ -368,17 +421,11 @@ pre:  self.class.ownedOperation
       .isDistinguishableFrom(newOperation, self.namespace)
 \end{lstlisting}
 
-\begin{lstlisting}[language=OCL,caption=OCL for rename class,label=lst:renameclass]
-context Class:
-pre:  self.namespace.member
-      ->selectByType(Class)
-      ->forAll(c | c.name <> 'newClassName')
-\end{lstlisting}
+As the OCL constraint for the \textit{rename class} refactoring is very similar to Listing \ref{lst:renameproperty} 
+we put it into Appendix \ref{sec:appendix} under Listing \ref{lst:renameclass}.
 
-The post conditions for rename property apply to all \texttt{Structural\-Feature\-Action} objects
-which reference the renamed property. For rename operation it applies to all \texttt{Call\-Operation\-Action} objects which
-call the renamed operation. For rename class all elements which reference objects of the renamed class must reference
-the new class name, that includes objects such as \texttt{Parameter} or \texttt{Pins} (InputPin, OutputPin).
+As we already mentioned the changes are automatically propagated to the respective diagrams. Because of this we do 
+not need to formulate postconditions for the rename refactorings.
 
 \subsection{Extract superclass}
 \label{sec:extract}
@@ -511,7 +558,7 @@ is added.
 \label{sec:execution}
 % usage of fUML reference implementation of BIG
 % how to execute models?
-In the prior section we discussed how the models are statically examined with \textit{OCL} constraints if a refacoring 
+In the prior section we discussed how the models are statically examined with \textit{OCL} constraints if a refactoring 
 is applicable. In this section we will show how the models can be tested dynamically by executing them. We use the 
 reference implementation as described in \cite{DBLP:conf/models/MayerhoferLK12} to execute the activity diagrams of 
 our models.
@@ -654,5 +701,17 @@ specification of pre- and postconditions OCL in is still required and will be th
 \newpage
 \bibliographystyle{acm}
 \bibliography{references}
+
+\newpage
+\appendix
+\section{Appendix}
+\label{sec:appendix}
+
+\begin{lstlisting}[language=OCL,caption=OCL for rename class,label=lst:renameclass]
+context Class:
+pre:  self.namespace.member
+      ->selectByType(Class)
+      ->forAll(c | c.name <> 'newClassName')
+\end{lstlisting}
 
 \end{document}
