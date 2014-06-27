@@ -59,9 +59,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
     private static final String OCL_POST_CONSTRAINT_TARGET =
         "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(target)->forAll(target | target.type = self.class)";
     private static final String OCL_POST_CONSTRAINT_ARGUMENT =
-        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(argument)->forAll(argument | argument.type = property.type)";
+        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(argument)->forAll(argument | argument.type = self.type)";
     private static final String OCL_POST_CONSTRAINT_RESULT =
-        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(result)->forAll(result | result.type = property.type)";
+        "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)->collect(result)->forAll(result | result.type = self.type)";
     // Check that for each call operation, the target of the operation is the class of the structural feature
     // Check that the number of read/write structural feature actions
     private final RefactoringData data;
@@ -93,6 +93,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         helper.setContext(UMLPackage.eINSTANCE.getProperty());
 
         Property selectedElement = (Property) data.get("selectedElement");
+        if (selectedElement == null) {
+            return false;
+        }
 
         OCLExpression<EClassifier> query;
 
@@ -164,54 +167,87 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         // Context Package
         // self.member->selectByType(Class).member->selectByType(Activity).node->selectByType(AddStructuralFeatureValueAction).structuralFeature.qualifiedName
 
+        // helper.setContext(UMLPackage.eINSTANCE.getActivity());
+        getterInputCount = 0;
+        getterResultCount = 0;
+
+        Variable<EClassifier, EParameter> getActivitiesOclVariable = ExpressionsFactory.eINSTANCE.createVariable();
+        getActivitiesOclVariable.setName("getActivity");
+        getActivitiesOclVariable.setType(UMLPackage.Literals.ACTIVITY);
+        ocl.getEnvironment().addElement(getActivitiesOclVariable.getName(), getActivitiesOclVariable, true);
+
+        Variable<EClassifier, EParameter> setActivitiesOclVariable = ExpressionsFactory.eINSTANCE.createVariable();
+        setActivitiesOclVariable.setName("setActivity");
+        setActivitiesOclVariable.setType(UMLPackage.Literals.ACTIVITY);
+        ocl.getEnvironment().addElement(setActivitiesOclVariable.getName(), setActivitiesOclVariable, true);
+
         OCLExpression<EClassifier> query01 = null;
         try {
             query01 =
                 helper.createQuery(String
-                        .format("self.class.namespace.member->selectByType(Class).member->selectByType(Activity).node"
-                            + "->selectByType(ReadStructuralFeatureAction)->select(r|r.structuralFeature.qualifiedName='%s')",
+                        .format("uml::ReadStructuralFeatureAction.allInstances()->select(r|r.structuralFeature.qualifiedName='%s')"
+                            + "->select(action | action.activity <> getActivity)->select(action | action.activity <> setActivity)",
                                 selectedElement.getQualifiedName()));
         } catch (ParserException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        getterInputCount = 0;
-        getterResultCount = 0;
+
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query01);
+        eval.getEvaluationEnvironment().add("getActivity", getActivity);
+        eval.getEvaluationEnvironment().add("setActivity", setActivity);
+
         Collection<ReadStructuralFeatureAction> object =
             (Collection<ReadStructuralFeatureAction>) eval.evaluate(selectedElement);
         for (ReadStructuralFeatureAction a : object) {
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
-            coa.setActivity(getActivity);
+            coa.setActivity(a.getActivity());
             coa.setOperation(getOperation);
             coa.setTarget(a.getObject());
             coa.getResults().add(a.getResult());
+            coa.setName(a.getName());
             EcoreUtil.delete(a, true);
             getterInputCount += 1;
             getterResultCount += 1;
         }
 
+        getActivitiesOclVariable = ExpressionsFactory.eINSTANCE.createVariable();
+        getActivitiesOclVariable.setName("getActivity");
+        getActivitiesOclVariable.setType(UMLPackage.Literals.ACTIVITY);
+        ocl.getEnvironment().addElement(getActivitiesOclVariable.getName(), getActivitiesOclVariable, true);
+
+        setActivitiesOclVariable = ExpressionsFactory.eINSTANCE.createVariable();
+        setActivitiesOclVariable.setName("setActivity");
+        setActivitiesOclVariable.setType(UMLPackage.Literals.ACTIVITY);
+        ocl.getEnvironment().addElement(setActivitiesOclVariable.getName(), setActivitiesOclVariable, true);
+
         OCLExpression<EClassifier> query02 = null;
         try {
             query02 =
                 helper.createQuery(String
-                        .format("self.class.namespace.member->selectByType(Class).member->selectByType(Activity).node"
-                            + "->selectByType(AddStructuralFeatureValueAction)->select(r|r.structuralFeature.qualifiedName='%s')",
+                        .format("uml::WriteStructuralFeatureAction.allInstances()->union(uml::AddStructuralFeatureValueAction.allInstances())->select(r|r.structuralFeature.qualifiedName='%s')"
+                            + "->select(action | action.activity <> getActivity)->select(action | action.activity <> setActivity)",
                                 selectedElement.getQualifiedName()));
         } catch (ParserException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        eval = ocl.createQuery(query01);
+        eval.getEvaluationEnvironment().add("getActivity", getActivity);
+        eval.getEvaluationEnvironment().add("setActivity", setActivity);
+
         setterInputCount = 0;
         eval = ocl.createQuery(query02);
         Collection<WriteStructuralFeatureAction> actions =
             (Collection<WriteStructuralFeatureAction>) eval.evaluate(selectedElement);
         for (WriteStructuralFeatureAction b : actions) {
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
-            coa.setActivity(setActivity);
+            coa.setActivity(b.getActivity());
             coa.setOperation(setOperation);
             coa.setTarget(b.getObject());
             coa.getArguments().add(b.getValue());
+            coa.setName(b.getName());
             EcoreUtil.delete(b, true);
             setterInputCount += 2;
         }
@@ -389,7 +425,104 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         boolean success = checkSetterCount(selectedElement);
         success = success && checkGetterCount(selectedElement);
 
+        success = success && checkTargetQuery(selectedElement);
+        success = success && checkArgumentQuery(selectedElement);
+        success = success && checkResultQuery(selectedElement);
+
         return success;
+    }
+
+    private boolean checkTargetQuery(Property selectedElement) {
+        try {
+            helper.setContext(UMLPackage.eINSTANCE.getProperty());
+
+            Variable<EClassifier, EParameter> variable = ExpressionsFactory.eINSTANCE.createVariable();
+            variable.setName("operation");
+            variable.setType(UMLPackage.Literals.OPERATION);
+            ocl.getEnvironment().addElement(variable.getName(), variable, true);
+
+            OCLExpression<EClassifier> query;
+            query = helper.createQuery(OCL_POST_CONSTRAINT_TARGET);
+            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+            eval.getEvaluationEnvironment().add("operation", getOperation);
+
+            boolean success = eval.check(selectedElement);
+
+            variable = ExpressionsFactory.eINSTANCE.createVariable();
+            variable.setName("operation");
+            variable.setType(UMLPackage.Literals.OPERATION);
+            ocl.getEnvironment().addElement(variable.getName(), variable, true);
+
+            query = helper.createQuery(OCL_POST_CONSTRAINT_TARGET);
+            eval = ocl.createQuery(query);
+            eval.getEvaluationEnvironment().add("operation", setOperation);
+
+            return success && eval.check(selectedElement);
+
+        } catch (ParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private boolean checkArgumentQuery(Property selectedElement) {
+        try {
+            helper.setContext(UMLPackage.eINSTANCE.getProperty());
+
+            Variable<EClassifier, EParameter> variable = ExpressionsFactory.eINSTANCE.createVariable();
+            variable.setName("operation");
+            variable.setType(UMLPackage.Literals.OPERATION);
+            ocl.getEnvironment().addElement(variable.getName(), variable, true);
+
+            OCLExpression<EClassifier> query;
+            query = helper.createQuery(OCL_POST_CONSTRAINT_ARGUMENT);
+            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+            eval.getEvaluationEnvironment().add("operation", getOperation);
+
+            boolean success = eval.check(selectedElement);
+
+            variable = ExpressionsFactory.eINSTANCE.createVariable();
+            variable.setName("operation");
+            variable.setType(UMLPackage.Literals.OPERATION);
+            ocl.getEnvironment().addElement(variable.getName(), variable, true);
+
+            query = helper.createQuery(OCL_POST_CONSTRAINT_ARGUMENT);
+            eval = ocl.createQuery(query);
+            eval.getEvaluationEnvironment().add("operation", setOperation);
+
+            return success && eval.check(selectedElement);
+
+        } catch (ParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private boolean checkResultQuery(Property selectedElement) {
+        try {
+            helper.setContext(UMLPackage.eINSTANCE.getProperty());
+
+            Variable<EClassifier, EParameter> variable = ExpressionsFactory.eINSTANCE.createVariable();
+            variable.setName("operation");
+            variable.setType(UMLPackage.Literals.OPERATION);
+            ocl.getEnvironment().addElement(variable.getName(), variable, true);
+
+            OCLExpression<EClassifier> query;
+            query = helper.createQuery(OCL_POST_CONSTRAINT_RESULT);
+            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+            eval.getEvaluationEnvironment().add("operation", getOperation);
+
+            return eval.check(selectedElement);
+        } catch (ParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     public boolean checkSetterCount(Property selectedElement) {
