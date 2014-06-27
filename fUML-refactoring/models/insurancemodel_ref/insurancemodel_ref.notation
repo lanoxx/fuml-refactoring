@@ -719,7 +719,7 @@
           <element xmi:type="uml:ForkNode" href="insurancemodel_ref.uml#_ru15MN87EeOh45j0uh-KZg"/>
           <layoutConstraint xmi:type="notation:Bounds" xmi:id="_ru5jkt87EeOh45j0uh-KZg" x="118" y="61"/>
         </children>
-        <children xmi:type="notation:Shape" xmi:id="_3cGKgN87EeOh45j0uh-KZg" type="3091" fillColor="15069951" lineColor="0">
+        <children xmi:type="notation:Shape" xmi:id="_3cGKgN87EeOh45j0uh-KZg" type="3091" fillColor="16770546" lineColor="0">
           <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_3cGKg987EeOh45j0uh-KZg" source="ShadowFigure">
             <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_3cGKhN87EeOh45j0uh-KZg" key="ShadowFigure_Value" value="false"/>
           </eAnnotations>
@@ -1007,7 +1007,7 @@
           <element xmi:type="uml:CallBehaviorAction" href="insurancemodel_ref.uml#_07inYN89EeOh45j0uh-KZg"/>
           <layoutConstraint xmi:type="notation:Bounds" xmi:id="_2UZ3wt89EeOh45j0uh-KZg" x="381" y="44"/>
         </children>
-        <children xmi:type="notation:Shape" xmi:id="_NOVc4N8-EeOh45j0uh-KZg" type="3091" fillColor="15069951" lineColor="0">
+        <children xmi:type="notation:Shape" xmi:id="_NOVc4N8-EeOh45j0uh-KZg" type="3091" fillColor="16770546" lineColor="0">
           <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_NOWD8N8-EeOh45j0uh-KZg" source="ShadowFigure">
             <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_NOWD8d8-EeOh45j0uh-KZg" key="ShadowFigure_Value" value="false"/>
           </eAnnotations>

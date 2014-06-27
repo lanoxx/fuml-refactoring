@@ -476,6 +476,20 @@ for value usage. For the activity diagram the \texttt{Write\-Structural\-Feature
 the meta-model. Finally the affected property has to be set to private. The precondition for this refactoring is that there are no 
 operations with the same name in the classes that use the property.
 
+\begin{figure}
+ \makebox[\textwidth]{
+ \begin{tabular}{c | c}
+  \includegraphics[scale=0.75]{images/encapsulate/Model_Model_EncapsulateProperty1} &
+  \includegraphics[scale=0.75]{images/encapsulate/Model_Model_EncapsulateProperty2} \\
+  \includegraphics[scale=0.65]{images/encapsulate/Activity_doSomething_DoSomething1} &
+  \includegraphics[scale=0.65]{images/encapsulate/Activity_doSomething_DoSomething2}
+ \end{tabular}
+ }
+ \label{fig:encapsulateproperty}
+ \caption{Abstract syntax changes of the activity diagram in the \textit{encapsulate property} refactoring}
+\end{figure}
+
+
 \begin{lstlisting}[language=OCL,caption=OCL for encapsulate property,label=lst:encapsulateproperty]
 context Property:
 pre:  self.visibility <> uml::VisibilityKind::private and
