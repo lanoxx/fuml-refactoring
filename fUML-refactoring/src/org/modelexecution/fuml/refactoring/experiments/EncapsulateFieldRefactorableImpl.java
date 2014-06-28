@@ -1,6 +1,7 @@
 package org.modelexecution.fuml.refactoring.experiments;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -17,7 +18,9 @@ import org.eclipse.ocl.expressions.OCLExpression;
 import org.eclipse.ocl.expressions.Variable;
 import org.eclipse.ocl.helper.OCLHelper;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.CallOperationAction;
@@ -233,16 +236,19 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             e.printStackTrace();
         }
 
-        eval = ocl.createQuery(query01);
+        eval = ocl.createQuery(query02);
         eval.getEvaluationEnvironment().add("getActivity", getActivity);
         eval.getEvaluationEnvironment().add("setActivity", setActivity);
 
         setterInputCount = 0;
-        eval = ocl.createQuery(query02);
+        HashMap<ActivityEdge, ActivityNode> controlMap = new HashMap<>();
         Collection<WriteStructuralFeatureAction> actions =
             (Collection<WriteStructuralFeatureAction>) eval.evaluate(selectedElement);
         for (WriteStructuralFeatureAction b : actions) {
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
+            for (ActivityEdge edge : b.getOutgoings()) {
+                controlMap.put(edge, coa);
+            }
             coa.setActivity(b.getActivity());
             coa.setOperation(setOperation);
             coa.setTarget(b.getObject());
@@ -250,6 +256,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             coa.setName(b.getName());
             EcoreUtil.delete(b, true);
             setterInputCount += 2;
+        }
+        for (ActivityEdge edge : controlMap.keySet()) {
+            edge.setSource(controlMap.get(edge));
         }
 
         return true;
@@ -294,11 +303,15 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             AddStructuralFeatureValueAction addFeature = UMLFactory.eINSTANCE.createAddStructuralFeatureValueAction();
             addFeature.setStructuralFeature(property);
             addFeature.setActivity(activity);
+            addFeature.setName("add" + getOperation.getName().substring(3));
 
             // Create an InputPin for AddStructuralValueAction
             InputPin addFeatureObjectInputPin = UMLFactory.eINSTANCE.createInputPin();
+            addFeatureObjectInputPin.setType(parent);
+
             LiteralInteger addFeatureObjectInputPinUpper = UMLFactory.eINSTANCE.createLiteralInteger();
             addFeatureObjectInputPinUpper.setValue(1);
+            addFeatureObjectInputPin.setUpperBound(addFeatureObjectInputPinUpper);
             addFeature.setObject(addFeatureObjectInputPin);
 
             // Create ObjectFlow from ReadSelfAction OutputPin to AddStructuralFeatureValueAction InputPin
@@ -317,14 +330,16 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
             // Create an InputPin for AddStructuralValueAction
             InputPin addFeatureValueInputPin = UMLFactory.eINSTANCE.createInputPin();
+            addFeatureValueInputPin.setType(property.getType());
             LiteralInteger addFeatureValueInputPinUpper = UMLFactory.eINSTANCE.createLiteralInteger();
             addFeatureValueInputPinUpper.setValue(1);
+            addFeatureValueInputPin.setUpperBound(addFeatureValueInputPinUpper);
             addFeature.setValue(addFeatureValueInputPin);
 
             // Create ObjectFlow from ParameterNode OutputPin to AddStructuralFeatureValueAction InputPin
             ObjectFlow parameterNodeToStructuralFeatureFlow = UMLFactory.eINSTANCE.createObjectFlow();
             parameterNodeToStructuralFeatureFlow.setSource(parameterNodeIn);
-            parameterNodeToStructuralFeatureFlow.setTarget(addFeatureObjectInputPin);
+            parameterNodeToStructuralFeatureFlow.setTarget(addFeatureValueInputPin);
             // Create the Guard for the ObjectFlow
             LiteralBoolean parameterNodeToStructuralFeatureGuard = UMLFactory.eINSTANCE.createLiteralBoolean();
             parameterNodeToStructuralFeatureGuard.setValue(true);
@@ -476,23 +491,11 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             variable.setType(UMLPackage.Literals.OPERATION);
             ocl.getEnvironment().addElement(variable.getName(), variable, true);
 
-            OCLExpression<EClassifier> query;
-            query = helper.createQuery(OCL_POST_CONSTRAINT_ARGUMENT);
+            OCLExpression<EClassifier> query = helper.createQuery(OCL_POST_CONSTRAINT_ARGUMENT);
             Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-            eval.getEvaluationEnvironment().add("operation", getOperation);
-
-            boolean success = eval.check(selectedElement);
-
-            variable = ExpressionsFactory.eINSTANCE.createVariable();
-            variable.setName("operation");
-            variable.setType(UMLPackage.Literals.OPERATION);
-            ocl.getEnvironment().addElement(variable.getName(), variable, true);
-
-            query = helper.createQuery(OCL_POST_CONSTRAINT_ARGUMENT);
-            eval = ocl.createQuery(query);
             eval.getEvaluationEnvironment().add("operation", setOperation);
 
-            return success && eval.check(selectedElement);
+            return eval.check(selectedElement);
 
         } catch (ParserException e) {
             // TODO Auto-generated catch block

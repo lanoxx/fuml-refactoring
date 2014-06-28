@@ -38,8 +38,7 @@ public class SimpleModelModificationTest {
         "models/insurancemodel/insurancemodel_renameProperty.uml";
     private static final String MODEL_RENAME_OPERATION_PATH =
         "models/insurancemodel/insurancemodel_renameOperation.uml";
-    private static final String MODEL_RENAME_CLASS_PATH =
-            "models/insurancemodel/insurancemodel_renameClass.uml";
+    private static final String MODEL_RENAME_CLASS_PATH = "models/insurancemodel/insurancemodel_renameClass.uml";
     private static final String MODEL_ENCAPSULATE_PATH = "models/insurancemodel/insurancemodel_encapsulate.uml";
     private static final String MODEL_REMOVE_UNUSED_CLASS_PATH =
         "models/insurancemodel/insurancemodel_removeunusedclass.uml";
@@ -96,7 +95,7 @@ public class SimpleModelModificationTest {
         data.set("newSuperClassName", superClassName);
         Class clazz = (Class) loadElement("Model::insurance::Car", Class.class);
         data.set("selectedElement", clazz);
-        
+
         Refactorable extractSuperClassRefactoring = new ExtractSuperClassRefactorableImpl(data);
 
         try {
@@ -178,7 +177,7 @@ public class SimpleModelModificationTest {
     @Test
     public void testEncapsulateField_shouldSucceed() {
         RefactoringData data = new RefactoringDataImpl();
-        Property property = (Property) loadElement("Model::insurance::InsurancePolicy::customer", Property.class);
+        Property property = (Property) loadElement("Model::insurance::InsurancePolicy::numberOfCars", Property.class);
         data.set("selectedElement", property);
 
         Refactorable encapsulate = new EncapsulateFieldRefactorableImpl(data);
@@ -255,12 +254,11 @@ public class SimpleModelModificationTest {
             e.printStackTrace();
         }
     }
-    
+
     @Test
     public void testRenameClass_shouldSucceed() {
         RefactoringData data = new RefactoringDataImpl();
-        Class clazz =
-            (Class) loadElement("Model::insurance::InsurancePolicy", Class.class);
+        Class clazz = (Class) loadElement("Model::insurance::InsurancePolicy", Class.class);
         data.set("selectedElement", clazz);
         data.set("newClassName", "InsurancePolicyRef");
 
