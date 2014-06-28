@@ -23,9 +23,11 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.junit.Before;
 import org.junit.Test;
+import org.modelexecution.fuml.refactoring.Refactorable;
 import org.modelexecution.fuml.refactoring.RefactoringData;
 import org.modelexecution.fuml.refactoring.RefactoringDataImpl;
 import org.modelexecution.fuml.refactoring.RefactoringException;
+import org.modelexecution.fuml.refactoring.rename.RenameClassRefactorableImpl;
 import org.modelexecution.fuml.refactoring.rename.RenameOperationRefactorableImpl;
 import org.modelexecution.fuml.refactoring.rename.RenamePropertyRefactorableImpl;
 
@@ -36,6 +38,8 @@ public class SimpleModelModificationTest {
         "models/insurancemodel/insurancemodel_renameProperty.uml";
     private static final String MODEL_RENAME_OPERATION_PATH =
         "models/insurancemodel/insurancemodel_renameOperation.uml";
+    private static final String MODEL_RENAME_CLASS_PATH =
+            "models/insurancemodel/insurancemodel_renameClass.uml";
     private static final String MODEL_ENCAPSULATE_PATH = "models/insurancemodel/insurancemodel_encapsulate.uml";
     private static final String MODEL_REMOVE_UNUSED_CLASS_PATH =
         "models/insurancemodel/insurancemodel_removeunusedclass.uml";
@@ -92,7 +96,8 @@ public class SimpleModelModificationTest {
         data.set("newSuperClassName", superClassName);
         Class clazz = (Class) loadElement("Model::insurance::Car", Class.class);
         data.set("selectedElement", clazz);
-        ExtractSuperClassRefactorableImpl extractSuperClassRefactoring = new ExtractSuperClassRefactorableImpl(data);
+        
+        Refactorable extractSuperClassRefactoring = new ExtractSuperClassRefactorableImpl(data);
 
         try {
             assertTrue("Precondition not met!", extractSuperClassRefactoring.checkPreCondition());
@@ -139,7 +144,7 @@ public class SimpleModelModificationTest {
         Property property = (Property) loadElement("Model::insurance::InsurancePolicy::numberOfCars", Property.class);
         data.set("selectedElement", property);
 
-        RenamePropertyRefactorableImpl rename = new RenamePropertyRefactorableImpl(data);
+        Refactorable rename = new RenamePropertyRefactorableImpl(data);
 
         String originalName = property.getQualifiedName();
         data.set("originalName", originalName);
@@ -176,7 +181,7 @@ public class SimpleModelModificationTest {
         Property property = (Property) loadElement("Model::insurance::InsurancePolicy::customer", Property.class);
         data.set("selectedElement", property);
 
-        EncapsulateFieldRefactorableImpl encapsulate = new EncapsulateFieldRefactorableImpl(data);
+        Refactorable encapsulate = new EncapsulateFieldRefactorableImpl(data);
 
         try {
             assertTrue("Precondition not met!", encapsulate.checkPreCondition());
@@ -219,7 +224,7 @@ public class SimpleModelModificationTest {
         String originalName = operation.getQualifiedName();
         data.set("originalName", originalName);
 
-        RenameOperationRefactorableImpl renameOperation = new RenameOperationRefactorableImpl(data);
+        Refactorable renameOperation = new RenameOperationRefactorableImpl(data);
 
         try {
             assertTrue("Precondition not met!", renameOperation.checkPreCondition());
@@ -250,6 +255,46 @@ public class SimpleModelModificationTest {
             e.printStackTrace();
         }
     }
+    
+    @Test
+    public void testRenameClass_shouldSucceed() {
+        RefactoringData data = new RefactoringDataImpl();
+        Class clazz =
+            (Class) loadElement("Model::insurance::InsurancePolicy", Class.class);
+        data.set("selectedElement", clazz);
+        data.set("newClassName", "InsurancePolicyRef");
+
+        Refactorable renameClass = new RenameClassRefactorableImpl(data);
+
+        try {
+            assertTrue("Precondition not met!", renameClass.checkPreCondition());
+        } catch (ParserException e) {
+            e.printStackTrace();
+            fail("Precondition error");
+        }
+        try {
+            renameClass.performRefactoring();
+        } catch (RefactoringException e) {
+            e.printStackTrace();
+            fail("Refactoring error");
+        }
+        try {
+            assertTrue("Post condition not met!", renameClass.checkPostCondition());
+        } catch (ParserException e) {
+            e.printStackTrace();
+            fail("Postcondition error");
+        }
+
+        try {
+            resource.save(new FileOutputStream(new File(MODEL_RENAME_CLASS_PATH)), null);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void testRemoveUnusedClass_shouldSucceed() {
@@ -257,7 +302,7 @@ public class SimpleModelModificationTest {
         Class operation = (Class) loadElement("Model::insurance::UnusedClass", Class.class);
         data.set("selectedElement", operation);
 
-        RemoveUnusedClassRefactorableImpl removeClass = new RemoveUnusedClassRefactorableImpl(data);
+        Refactorable removeClass = new RemoveUnusedClassRefactorableImpl(data);
 
         try {
             assertTrue("Precondition not met!", removeClass.checkPreCondition());

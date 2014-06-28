@@ -11,33 +11,30 @@ import org.eclipse.ocl.ecore.Constraint;
 import org.eclipse.ocl.ecore.EcoreEnvironmentFactory;
 import org.eclipse.ocl.expressions.OCLExpression;
 import org.eclipse.ocl.helper.OCLHelper;
-import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.modelexecution.fuml.refactoring.Refactorable;
 import org.modelexecution.fuml.refactoring.RefactoringData;
 import org.modelexecution.fuml.refactoring.RefactoringException;
 
-public class RenamePropertyRefactorableImpl implements Refactorable {
+public class RenameClassRefactorableImpl implements Refactorable {
 
     private final OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
     private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
-    private static final String OCL_PRE_CONSTRAINT =
-        "self.class.attribute->union(self.class.allParents().attribute)->forAll(a | a.name <> '%s')";
-    // self.class.attribute.name<>'%s' and self.class.inheritedMember->selectByType(Property).name<>'%s'
+    // context Class
+    private static final String OCL_PRE_CONSTRAINT = "self.namespace.member->selectByType(Class)->forAll(c | c.name <> '%s')";
 
-    private static final String OCL_POST_CONSTRAINT = "self.class.namespace.member->selectByType(Class).member"
-        + "->selectByType(Activity).node->selectByKind(StructuralFeatureAction).structuralFeature"
-        + "->forAll(n | n.qualifiedName <> '%s')"; // %s is the old name.
     // no post constraint needed at all
+    private static final String OCL_POST_CONSTRAINT = "";
     private final RefactoringData data;
 
-    public RenamePropertyRefactorableImpl(RefactoringData data) {
+    public RenameClassRefactorableImpl(RefactoringData data) {
         this.ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
         this.helper = ocl.createOCLHelper();
         this.data = data;
 
-        assert (data.get("newAttributeName") != null);
+        assert (data.get("newClassName") != null);
         assert (data.get("selectedElement") != null);
     }
 
@@ -50,13 +47,13 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
      */
     @Override
     public boolean checkPreCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getProperty());
+        helper.setContext(UMLPackage.eINSTANCE.getClass_());
 
-        Property selectedElement = (Property) data.get("selectedElement");
-        String newAttributeName = (String) data.get("newAttributeName");
+        Class selectedElement = (Class) data.get("selectedElement");
+        String newClassName = (String) data.get("newClassName");
 
         OCLExpression<EClassifier> query;
-        query = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newAttributeName));
+        query = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newClassName));
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
 
@@ -75,28 +72,16 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
      */
     @Override
     public boolean performRefactoring() throws RefactoringException {
-        Property selectedElement = (Property) data.get("selectedElement");
-        String newAttributeName = (String) data.get("newAttributeName");
+        Class selectedElement = (Class) data.get("selectedElement");
+        String newClassName = (String) data.get("newClassName");
 
-        selectedElement.setName(newAttributeName);
+        selectedElement.setName(newClassName);
 
         return true;
     }
 
     @Override
     public boolean checkPostCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getProperty());
-
-        Property selectedElement = (Property) data.get("selectedElement");
-
-        OCLExpression<EClassifier> query;
-        query = helper.createQuery(String.format(OCL_POST_CONSTRAINT, data.get("originalName")));
-
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-
-        if (!eval.check(selectedElement)) {
-            return false;
-        }
         return true;
     }
 }

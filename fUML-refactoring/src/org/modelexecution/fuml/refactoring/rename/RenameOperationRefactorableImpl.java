@@ -25,13 +25,16 @@ public class RenameOperationRefactorableImpl implements Refactorable {
     private static final String OCL_PRE_CONSTRAINT = "self.class.ownedOperation->union(self.class.allParents()"
         + "->selectByType(Class).ownedOperation)->union(self.class.allParents()"
         + "->selectByType(Interface).ownedOperation)->forAll(a | a.name <> '%s')";
-
+    // interface does not seem to count in UML
+    // self.class.inheritedMember->selectByType(Operation)->forAll(o|(o.parameterableElements()<>self.parameterableElements()) and (o.name<>'%s')) and
+    // self.class.ownedOperation->forAll(o|(o.parameterableElements()<>self.parameterableElements() and (o.name<>'%s')))
     private static final String OCL_POST_CONSTRAINT = ""
         + "self.class.namespace.member->selectByType(Class).member->selectByType(Activity).node"
         + "->selectByType(CallOperationAction)->isEmpty() or "
         + "self.class.namespace.member->selectByType(Class).member"
         + "->selectByType(Activity).node->selectByType(CallOperationAction).operation"
         + "->forAll(n | n.qualifiedName <> '%s')";
+    // no post constraint needed at all 
     private final RefactoringData data;
 
     public RenameOperationRefactorableImpl(RefactoringData data) {
