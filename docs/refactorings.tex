@@ -64,8 +64,7 @@
 \pagestyle{plain}
 \pagenumbering{roman}
 
-\title{Refactoring UML models: Co-refactoring class diagrams and activity diagrams conform to fUML}
-% Maybe better: Refactoring UML models: Co-refactoring fUML conform class diagrams and activity diagrams
+\title{Refactoring UML models: Co-refactoring fUML conform class diagrams and activity diagrams}
 
 \author{Sebastian Geiger (1127054) \and Kristof Meixner (9725208)}
 \institute{Business Informatics Group\\Vienna Technical University}
@@ -123,8 +122,8 @@ as it needs to span over those different types of diagrams and semantics.
 % language for models provided by the OMG that also allows execution and thus can be analysed dynamically
 
 Different approaches exist to prove the semantic preservation of refactorings. One is the static analysis of
-UML models via metrics which can be done with
-the \textit{Object Constraint Language} (OCL) \cite{man:OCL}. Another way is to verify that models can be executed and to compare 
+UML models via the \textit{Object Constraint Language} (OCL) \cite{man:OCL} to assert different properties of the UML model, both before 
+and after the refactoring. Another way is to verify that models can be executed and to compare 
 different attributes of the execution like input and output values, execution traces or states of the 
 original and refactored models. The OMG introduced a foundational subset 
 of UML metamodel concepts abbreviated fUML \cite{man:FUML} and precisely defined the semantics for their execution. Thanks 
@@ -136,10 +135,9 @@ and debug models that conform to fUML.
 
 The goal of this work is to introduce refactorings for fUML models, examine the requirements for co-refactoring of the
 corresponding diagram types and define which co-changes have to be performed to preserve the behavior. Our approach to
-verify
-the semantic preservation of the models is twofold. On the one hand we use OCL pre- and postconditions
+verify the semantic preservation and the correctness of the models is twofold. On the one hand we use OCL pre- and postconditions
 \cite{rob99} to determine whether a refactoring can be applied and whether the models are semantically correct afterwards.
-On the other hand the models have to stay executable after the changes.
+On the other hand the models have to stay executable after the changes, if they are executed with the same input data.
 
 % we present a motivating example (class and activity diagrams) we provide some refactorings that target bothe diagram
 % types we provide a how to test statically and dynamically, then refactor and retest we provide a toolchain
@@ -170,8 +168,9 @@ Section \ref{sec:conclusion} to summarize the paper.
 % what do we want to achieve?
 fUML is a subset of UML for which additional semantics are defined such that models can be executed. The subset contains concepts
 of the packages \textit{Classes}, 
-\textit{CommonBehaviors}, \textit{Activities} and \textit{Actions}, which basically means someone can create 
-\textit{class diagrams} and \textit{activity diagrams} with fUML.
+\textit{CommonBehaviors}, \textit{Activities} and \textit{Actions}, which basically means that it is possible to create 
+\textit{class diagrams} and \textit{activity diagrams} with fUML. At the same time it means that UML models which conform to fUML
+are also executable.
 
 If a refactoring 
 is performed on a UML model such as a class diagram, then any activity diagram which is releated to the class diagram, has 
