@@ -22,19 +22,13 @@ public class RenameOperationRefactorableImpl implements Refactorable {
     private final OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
     private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
-    private static final String OCL_PRE_CONSTRAINT = "self.class.ownedOperation->union(self.class.allParents()"
-        + "->selectByType(Class).ownedOperation)->union(self.class.allParents()"
-        + "->selectByType(Interface).ownedOperation)->forAll(a | a.name <> '%s')";
-    // interface does not seem to count in UML
-    // self.class.inheritedMember->selectByType(Operation)->forAll(o|(o.parameterableElements()<>self.parameterableElements()) and (o.name<>'%s')) and
-    // self.class.ownedOperation->forAll(o|(o.parameterableElements()<>self.parameterableElements() and (o.name<>'%s')))
-    private static final String OCL_POST_CONSTRAINT = ""
-        + "self.class.namespace.member->selectByType(Class).member->selectByType(Activity).node"
-        + "->selectByType(CallOperationAction)->isEmpty() or "
-        + "self.class.namespace.member->selectByType(Class).member"
-        + "->selectByType(Activity).node->selectByType(CallOperationAction).operation"
-        + "->forAll(n | n.qualifiedName <> '%s')";
+    // context Operation
+    private static final String OCL_PRE_CONSTRAINT = "self.class.inheritedMember->selectByType(Operation)"
+    		+ "->forAll(o|(o.parameterableElements()<>self.parameterableElements()) and (o.name<>'%s')) and "
+    		+ "self.class.ownedOperation->excluding(self)->forAll(o|(o.parameterableElements()<>self.parameterableElements() "
+    		+ "and (o.name<>'%s')))";
     // no post constraint needed at all 
+    private static final String OCL_POST_CONSTRAINT = "";
     private final RefactoringData data;
 
     public RenameOperationRefactorableImpl(RefactoringData data) {
@@ -61,7 +55,7 @@ public class RenameOperationRefactorableImpl implements Refactorable {
         String newOperationName = (String) data.get("newOperationName");
 
         OCLExpression<EClassifier> query;
-        String queryString = String.format(OCL_PRE_CONSTRAINT, newOperationName);
+        String queryString = String.format(OCL_PRE_CONSTRAINT, newOperationName, newOperationName);
         query = helper.createQuery(queryString);
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
@@ -91,19 +85,6 @@ public class RenameOperationRefactorableImpl implements Refactorable {
 
     @Override
     public boolean checkPostCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getOperation());
-
-        Operation selectedElement = (Operation) data.get("selectedElement");
-
-        OCLExpression<EClassifier> query;
-        String queryString = String.format(OCL_POST_CONSTRAINT, data.get("originalName"));
-        query = helper.createQuery(queryString);
-
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-
-        if (!eval.check(selectedElement)) {
-            return false;
-        }
         return true;
     }
 }

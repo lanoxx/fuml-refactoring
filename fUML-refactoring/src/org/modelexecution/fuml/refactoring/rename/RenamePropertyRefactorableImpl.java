@@ -22,14 +22,12 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
     private final OCL<?, EClassifier, ?, ?, ?, EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
     private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
+    // context Property
     private static final String OCL_PRE_CONSTRAINT =
-        "self.class.attribute->union(self.class.allParents().attribute)->forAll(a | a.name <> '%s')";
-    // self.class.attribute.name<>'%s' and self.class.inheritedMember->selectByType(Property).name<>'%s'
+        "self.class.attribute.name->forAll(n|n<>'%s') and self.class.inheritedMember->selectByType(Property).name->forAll(n|n<>'%s')";
 
-    private static final String OCL_POST_CONSTRAINT = "self.class.namespace.member->selectByType(Class).member"
-        + "->selectByType(Activity).node->selectByKind(StructuralFeatureAction).structuralFeature"
-        + "->forAll(n | n.qualifiedName <> '%s')"; // %s is the old name.
     // no post constraint needed at all
+    private static final String OCL_POST_CONSTRAINT = "";
     private final RefactoringData data;
 
     public RenamePropertyRefactorableImpl(RefactoringData data) {
@@ -56,7 +54,7 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
         String newAttributeName = (String) data.get("newAttributeName");
 
         OCLExpression<EClassifier> query;
-        query = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newAttributeName));
+        query = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newAttributeName, newAttributeName));
 
         Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
 
@@ -85,18 +83,6 @@ public class RenamePropertyRefactorableImpl implements Refactorable {
 
     @Override
     public boolean checkPostCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getProperty());
-
-        Property selectedElement = (Property) data.get("selectedElement");
-
-        OCLExpression<EClassifier> query;
-        query = helper.createQuery(String.format(OCL_POST_CONSTRAINT, data.get("originalName")));
-
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-
-        if (!eval.check(selectedElement)) {
-            return false;
-        }
         return true;
     }
 }
