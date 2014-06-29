@@ -103,7 +103,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             return false;
         }
 
-        OCLExpression<EClassifier> query;
+        OCLExpression<EClassifier> expression;
 
         Variable<EClassifier, EParameter> getVariable = ExpressionsFactory.eINSTANCE.createVariable();
         getVariable.setName("getOperation");
@@ -115,7 +115,7 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         setVariable.setType(UMLPackage.Literals.PROPERTY);
         ocl.getEnvironment().addElement(setVariable.getName(), setVariable, true);
 
-        query = helper.createQuery(OCL_PRE_CONSTRAINT);
+        expression = helper.createQuery(OCL_PRE_CONSTRAINT);
 
         Type propertyType = selectedElement.getType();
         String propertyName = selectedElement.getName();
@@ -131,11 +131,11 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         getOperationOutParameter = getOperation.createOwnedParameter(propertyName, propertyType);
         getOperationOutParameter.setDirection(ParameterDirectionKind.RETURN_LITERAL);
 
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-        eval.getEvaluationEnvironment().add("getOperation", getOperation);
-        eval.getEvaluationEnvironment().add("setOperation", setOperation);
+        Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
+        query.getEvaluationEnvironment().add("getOperation", getOperation);
+        query.getEvaluationEnvironment().add("setOperation", setOperation);
 
-        return eval.check(selectedElement);
+        return query.check(selectedElement);
     }
 
     /**
@@ -190,24 +190,23 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         setActivitiesOclVariable.setType(UMLPackage.Literals.ACTIVITY);
         ocl.getEnvironment().addElement(setActivitiesOclVariable.getName(), setActivitiesOclVariable, true);
 
-        OCLExpression<EClassifier> query01 = null;
+        OCLExpression<EClassifier> readStructuralExpression = null;
         try {
-            query01 =
+            readStructuralExpression =
                 helper.createQuery(String
                         .format("uml::ReadStructuralFeatureAction.allInstances()->select(r|r.structuralFeature.qualifiedName='%s')"
                             + "->select(action | action.activity <> getActivity)->select(action | action.activity <> setActivity)",
                                 selectedElement.getQualifiedName()));
         } catch (ParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query01);
-        eval.getEvaluationEnvironment().add("getActivity", getActivity);
-        eval.getEvaluationEnvironment().add("setActivity", setActivity);
+        Query<EClassifier, EClass, EObject> query = ocl.createQuery(readStructuralExpression);
+        query.getEvaluationEnvironment().add("getActivity", getActivity);
+        query.getEvaluationEnvironment().add("setActivity", setActivity);
 
         Collection<ReadStructuralFeatureAction> object =
-            (Collection<ReadStructuralFeatureAction>) eval.evaluate(selectedElement);
+            (Collection<ReadStructuralFeatureAction>) query.evaluate(selectedElement);
         for (ReadStructuralFeatureAction a : object) {
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
             coa.setActivity(a.getActivity());
@@ -230,26 +229,25 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
         setActivitiesOclVariable.setType(UMLPackage.Literals.ACTIVITY);
         ocl.getEnvironment().addElement(setActivitiesOclVariable.getName(), setActivitiesOclVariable, true);
 
-        OCLExpression<EClassifier> query02 = null;
+        OCLExpression<EClassifier> writeStructuralExpression = null;
         try {
-            query02 =
+            writeStructuralExpression =
                 helper.createQuery(String
                         .format("uml::WriteStructuralFeatureAction.allInstances()->union(uml::AddStructuralFeatureValueAction.allInstances())->select(r|r.structuralFeature.qualifiedName='%s')"
                             + "->select(action | action.activity <> getActivity)->select(action | action.activity <> setActivity)",
                                 selectedElement.getQualifiedName()));
         } catch (ParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        eval = ocl.createQuery(query02);
-        eval.getEvaluationEnvironment().add("getActivity", getActivity);
-        eval.getEvaluationEnvironment().add("setActivity", setActivity);
+        query = ocl.createQuery(writeStructuralExpression);
+        query.getEvaluationEnvironment().add("getActivity", getActivity);
+        query.getEvaluationEnvironment().add("setActivity", setActivity);
 
         setterInputCount = 0;
         HashMap<ActivityEdge, ActivityNode> controlMap = new HashMap<>();
         Collection<WriteStructuralFeatureAction> actions =
-            (Collection<WriteStructuralFeatureAction>) eval.evaluate(selectedElement);
+            (Collection<WriteStructuralFeatureAction>) query.evaluate(selectedElement);
         for (WriteStructuralFeatureAction b : actions) {
             CallOperationAction coa = UMLFactory.eINSTANCE.createCallOperationAction();
             for (ActivityEdge edge : b.getOutgoings()) {
@@ -462,26 +460,24 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             variable.setType(UMLPackage.Literals.OPERATION);
             ocl.getEnvironment().addElement(variable.getName(), variable, true);
 
-            OCLExpression<EClassifier> query;
-            query = helper.createQuery(OCL_POST_CONSTRAINT_TARGET);
-            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-            eval.getEvaluationEnvironment().add("operation", getOperation);
+            OCLExpression<EClassifier> expression;
+            expression = helper.createQuery(OCL_POST_CONSTRAINT_TARGET);
+            Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
+            query.getEvaluationEnvironment().add("operation", getOperation);
 
-            boolean success = eval.check(selectedElement);
+            boolean success = query.check(selectedElement);
 
             variable = ExpressionsFactory.eINSTANCE.createVariable();
             variable.setName("operation");
             variable.setType(UMLPackage.Literals.OPERATION);
             ocl.getEnvironment().addElement(variable.getName(), variable, true);
 
-            query = helper.createQuery(OCL_POST_CONSTRAINT_TARGET);
-            eval = ocl.createQuery(query);
-            eval.getEvaluationEnvironment().add("operation", setOperation);
+            expression = helper.createQuery(OCL_POST_CONSTRAINT_TARGET);
+            query = ocl.createQuery(expression);
+            query.getEvaluationEnvironment().add("operation", setOperation);
 
-            return success && eval.check(selectedElement);
-
+            return success && query.check(selectedElement);
         } catch (ParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -497,14 +493,12 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             variable.setType(UMLPackage.Literals.OPERATION);
             ocl.getEnvironment().addElement(variable.getName(), variable, true);
 
-            OCLExpression<EClassifier> query = helper.createQuery(OCL_POST_CONSTRAINT_ARGUMENT);
-            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-            eval.getEvaluationEnvironment().add("operation", setOperation);
+            OCLExpression<EClassifier> expression = helper.createQuery(OCL_POST_CONSTRAINT_ARGUMENT);
+            Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
+            query.getEvaluationEnvironment().add("operation", setOperation);
 
-            return eval.check(selectedElement);
-
+            return query.check(selectedElement);
         } catch (ParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -520,14 +514,13 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             variable.setType(UMLPackage.Literals.OPERATION);
             ocl.getEnvironment().addElement(variable.getName(), variable, true);
 
-            OCLExpression<EClassifier> query;
-            query = helper.createQuery(OCL_POST_CONSTRAINT_RESULT);
-            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-            eval.getEvaluationEnvironment().add("operation", getOperation);
+            OCLExpression<EClassifier> expression;
+            expression = helper.createQuery(OCL_POST_CONSTRAINT_RESULT);
+            Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
+            query.getEvaluationEnvironment().add("operation", getOperation);
 
-            return eval.check(selectedElement);
+            return query.check(selectedElement);
         } catch (ParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -550,18 +543,15 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             outputPinCount.setType(UMLPackage.Literals.OPERATION);
             ocl.getEnvironment().addElement(outputPinCount.getName(), outputPinCount, true);
 
-            OCLExpression<EClassifier> query;
-            query = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_INPUT);
-            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-            eval.getEvaluationEnvironment().add("inputPinCounter", setterInputCount);
-            eval.getEvaluationEnvironment().add("operation", setOperation);
+            OCLExpression<EClassifier> expression;
+            expression = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_INPUT);
+            Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
+            query.getEvaluationEnvironment().add("inputPinCounter", setterInputCount);
+            query.getEvaluationEnvironment().add("operation", setOperation);
 
-            boolean success = eval.check(selectedElement);
-
+            boolean success = query.check(selectedElement);
             return success;
-
         } catch (ParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -583,29 +573,27 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
             operation.setType(UMLPackage.Literals.OPERATION);
             ocl.getEnvironment().addElement(operation.getName(), operation, true);
 
-            OCLExpression<EClassifier> query;
-            query = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_INPUT);
-            Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-            eval.getEvaluationEnvironment().add("inputPinCounter", getterInputCount);
-            eval.getEvaluationEnvironment().add("operation", getOperation);
+            OCLExpression<EClassifier> expression;
+            expression = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_INPUT);
+            Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
+            query.getEvaluationEnvironment().add("inputPinCounter", getterInputCount);
+            query.getEvaluationEnvironment().add("operation", getOperation);
 
-            boolean success = eval.check(selectedElement);
+            boolean success = query.check(selectedElement);
 
             Variable<EClassifier, EParameter> outputPinCount = ExpressionsFactory.eINSTANCE.createVariable();
             outputPinCount.setName("outputPinCounter");
             outputPinCount.setType(UMLPackage.Literals.LITERAL_INTEGER);
             ocl.getEnvironment().addElement(outputPinCount.getName(), outputPinCount, true);
 
-            query = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_OUTPUT);
-            eval = ocl.createQuery(query);
-            eval.getEvaluationEnvironment().add("outputPinCounter", getterResultCount);
-            eval.getEvaluationEnvironment().add("operation", getOperation);
+            expression = helper.createQuery(OCL_POST_CONSTRAINT_COUNT_OUTPUT);
+            query = ocl.createQuery(expression);
+            query.getEvaluationEnvironment().add("outputPinCounter", getterResultCount);
+            query.getEvaluationEnvironment().add("operation", getOperation);
 
-            success = success && eval.check(selectedElement);
+            success = success && query.check(selectedElement);
             return success;
-
         } catch (ParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

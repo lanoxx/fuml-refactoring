@@ -55,13 +55,13 @@ public class RemoveUnusedClassRefactorableImpl implements Refactorable {
         variable.setType(UMLPackage.Literals.CLASSIFIER);
         ocl.getEnvironment().addElement(variable.getName(), variable, true);
 
-        OCLExpression<EClassifier> query;
-        query = helper.createQuery(OCL_PRE_CONSTRAINT);
+        OCLExpression<EClassifier> expression;
+        expression = helper.createQuery(OCL_PRE_CONSTRAINT);
 
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-        eval.getEvaluationEnvironment().add("classToRemove", selectedElement);
+        Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
+        query.getEvaluationEnvironment().add("classToRemove", selectedElement);
 
-        if (!eval.check(selectedElement)) {
+        if (!query.check(selectedElement)) {
             return false;
         }
 

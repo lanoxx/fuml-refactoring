@@ -58,12 +58,12 @@ public class ExtractSuperClassRefactorableImpl implements Refactorable {
         Class selectedElement = (Class) data.get("selectedElement");
         String newSuperClassName = (String) data.get("newSuperClassName");
 
-        OCLExpression<EClassifier> query;
-        query = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newSuperClassName));
+        OCLExpression<EClassifier> expression;
+        expression = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newSuperClassName));
 
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+        Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
 
-        if (!eval.check(selectedElement)) {
+        if (!query.check(selectedElement)) {
             return false;
         }
 
@@ -125,10 +125,10 @@ public class ExtractSuperClassRefactorableImpl implements Refactorable {
         variable.setType(UMLPackage.Literals.CLASSIFIER);
         ocl.getEnvironment().addElement(variable.getName(), variable, true);
 
-        OCLExpression<EClassifier> query = helper.createQuery(OCL_POST_CONSTRAINT);
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
-        eval.getEvaluationEnvironment().add("newSuperClass", superClass);
-        if (!eval.check(selectedElement)) {
+        OCLExpression<EClassifier> expression = helper.createQuery(OCL_POST_CONSTRAINT);
+        Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
+        query.getEvaluationEnvironment().add("newSuperClass", superClass);
+        if (!query.check(selectedElement)) {
             return false;
         }
 

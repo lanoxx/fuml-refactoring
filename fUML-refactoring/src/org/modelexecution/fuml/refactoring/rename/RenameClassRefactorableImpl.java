@@ -52,12 +52,12 @@ public class RenameClassRefactorableImpl implements Refactorable {
         Class selectedElement = (Class) data.get("selectedElement");
         String newClassName = (String) data.get("newClassName");
 
-        OCLExpression<EClassifier> query;
-        query = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newClassName));
+        OCLExpression<EClassifier> expression;
+        expression = helper.createQuery(String.format(OCL_PRE_CONSTRAINT, newClassName));
 
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+        Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
 
-        if (!eval.check(selectedElement)) {
+        if (!query.check(selectedElement)) {
             return false;
         }
         return true;
