@@ -567,11 +567,16 @@ pre:  self.visibility <> uml::VisibilityKind::private and
 \label{sec:toolchain}
 In the last section we explained some refactorings in detail with their respective preconditions and postconditions the model. 
 We also discussed which steps have to be taken to actually co-refactor an activity diagram if changes are implied by refactoring 
-the class diagram. In this section we will present a toolchain that allows the implementation and execution of the refactorings.
+the class diagram. In this section we will present implementation details as well as a toolchain that allows the integration and 
+execution of the refactorings in Eclipse\footnote{\url{http://www.eclipse.org/}}. 
 
-For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
-models in a virtual machine. The models are stored in XMI format and loaded with an EMF ResourceSet. The ResourceSet
-can be used to retrieve a Resource object through an URI, which is then used to access the different objects in the model 
+% For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
+% models in a virtual machine.
+\subsection{Model loading}
+The models are stored in \textit{XML Metadata Interchange} \cite{man:XMI} (XMI) format 
+and loaded programmatically with an \textit{Eclipse Modeling Framework} \cite{Steinberg:2009:EEM:1197540} (EMF) 
+\texttt{Resource\-Set}. The \texttt{Resource\-Set}
+can be used to retrieve a \texttt{Resource} object through an \texttt{URI}, which is then used to access the different objects in the model 
 (see Listing \ref{lst:resourceset}). All elements contained in the model are instances of Ecore (the implementation of
 the MOF meta-meta-model) and they represent classes of the UML meta-model, which is implemented with Ecore.
 
