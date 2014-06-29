@@ -42,6 +42,8 @@ public class SimpleModelModificationTest {
     private static final String MODEL_ENCAPSULATE_PATH = "models/insurancemodel/insurancemodel_encapsulate.uml";
     private static final String MODEL_REMOVE_UNUSED_CLASS_PATH =
         "models/insurancemodel/insurancemodel_removeunusedclass.uml";
+    private static final String MODEL_PULLUP_PROPERTY_PATH =
+        "models/insurancemodel/insurancemodel_pullupproperty.uml";
 
     /** The current resource. */
     private ResourceSet resourceSet;
@@ -127,13 +129,10 @@ public class SimpleModelModificationTest {
             e.printStackTrace();
         }
 
-        TreeIterator<EObject> iterator = resource.getAllContents();
-        while (iterator.hasNext()) {
-            EObject eObject = iterator.next();
-            if (eObject instanceof Class) {
-                System.out.println(eObject.toString());
-            }
-        }
+        /*
+         * TreeIterator<EObject> iterator = resource.getAllContents(); while (iterator.hasNext()) { EObject eObject =
+         * iterator.next(); if (eObject instanceof Class) { System.out.println(eObject.toString()); } }
+         */
     }
 
     @Test
@@ -323,6 +322,77 @@ public class SimpleModelModificationTest {
 
         try {
             resource.save(new FileOutputStream(new File(MODEL_REMOVE_UNUSED_CLASS_PATH)), null);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testPullUpProperty_shouldSucceed() {
+        String superClassName = "SuperPolicy";
+
+        RefactoringData data = new RefactoringDataImpl();
+        data.set("newSuperClassName", superClassName);
+        Class clazz = (Class) loadElement("Model::insurance::InsurancePolicy", Class.class);
+        data.set("selectedElement", clazz);
+
+        Refactorable extractSuperClassRefactoring = new ExtractSuperClassRefactorableImpl(data);
+
+        try {
+            assertTrue("Precondition not met!", extractSuperClassRefactoring.checkPreCondition());
+        } catch (ParserException pre) {
+            fail("Preconstraints failed with ParserException");
+        }
+
+        try {
+            extractSuperClassRefactoring.performRefactoring();
+        } catch (RefactoringException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            assertTrue("Post condition not met!", extractSuperClassRefactoring.checkPostCondition());
+        } catch (ParserException post) {
+            post.printStackTrace();
+            fail("Postconstraints failed with ParserException");
+        }
+
+        // Extract SuperClass refactoring is done, next we perform the pull up property refactoring
+
+        data = new RefactoringDataImpl();
+        Property property = (Property) loadElement("Model::insurance::InsurancePolicy::numberOfCars", Property.class);
+        Class superClass = (Class) loadElement("Model::insurance::SuperPolicy", Class.class);
+        data.set("selectedElement", property);
+        data.set("superClass", superClass);
+
+        Refactorable pullUpPropertyRefactoring = new PullUpPropertyRefactorableImpl(data);
+
+        try {
+            // assertTrue("Precondition not met!", pullUpPropertyRefactoring.checkPreCondition());
+            pullUpPropertyRefactoring.checkPreCondition();
+        } catch (ParserException pre) {
+            fail("Preconstraints failed with ParserException");
+        }
+
+        try {
+            pullUpPropertyRefactoring.performRefactoring();
+        } catch (RefactoringException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            assertTrue("Post condition not met!", pullUpPropertyRefactoring.checkPostCondition());
+        } catch (ParserException post) {
+            post.printStackTrace();
+            fail("Postconstraints failed with ParserException");
+        }
+
+        try {
+            resource.save(new FileOutputStream(new File(MODEL_PULLUP_PROPERTY_PATH)), null);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
