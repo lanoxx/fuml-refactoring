@@ -54,13 +54,13 @@ public class RenameOperationRefactorableImpl implements Refactorable {
         Operation selectedElement = (Operation) data.get("selectedElement");
         String newOperationName = (String) data.get("newOperationName");
 
-        OCLExpression<EClassifier> query;
+        OCLExpression<EClassifier> expression;
         String queryString = String.format(OCL_PRE_CONSTRAINT, newOperationName, newOperationName);
-        query = helper.createQuery(queryString);
+        expression = helper.createQuery(queryString);
 
-        Query<EClassifier, EClass, EObject> eval = ocl.createQuery(query);
+        Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
 
-        if (!eval.check(selectedElement)) {
+        if (!query.check(selectedElement)) {
             return false;
         }
         return true;
