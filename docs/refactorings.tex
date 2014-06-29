@@ -257,7 +257,9 @@ co-refactorings is given in Section \ref{sec:fuml-refactoring} together with the
 
 \begin{figure}[h!t]
  \centering
- \includegraphics[scale=0.8]{images/Model_Model_Classifiers}
+ \makebox[\textwidth]{
+ \includegraphics[scale=0.65]{images/Model_Model_Classifiers}
+ }
  \caption{Abstract syntax for used class concepts in \textit{fUML}}
  \label{fig:fuml1}
 \end{figure}
@@ -266,17 +268,10 @@ In order to demonstrate how the presented refactorings affect both class and act
 model from the insurance domain. For a better understanding of the abstract syntax we first show the relevant parts of the fUML 
 subset for our example. Figure \ref{fig:fuml1} explain how the meta-model concepts \texttt{Property}, which is a subclass of 
 \texttt{Structural\-Feature}, and \texttt{Operation}, which is a \texttt{Behavioral\-Feature}, are linked to the \texttt{Class}. 
-Furthermore is shows that \texttt{Operation} owns zero or more \texttt{Parameter}. Figure \ref{fig:fuml2} shows the hierarchy of 
+Furthermore is shows that \texttt{Operation} owns zero or more \texttt{Parameter}. It also shows the hierarchy of 
 the most relevant actions. Important to mention is the \texttt{Call\-Operation\-Action} which holds a single \texttt{Operation}, 
 and the \texttt{Structural\-Feature\-Action}, which holds a single \texttt{Structural\-Feature}. To better recall the abstract 
 concepts we colored them and used the color for the diagrams in the paper.
-
-\begin{figure}[h!t]
- \centering
- \includegraphics[scale=0.8]{images/Model_Model_Behavior}
- \caption{Abstract syntax for used actions in \textit{fUML}}
- \label{fig:fuml2}
-\end{figure}
 
 Figure \ref{fig:classdiagramcomplex} shows our example class diagram of an insurance company with relevant properties and operations. 
 In our case there are different domain objects. A company administers different customers and employs some employees. Further the company 

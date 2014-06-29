@@ -59,6 +59,10 @@
       <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Xq9QceyqEeOA0Yz9yaDTEA" value="1"/>
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Xq9QcuyqEeOA0Yz9yaDTEA" value="1"/>
     </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_BVIH4P93EeOvnuO1TAENuQ" name="operation" type="_O_DvwOyIEeOFCM9lFXJhNA" association="_BVJWAP93EeOvnuO1TAENuQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BVIH4f93EeOvnuO1TAENuQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BVIH4v93EeOvnuO1TAENuQ" value="1"/>
+    </ownedAttribute>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="_T9pcwOygEeOA0Yz9yaDTEA" name="Operation"/>
   <packagedElement xmi:type="uml:Association" xmi:id="_Xq93gOyqEeOA0Yz9yaDTEA" name="" memberEnd="_Xq93geyqEeOA0Yz9yaDTEA _Xq9QcOyqEeOA0Yz9yaDTEA">
@@ -73,6 +77,10 @@
       <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Ac4VYeysEeOA0Yz9yaDTEA" value="1"/>
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Ac4VYuysEeOA0Yz9yaDTEA" value="1"/>
     </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_5EjY0P92EeOvnuO1TAENuQ" name="structuralFeature" type="_Y8NVYOyIEeOFCM9lFXJhNA" association="_5EjY0_92EeOvnuO1TAENuQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_5EjY0f92EeOvnuO1TAENuQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_5EjY0v92EeOvnuO1TAENuQ" value="1"/>
+    </ownedAttribute>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="_7fP9wOyrEeOA0Yz9yaDTEA" name="StructuralFeature"/>
   <packagedElement xmi:type="uml:Association" xmi:id="_Ac4VY-ysEeOA0Yz9yaDTEA" name="" memberEnd="_Ac4VZOysEeOA0Yz9yaDTEA _Ac4VYOysEeOA0Yz9yaDTEA">
@@ -84,10 +92,22 @@
   <packagedElement xmi:type="uml:Class" xmi:id="_S2l3oOysEeOA0Yz9yaDTEA" name="ReadStructuralFeatureAction">
     <generalization xmi:type="uml:Generalization" xmi:id="_yJ9XcOytEeOA0Yz9yaDTEA" general="_4pyMgOyrEeOA0Yz9yaDTEA"/>
   </packagedElement>
-  <packagedElement xmi:type="uml:Class" xmi:id="_d-YrcOysEeOA0Yz9yaDTEA" name="WriteStructuralFeatureAction">
+  <packagedElement xmi:type="uml:Class" xmi:id="_d-YrcOysEeOA0Yz9yaDTEA" name="WriteStructuralFeatureAction" isAbstract="true">
     <generalization xmi:type="uml:Generalization" xmi:id="_zIv68OytEeOA0Yz9yaDTEA" general="_4pyMgOyrEeOA0Yz9yaDTEA"/>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="_kJN2AOysEeOA0Yz9yaDTEA" name="AddStructuralFeatureValueAction">
     <generalization xmi:type="uml:Generalization" xmi:id="_1JzzwOytEeOA0Yz9yaDTEA" general="_d-YrcOysEeOA0Yz9yaDTEA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_5EjY0_92EeOvnuO1TAENuQ" name="" memberEnd="_5EjY1P92EeOvnuO1TAENuQ _5EjY0P92EeOvnuO1TAENuQ">
+    <ownedEnd xmi:type="uml:Property" xmi:id="_5EjY1P92EeOvnuO1TAENuQ" name="structuralFeatureAction" type="_4pyMgOyrEeOA0Yz9yaDTEA" association="_5EjY0_92EeOvnuO1TAENuQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_5EjY1f92EeOvnuO1TAENuQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_5EjY1v92EeOvnuO1TAENuQ" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_BVJWAP93EeOvnuO1TAENuQ" name="" memberEnd="_BVJWAf93EeOvnuO1TAENuQ _BVIH4P93EeOvnuO1TAENuQ">
+    <ownedEnd xmi:type="uml:Property" xmi:id="_BVJWAf93EeOvnuO1TAENuQ" name="callOperationAction" type="_LBuDkOygEeOA0Yz9yaDTEA" association="_BVJWAP93EeOvnuO1TAENuQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BVJWAv93EeOvnuO1TAENuQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BVJWA_93EeOvnuO1TAENuQ" value="1"/>
+    </ownedEnd>
   </packagedElement>
 </uml:Model>
