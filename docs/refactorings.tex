@@ -262,13 +262,14 @@ co-refactorings is given in Section \ref{sec:fuml-refactoring} together with the
  \label{fig:fuml1}
 \end{figure}
 
-In order to demonstrate how the presented refactorings affect both class and activity diagrams we will present an example 
+In order to demonstrate how the presented refactorings affect both class and activity diagrams we will introduce an example 
 model from the insurance domain. For a better understanding of the abstract syntax we first show the relevant parts of the fUML 
 subset for our example. Figure \ref{fig:fuml1} explain how the meta-model concepts \texttt{Property}, which is a subclass of 
 \texttt{Structural\-Feature}, and \texttt{Operation}, which is a \texttt{Behavioral\-Feature}, are linked to the \texttt{Class}. 
 Furthermore is shows that \texttt{Operation} owns zero or more \texttt{Parameter}. Figure \ref{fig:fuml2} shows the hierarchy of 
 the most relevant actions. Important to mention is the \texttt{Call\-Operation\-Action} which holds a single \texttt{Operation}, 
-and the \texttt{Structural\-Feature\-Action}, which holds a single \texttt{Structural\-Feature}.
+and the \texttt{Structural\-Feature\-Action}, which holds a single \texttt{Structural\-Feature}. To better recall the abstract 
+concepts we colored them and used the color for the diagrams in the paper.
 
 \begin{figure}[h!t]
  \centering
@@ -397,13 +398,13 @@ is out of the scope of this work.
 A refactoring takes several parameters to configure the parts of the model that change. Rename 
 refactorings need the model element that shall be refactored as well as the new name as parameter. As the abstract syntax 
 is not changed the respective classes, operations and properties can then be adapted 
-and the changes are automatically propagated. As refactoring is trivial in our example there is no such case explicitly 
+and the changes are automatically propagated. As this refactoring is trivial in our example there is no such case explicitly 
 included. However in order to guarantee that the 
 refactoring is possible, we have to ensure that there are no occurrences of the same type with the same name as the 
 new name. In this work we did not take techniques such as operation overloading into account.
 
 Listing \ref{lst:renameproperty} shows the OCL constraint that has to be checked prior to the \textit{rename property} 
-refactoring. All properties of the class and its parents have to be check such that any property name does not match 
+refactoring. Is has to be verified that the names of all inherited properties and the ones of the class itself do not match 
 with the indicted new name.
 
 \begin{lstsingle}[language=OCL,caption=OCL for \textit{rename property} refactoring,label=lst:renameproperty]
@@ -416,10 +417,8 @@ pre:  self.class.attribute.name->
 \end{lstsingle}
 
 Listing \ref{lst:renameoperation} shows the OCL precondition for the \textit{rename operation} refactoring. As operations 
-might have same name but different parameter declarations we use the OCL function \texttt{isDistinguishableFrom} on the 
-united operations of the class and its parents. This precondition is not a pure OCL constraint as the operation \texttt{newOperation} 
-is constructed in Java before and checked against the existing ones in the model. We will show an example of this in 
-Section \ref{sec:toolchain}.
+might have the same name but different parameter declarations we need to test if there already are operations within the 
+class or its parents that have the same parameters and the same name as the indicated name of the operation.
 
 \begin{lstsingle}[language=OCL,caption=OCL for \textit{rename operation} refactoring,label=lst:renameoperation]
 context Operation:
@@ -434,25 +433,29 @@ pre:  self.class.inheritedMember->selectByType(Operation)
           and (o.name <> 'newOperationName')))
 \end{lstsingle}
 
-As the OCL constraint for the \textit{rename class} refactoring is very similar to Listing \ref{lst:renameproperty} 
-we put it into Appendix \ref{sec:appendix} under Listing \ref{lst:renameclass}.
+As the OCL constraint for the \textit{rename class} refactoring is very similar to one of \textit{rename property} shown 
+in Listing \ref{lst:renameproperty} we present it in Appendix \ref{sec:appendix} under Listing \ref{lst:renameclass}.
 
-As we already mentioned the changes are automatically propagated to the respective diagrams. Because of this we do 
-not need to formulate postconditions for the rename refactorings.
+As we already mentioned the changes are automatically propagated to the respective diagrams. Thanks to this we also do 
+not need to formulate postconditions for the rename refactorings. The refactoring which we present next will also 
+change the model on the abstract syntax level.
 
 \subsection{Extract superclass}
 \label{sec:extract}
-The \textit{extract superclass} refactoring takes two parameters. The name of the superclass to extract as well as
+The \textit{extract superclass} refactoring is used to extract a superclass out of one or more classes and provide 
+a common basis. Most of the time it is used in combination with the \textit{pull up property} and/or the \textit{pull 
+up operation} refactoring.
+In our case the refactoring takes two parameters. The name of the superclass to extract as well as
 the class that participates in the refactoring and which will receive the created class as its superclass.
 
-Figure \ref{fig:extract} shows the changes of the refactoring on the abstrax syntax level. A new \texttt{Class} is 
+Figure \ref{fig:extract} shows the changes of the refactoring on the abstract syntax level. A new \texttt{Class} is 
 introduced and linked via a \texttt{Generalization} to the already existing \texttt{Class}. In our example the two 
 classes \texttt{Car} and \texttt{Truck} will be connected to the new superclass \texttt{Vehicle} via the attribute 
 \textit{superClass} of the meta-model concept \texttt{Class}. Listing \ref{lst:extractsuperclass} shows the OCL pre- and 
 postcondition for this refactoring. The preconditions checks that there are no classes in the namespace with the 
-same name. The postcondition whether the newly created class is visible and the existing class is a subclass. 
-Parts of the model\footnote{E.g. the insurance policy can hold a single variable referencing all vehicles} might also benefit 
-from changing references to the new class.
+same name. The postcondition verifies whether the newly created class is visible and the class, from which the refactoring was initiated,
+is a subclass. Parts of the model\footnote{E.g. the insurance policy could then hold a single variable referencing all vehicles instead 
+of one for the cars and one for the trucks.} might also benefit from changing references to the new class.
 
 \begin{figure}
  \makebox[\textwidth]{
@@ -494,17 +497,19 @@ in the target class and that they are not private.
 \subsection{Encapsulate property}
 \label{sec:encapsulate}
 The \textit{encapsulate property} refactoring is a rather complex one. The goal is to change the visibility of a property to 
-\textit{private} and introduce getter and setter operations. Thus at first setter and getter operations for the property are created and
-added to the class. For both operations the corresponding activities are also created. Afterwards each 
-\texttt{Structural\-Feature\-Action} in the model (which accesses the property) must be replaced by a \texttt{Call\-Operation\-Action}. If 
-the action is a 
-\texttt{Read\-Structural\-Feature\-Action} then the call operation invokes the getter, otherwise the setter. Finally the property's 
+\textit{private} and introduce \textit{public} getter and setter operations to access the value of the property. Thus at first 
+getter and setter operations for the property are created and
+added to the class. For both operations the corresponding activities are generated and their specification set to the 
+respective operation. Afterwards each \texttt{Structural\-Feature\-Action} in the model has to be checked, whether it accesses 
+the property, and in case must be replaced by a \texttt{Call\-Operation\-Action}. If the action is a 
+\texttt{Read\-Structural\-Feature\-Action} then the call operation invokes the getter, if the node is of class 
+\texttt{Add\-Structural\-Feature\-Value\-Action} the setter operation has to be used. Finally the property's 
 visibility is set to private.
 
-Figure \ref{fig:encapsulatebefore} shows the abstract syntax of a part of the model before the refactoring and
+Figure \ref{fig:encapsulatebefore} shows the abstract syntax of a part of the model before the refactoring, 
 Figure \ref{fig:encapsulateafter} shows the abstract syntax of the same model after the refactoring. In Figure \ref{fig:encapsulateafter} 
-we have omitted the activity objects to make the diagram simpler. For each operation there is actually a corresponding \texttt{Activity} 
-object, which is also contained by the \texttt{Class} object.
+we have omitted the activity objects and their internal representation for the sake of visual simplicity. So for each operation 
+there is actually a corresponding \texttt{Activity} object, which is also contained by the \texttt{Class}.
 
 Creating the two activities for the getter and the setter is not trivial. It requires the creation of
 a \texttt{Read\-Self\-Action} to retrieve the properties owner class and the creation of the correct \texttt{Structural\-Feature\-Action}.
@@ -513,19 +518,24 @@ actions. For each of these elements there are several properties in the abstract
 \textit{type} property of pins or the \textit{source} and \textit{target} properties of edges. If only one element is not correctly 
 generated by the refactoring, then the refactoring results in an incorrect model. Once the activities are added to the model, the 
 refactoring searches for structural feature actions to replace. Besides creating the call operation and removing the structural feature 
-action, care must be taken to reassign the corresponding input pins and control flow edges to the call operation action.
+action, care must be taken to reassign the corresponding input pins and activity flow edges to the call operation action.
 
+There are several constraints that need to be checked in order to verify that the refactoring preserved the behavior of the model. 
+We present the relevant constraints in Appendix \ref{sec:appendix} in Listing \ref{lst:encapsulateproperty}.
+The precondition for this refactoring is that the property is not already private and there are not already getters 
+and setters for it. It this case the conditions are not purely formulated in OCL as the \texttt{is\-Distinguishable\-From} method 
+demands an element that already exists. We provide this by creating the element before the precondition check and using it 
+within our Java refactoring implementation. In case the precondition check fails we simply drop the element. An example how 
+to do this is given in Section \ref{sec:toolchain}. 
 As UML does not explicitly distinguish between scalars and list types and the differences is only visible
 in the multiplicity of the property, the refactoring needs to take this into account. Our current implementation only handles
-scalars properties. The precondition for this refactoring is that the property is not already private and there are not already getters 
-and setters for it. Additionally the multiplicity of the property must be '1' to prevent the refactoring for list types. We also reject 
+scalars properties. So additionally the multiplicity of the property must be '1' to prevent the refactoring for list types. We also reject 
 the refactoring if \texttt{Clear\-Structural\-Feature\-Action}s or \texttt{Remove\-Structural\-Feature\-Value\-Action}s are present for 
-the property as these would also require additional consideration in the refactoring code. Listing \ref{lst:encapsulateproperty} show the 
-complete precondition.
+the property as these would also require additional consideration in the refactoring code.
 
-The postcondition is more complex and thus we have split it into five separate conditions. We verify that the amount of input and output 
+As the postcondition is more complex we have split it into five separate conditions. We verify that the amount of input and output 
 pins from the removed structural feature actions matches the number of respective pins of the added call operation actions. Additionally
-we require that the type of each pin is correctly set. The resulting postconditions can be found in appendix \ref{sec:appendix}.
+we require that the type of each pin is correctly set.
 
 \begin{figure}
  \makebox[\textwidth]{
@@ -542,7 +552,6 @@ we require that the type of each pin is correctly set. The resulting postconditi
  \caption{Abstract syntax after \textit{encapsulate property} refactoring}
  \label{fig:encapsulateafter}
 \end{figure}
-
 
 \begin{lstsingle}[language=OCL,caption=OCL for encapsulate property,label=lst:encapsulateproperty]
 context Property:
@@ -561,6 +570,10 @@ pre:  self.visibility <> uml::VisibilityKind::private and
 \clearpage
 \section{Toolchain and implementation}
 \label{sec:toolchain}
+In the last section we explained some refactorings in detail with their respective preconditions and postconditions the model. 
+We also discussed which steps have to be taken to actually co-refactor an activity diagram if changes are implied by refactoring 
+the class diagram. In this section we will present a toolchain that allows the implementation and execution of the refactorings.
+
 For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
 models in a virtual machine. The models are stored in XMI format and loaded with an EMF ResourceSet. The ResourceSet
 can be used to retrieve a Resource object through an URI, which is then used to access the different objects in the model 
