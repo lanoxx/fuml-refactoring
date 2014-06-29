@@ -161,6 +161,9 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
         Activity getActivity = createActivity(class_, selectedElement, false);
         Activity setActivity = createActivity(class_, selectedElement, true);
+        
+        getActivity.setSpecification(getOperation);
+        setActivity.setSpecification(setOperation);
 
         class_.getOwnedBehaviors().add(getActivity);
         class_.getOwnedBehaviors().add(setActivity);
