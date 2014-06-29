@@ -32,21 +32,6 @@
         <children>
           <emfPageIdentifier href="fUMLKernel.notation#_x5bKcOyUEeOA0Yz9yaDTEA"/>
         </children>
-        <children>
-          <emfPageIdentifier href="fUMLKernel.notation#_RB7uMP3mEeOXUONNtXznaA"/>
-        </children>
-        <children>
-          <emfPageIdentifier href="fUMLKernel.notation#_SX7MkP3tEeOXUONNtXznaA"/>
-        </children>
-        <children>
-          <emfPageIdentifier href="fUMLKernel.notation#_PhO7AP3nEeOXUONNtXznaA"/>
-        </children>
-        <children>
-          <emfPageIdentifier href="fUMLKernel.notation#_O1_TsP3pEeOXUONNtXznaA"/>
-        </children>
-        <children>
-          <emfPageIdentifier href="fUMLKernel.notation#_8eovoP3tEeOXUONNtXznaA"/>
-        </children>
       </children>
     </windows>
   </sashModel>
