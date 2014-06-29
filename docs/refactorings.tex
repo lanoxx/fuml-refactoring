@@ -442,15 +442,17 @@ not need to formulate postconditions for the rename refactorings.
 
 \subsection{Extract superclass}
 \label{sec:extract}
-The \textit{extract superclass} refactoring takes two parameters, the new name of the extracted superclass as well as
-the list of classes that participate in the refactoring and which will receive the new class as their superclass.
+The \textit{extract superclass} refactoring takes two parameters. The name of the superclass to extract as well as
+the class that participates in the refactoring and which will receive the created class as its superclass.
 
-In terms of the abstract syntax of these models, the two classes \texttt{Car} and \texttt{Truck} are instances of 
-type \textit{Class} of the meta-model a superclass named \texttt{Vehicle} would be an instance of type \textit{Class} as well, 
-and can be associated with these two classes through the recursive attribute \textit{general} of the class \textit{Class} 
-to create the inheritance hierarchy. However the abstract syntax representation of the diagram does not change. In order to 
-achieve a correct refactoring each class that participates in the refactoring must not already have a superclass. The 
-model would also benefit from changing all possible references to the new class.
+Figure \ref{fig:extract} shows the changes of the refactoring on the abstrax syntax level. A new \texttt{Class} is 
+introduced and linked via a \texttt{Generalization} to the already existing \texttt{Class}. In our example the two 
+classes \texttt{Car} and \texttt{Truck} will be connected to the new superclass \texttt{Vehicle} via the attribute 
+\textit{superClass} of the meta-model concept \texttt{Class}. Listing \ref{lst:extractsuperclass} shows the OCL pre- and 
+postcondition for this refactoring. The preconditions checks that there are no classes in the namespace with the 
+same name. The postcondition whether the newly created class is visible and the existing class is a subclass. 
+Parts of the model\footnote{E.g. the insurance policy can hold a single variable referencing all vehicles} might also benefit 
+from changing references to the new class.
 
 \begin{figure}
  \makebox[\textwidth]{
@@ -792,6 +794,12 @@ pre:  self.visibility <> uml::VisibilityKind::private
           o.isDistinguishableFrom(getOperation, 
             self.namespace)) 
       and 
+      uml::ClearStructuralFeatureAction.allInstances().
+        structuralFeature->forAll(s|s<>self)
+      and
+      uml::RemoveStructuralFeatureValueAction.allInstances().
+        structuralFeature->forAll(s|s<>self)
+      and
       self.upper <= 1"
 post: uml::CallOperationAction.allInstances()
         ->select(action | action.operation = operation)

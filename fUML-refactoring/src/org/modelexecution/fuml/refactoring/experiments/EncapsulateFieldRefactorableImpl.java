@@ -53,7 +53,10 @@ public class EncapsulateFieldRefactorableImpl implements Refactorable {
 
     private static final String OCL_PRE_CONSTRAINT = "self.visibility <> uml::VisibilityKind::private"
         + " and self.class.ownedOperation->forAll(o | o.isDistinguishableFrom(setOperation, self.namespace)"
-        + " and o.isDistinguishableFrom(getOperation, self.namespace)) and self.upper <= 1";
+        + " and o.isDistinguishableFrom(getOperation, self.namespace))"
+        + " and uml::ClearStructuralFeatureAction.allInstances().structuralFeature->forAll(s|s<>self)"
+        + " and uml::RemoveStructuralFeatureValueAction.allInstances().structuralFeature->forAll(s|s<>self)"
+        + " and self.upper <= 1";
     private static final String OCL_POST_CONSTRAINT_COUNT_INPUT =
         "uml::CallOperationAction.allInstances()->select(action | action.operation = operation)"
             + "->collect(input)->select(pin | pin <> null)->size() = inputPinCounter";
