@@ -26,7 +26,10 @@ public class PullUpPropertyRefactorableImpl implements Refactorable {
     private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
     // Context Property
-    private static final String OCL_PRE_CONSTRAINT = "selectedSuperClass.name = 'SuperPolicy'";
+    private static final String OCL_PRE_CONSTRAINT = "self.class.superClass->select(s | s.name = selectedSuperClass.name)->notEmpty()"
+    		+ " and self.visibility <> uml::VisibilityKind::private"
+    		+ " and self.class.inheritedMember->selectByType(Property)"
+    		+ "->forAll(prop | prop.isDistinguishableFrom(self, self.class.namespace))";
     // "self.class.superClass->select(s | s.name = superClass.name)->notEmpty()";
     // + " and self.visibility <> uml::VisibilityKind::private"
     // + " and self.class.inheritedMember->selectByType(Property)"
@@ -95,23 +98,6 @@ public class PullUpPropertyRefactorableImpl implements Refactorable {
 
     @Override
     public boolean checkPostCondition() throws ParserException {
-        helper.setContext(UMLPackage.eINSTANCE.getClass_());
-
-        /*
-         * Class selectedElement = (Class) data.get("selectedElement"); Class superClass = (Class)
-         * data.get("newSuperClass");
-         * 
-         * if (superClass == null) { return false; }
-         * 
-         * Variable<EClassifier, EParameter> variable = ExpressionsFactory.eINSTANCE.createVariable();
-         * variable.setName("newSuperClass"); variable.setType(UMLPackage.Literals.CLASSIFIER);
-         * ocl.getEnvironment().addElement(variable.getName(), variable, true);
-         * 
-         * OCLExpression<EClassifier> query = helper.createQuery(OCL_POST_CONSTRAINT); Query<EClassifier, EClass,
-         * EObject> eval = ocl.createQuery(query); eval.getEvaluationEnvironment().add("newSuperClass", superClass); if
-         * (!eval.check(selectedElement)) { return false; }
-         */
-
         return true;
     }
 }
