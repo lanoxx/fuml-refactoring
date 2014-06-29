@@ -19,8 +19,9 @@
 % define custom macros for specific formats or names
 \newcommand{\uml}[1]{\texttt{#1}}
 \newcommand{\cd}{\textsf{Class Diagram}}
+
 \lstnewenvironment{lstsingle}[1][]%
- {\minipage{\linewidth} 
+ {\noindent\minipage{\linewidth} 
   \vspace{0.5\baselineskip}
   \lstset{#1}}
  {\endminipage}
