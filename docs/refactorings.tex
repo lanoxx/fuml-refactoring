@@ -641,8 +641,17 @@ Object loadElement(String qualifiedName,
 \end{lstsingle}
 
 \subsection{Model refactoring}
+
+\begin{figure}
+ \makebox[\textwidth]{
+  \includegraphics[scale=0.6]{images/Model_Model_Toolchain}
+ }
+ \caption{Implementation architecture}
+ \label{fig:toolchain}
+\end{figure}
+
 Our refactorings are implemented with a strategy pattern, where each refactoring implements a \texttt{Refactorable}
-interface that has three operations \texttt{checkPrecondition}, \texttt{performRefactoring}, and \texttt{checkPostcondition}. 
+interface that has three operations \texttt{check\-Precondition}, \texttt{perform\-Refactoring}, and \texttt{check\-Post\-condition}. 
 Each refactoring identifies the model objects that participate in the refactoring and then creates and evaluates the \textit{OCL} 
 constraints on these objects. An object to type \texttt{OCL} from the org.eclipse.ocl package is used to create and evaluate the 
 queries as can be seen in Listing \ref{lst:ocl}.

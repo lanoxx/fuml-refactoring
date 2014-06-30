@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20110701" xmlns:xmi="http://www.omg.org/spec/XMI/20110701" xmlns:uml="http://www.eclipse.org/uml2/4.0.0/UML" xmi:id="_T16X4AA6EeSh1utmNqpjnA" name="Model">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_T16X4QA6EeSh1utmNqpjnA">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Package" xmi:id="_W-XWkAA6EeSh1utmNqpjnA" name="org.eclipse.emf">
+    <packagedElement xmi:type="uml:Class" xmi:id="_dbGwgAA6EeSh1utmNqpjnA" name="ResourceSet"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_jyM1cAA6EeSh1utmNqpjnA" clientDependency="_Q7qiYAA8EeSh1utmNqpjnA _bqBwQABBEeSDAO7Hq1x15A" name="Resource"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_Q7qiYAA8EeSh1utmNqpjnA" name="contains" client="_jyM1cAA6EeSh1utmNqpjnA" supplier="_pLBe0AA7EeSh1utmNqpjnA"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_bqBwQABBEeSDAO7Hq1x15A" name="loading" client="_jyM1cAA6EeSh1utmNqpjnA" supplier="_dbGwgAA6EeSh1utmNqpjnA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_TQrHYAA7EeSh1utmNqpjnA" name="org.eclipse.uml">
+    <packagedElement xmi:type="uml:Class" xmi:id="_pLBe0AA7EeSh1utmNqpjnA" clientDependency="_gFNUYAA8EeSh1utmNqpjnA" name="Model"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_5jEEQAA7EeSh1utmNqpjnA" name="Element"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_gFNUYAA8EeSh1utmNqpjnA" name="contains" client="_pLBe0AA7EeSh1utmNqpjnA" supplier="_5jEEQAA7EeSh1utmNqpjnA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_Y0ofMAA7EeSh1utmNqpjnA" name="org.eclipse.ocl">
+    <packagedElement xmi:type="uml:Class" xmi:id="_phaJEAA8EeSh1utmNqpjnA" clientDependency="_MPMWwAA9EeSh1utmNqpjnA _NwTkMAA9EeSh1utmNqpjnA _PKH20AA9EeSh1utmNqpjnA" name="OCL"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_qfSGkAA8EeSh1utmNqpjnA" clientDependency="_-iFGgAA8EeSh1utmNqpjnA" name="OCLHelper"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_xy3o8AA8EeSh1utmNqpjnA" clientDependency="_AlDD0AA9EeSh1utmNqpjnA" name="OCLExpression"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_zvoQkAA8EeSh1utmNqpjnA" clientDependency="_JTpysAA9EeSh1utmNqpjnA" name="Query"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_-iFGgAA8EeSh1utmNqpjnA" name="context" client="_qfSGkAA8EeSh1utmNqpjnA" supplier="_5jEEQAA7EeSh1utmNqpjnA"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_AlDD0AA9EeSh1utmNqpjnA" name="evaluates" client="_xy3o8AA8EeSh1utmNqpjnA" supplier="_5jEEQAA7EeSh1utmNqpjnA"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_JTpysAA9EeSh1utmNqpjnA" name="basedOn" client="_zvoQkAA8EeSh1utmNqpjnA" supplier="_xy3o8AA8EeSh1utmNqpjnA"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_MPMWwAA9EeSh1utmNqpjnA" name="creates" client="_phaJEAA8EeSh1utmNqpjnA" supplier="_qfSGkAA8EeSh1utmNqpjnA"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_NwTkMAA9EeSh1utmNqpjnA" name="creates" client="_phaJEAA8EeSh1utmNqpjnA" supplier="_xy3o8AA8EeSh1utmNqpjnA"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_PKH20AA9EeSh1utmNqpjnA" name="creates" client="_phaJEAA8EeSh1utmNqpjnA" supplier="_zvoQkAA8EeSh1utmNqpjnA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_hiqmUAA7EeSh1utmNqpjnA" name="org.modelexecution.fuml.refactoring">
+    <packagedElement xmi:type="uml:Interface" xmi:id="_Z5YO0AA9EeSh1utmNqpjnA" name="RefactoringData">
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_vqmfcAA9EeSh1utmNqpjnA" name="get">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_4W4TEAA9EeSh1utmNqpjnA" name="key">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_7qjqUAA9EeSh1utmNqpjnA" name="object" type="_l6JSAAA9EeSh1utmNqpjnA" direction="return"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_w8FVcAA9EeSh1utmNqpjnA" name="set">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="__A5UAAA9EeSh1utmNqpjnA" name="key">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_Bm4e0AA-EeSh1utmNqpjnA" name="object" type="_l6JSAAA9EeSh1utmNqpjnA"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Interface" xmi:id="_GWAgYAA-EeSh1utmNqpjnA" name="Refactorable">
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_IzoZYAA-EeSh1utmNqpjnA" name="checkPrecondition">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_isnJkAA-EeSh1utmNqpjnA" name="return" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_K4J14AA-EeSh1utmNqpjnA" name="performRefactoring">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_fCj5sAA-EeSh1utmNqpjnA" name="return" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_OFeGcAA-EeSh1utmNqpjnA" name="checkPostcondition">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_b0rBYAA-EeSh1utmNqpjnA" name="return" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        </ownedParameter>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_oaQB0AA-EeSh1utmNqpjnA" clientDependency="_2fYwgAA-EeSh1utmNqpjnA _7ffNUAA-EeSh1utmNqpjnA __UVX8AA-EeSh1utmNqpjnA _B0PI4AA_EeSh1utmNqpjnA" name="EncapsulateProperty">
+      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_2fYwgAA-EeSh1utmNqpjnA" name="realizes" client="_oaQB0AA-EeSh1utmNqpjnA" supplier="_GWAgYAA-EeSh1utmNqpjnA" contract="_GWAgYAA-EeSh1utmNqpjnA"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_7ffNUAA-EeSh1utmNqpjnA" name="uses" client="_oaQB0AA-EeSh1utmNqpjnA" supplier="_Z5YO0AA9EeSh1utmNqpjnA"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="__UVX8AA-EeSh1utmNqpjnA" name="transforms" client="_oaQB0AA-EeSh1utmNqpjnA" supplier="_TQrHYAA7EeSh1utmNqpjnA"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_B0PI4AA_EeSh1utmNqpjnA" name="checks" client="_oaQB0AA-EeSh1utmNqpjnA" supplier="_Y0ofMAA7EeSh1utmNqpjnA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_l6JSAAA9EeSh1utmNqpjnA" name="Object"/>
+</uml:Model>
