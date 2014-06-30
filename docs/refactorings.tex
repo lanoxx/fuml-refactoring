@@ -82,8 +82,8 @@ the extension of existing UML refactorings. Our refactorings cover not only the 
 the co-refactoring of the dynamic parts such as activity diagrams as well. In this work we will present basic concepts for the refactoring 
 of models with EMF and show how model semantics can be preserved through the use of OCL constraints. Furthermore we present our toolchain 
 and the technologies of EMF (in particular Ecore and OCL) and how we used them for the co-refactoring of fUML conform UML models. We 
-also present a discussion of EMF Refactor, which shows how such refactorings can be made available in the Eclipse GUIs such as the UML 
-tree editor or the Papyrus UML editor.
+also present a discussion of EMF Refactor, which shows how such refactorings can be made available in the Eclipse editors such as 
+the UML tree editor or the Papyrus UML editor.
 \end{abstract}
 
 \tableofcontents
@@ -556,7 +556,7 @@ we have omitted the activity objects and their internal representation for the s
 there is actually a corresponding \texttt{Activity} object, which is also contained by the \texttt{Class}.}.
 
 At first 
-getter and setter operations for the property are created and
+getter and setter operations for a property are created and
 added to the class. For both operations the corresponding activities are generated and their specification is set to the 
 respective operation.
 Creating the two activities for the getter and the setter is not trivial as we also need to implement their internal logic. This requires 
@@ -610,9 +610,9 @@ we require that the type of each pin is correctly set.
 \clearpage
 \section{Toolchain and implementation}
 \label{sec:toolchain}
-In the last section we explained some refactorings in detail with their respective preconditions and postconditions the model. 
-We also discussed which steps have to be taken to actually co-refactor an activity diagram if changes are implied by refactoring 
-the class diagram. In this section we will present implementation details as well as a toolchain that allows the integration and 
+In the last section we explained our refactorings in detail and introduced their pre- and postconditions. We also discussed which steps 
+have to be taken to actually co-refactor an activity diagram if changes are implied by refactoring 
+the class diagram. In this section we will present implementation details as well as our toolchain that allows the integration and 
 execution of the refactorings in Eclipse\footnote{\url{http://www.eclipse.org/}}.
 
 \begin{figure}
@@ -627,7 +627,12 @@ The examples in this work were created in Eclipse with the \textit{Eclipse Model
 (EMF) and Papyrus, a visual modeling tool for different types of diagrams and modeling languages, which stores the models 
 in \textit{XML Metadata Interchange} \cite{man:XMI} (XMI) format. We use Java as programming language to manipulate 
 the models according to the defined refactorings. The relevant dependencies used for the implementation of the refactorings 
-as well as our class structure is depicted in Figure \ref{fig:toolchain}.
+as well as our class structure is depicted in Figure \ref{fig:toolchain}. Our toolchain mainly consists of the interfaces and
+implementations for the refactorings, which are shown on the right side of Figure \ref{fig:toolchain}. These parts make use of the
+\texttt{uml}-package to transform the models and the \texttt{ocl}-package to check and evaluate OCL expressions. Model loading and saving
+is done through the \texttt{emf}-package. All three packages are part of the \texttt{org.eclipse} namespace and belong to the Eclipse 
+Modeling Framework (EMF). For testing of the refactorings we have written unit tests, which load, transform and 
+save the models. In the following we will introduce each part of our tool chain in more detail.
 
 % For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
 % models in a virtual machine.
@@ -636,8 +641,8 @@ The \texttt{Resource\-Set} which serves as a basis to read the XMI files needs t
 initialized first to use the correct settings for UML models. It then can be used to retrieve a \texttt{Resource} object through 
 an \texttt{URI}, which is then used to access the different objects in the model. Listing \ref{lst:resourceset} which is contained 
 in Appendix \ref{sec:applistings} shows how a model can be initialized and loaded.
-All elements contained in the model are instances of Ecore\footnote{The EMF core meta-model implementation of
-the MOF meta-meta-model} and they represent classes of the UML meta-model, which is implemented with Ecore.
+All elements contained in the model are instances of \texttt{EObject} from the Ecore\footnote{The EMF core meta-model implementation of
+the MOF meta-meta-model} implementation and they represent classes of the UML meta-model, which is implemented with Ecore.
 
 \begin{lstsingle}[language=Java,caption=Loading elements from the model,label=lst:loadingelements]
 Object loadElement(String qualifiedName, 
@@ -663,54 +668,63 @@ Object loadElement(String qualifiedName,
 }
 \end{lstsingle}
 
-Model elements can be loaded in different ways. We decided to use the qualified name and the class of the concept as 
-parameters to identify and load an element. Listing \ref{lst:loadingelements} shows that we first build up a tree of 
-the model which is retrieved from the \texttt{Resource}. Then we iterate through the tree and check whether the element 
-is a \texttt{NamedElement}. If this is the case we need to verify that element is assignable to the class we want to 
-load and that the qualified name is the same. The resulting \texttt{EObject} is returned and needs to be casted by the 
+Model elements can be loaded in different ways. We decided to load objects through their qualified name and the meta-model type of the 
+object. Listing \ref{lst:loadingelements} shows the implementation of the \texttt{loadElement} function. The method retrieves the tree of 
+model elements from the \texttt{Resource} and iterates over the models elements. Each element in the tree is checked whether the element 
+is a \texttt{NamedElement}. If this is the case we need to verify that the element is assignable to the class we want to 
+load and that the qualified name is the same. The resulting \texttt{Object} is returned and needs to be casted by the 
 calling method.
 
 \subsection{Model refactoring}
-Each of our refactorings is implemented in a separated Java class, which for the demonstration of our implementation 
+Each of our refactorings is implemented in a separate Java class, which for the demonstration of our implementation 
 is initialized and executed by a \textit{JUnit} test\footnote{\url{http://junit.org/}}.
 The Java classes representing a refactoring implement the \texttt{Refactorable}
 interface that has three operations \texttt{check\-Precondition}, \texttt{perform\-Refactoring}, and \texttt{check\-Post\-condition} as 
-shown in Figure \ref{fig:toolchain}. These three methods are executed in the described order to apply the refactoring. 
-In the following paragraphs we will explain what is done by the single operations. In order to get a better insight we will 
-append Listing \ref{lst:extractSuperclass} which contains the source code for the \textit{extract superclass} refactoring.
+shown in Figure \ref{fig:toolchain}. These three methods are executed in the described order to apply the refactoring. Each method
+returns a boolean to indicate whether the operation succeeded and it can throw an exception if an error occured. All of the 
+three methods must terminate without throwing an exception or returning false. If this is the case then the \texttt{Resource} object is 
+saved, which causes the model transformations to be written to the model file. In the following paragraphs we will explain what is done 
+by each of the three operations. In order to get a better insight we have
+included Listing \ref{lst:extractSuperclass} in Appendix \ref{sec:applistings}, which contains the source code for the \textit{extract 
+superclass} refactoring.
 
-First the initialization in the JUnit test identifies and loads the passed model elements that participate in the refactoring with the \texttt{loadElement} 
-method introduced in Listing \ref{lst:loadingelements} and puts them into a \texttt{RefactoringData} container 
-(Listing \ref{lst:extractSuperclassTest}, line 7-10). It then creates the specific implementation of the \texttt{Refactorable} interface 
-and passes the data container as argument (line 12-13). The refactoring implementation creates and evaluates the OCL 
-preconditions corresponding to the refactoring on these elements. The class \texttt{OCL} from the \texttt{org.\-eclipse\-.ocl} package is 
-used to create and check the constraints as can be seen in Listing \ref{lst:extractSuperclass} lines 38 to 47. Depending on our refactoring the constraint 
-can also contain a placeholder (line 13-15) which is later defined as a variable (line 110-115) and then replaced by a specific value 
-(line 121-122).
+First the initialization code in the JUnit test identifies and loads the specified model elements that participate in the refactoring. 
+This is done with the \texttt{loadElement} method introduced in Listing \ref{lst:loadingelements} and the elements are put into a 
+\texttt{RefactoringData} container (Listing \ref{lst:extractSuperclassTest}, line 7-10). It then instantiates the specific implementation 
+of the \texttt{Refactorable} interface and passes the data container as an argument (line 12-13). The refactoring implementation creates 
+and evaluates the OCL expressions (pre- and postconditions) which we specified in Section \ref{sec:fuml-refactoring} on the elements in 
+the container. The class \texttt{OCL} from the \texttt{org.\-eclipse\-.ocl} package is 
+used to create and check the constraints as can be seen in Listing \ref{lst:extractSuperclass} lines 38 to 47. Depending on our 
+refactoring the constraint can also contain OCL variable placeholders (line 13-15, \texttt{newSuperClass}) which are later defined as OCL 
+variables (line 107-112) and then connected to specific Java variables (line 118-119). Finally the query is executed with the 
+\texttt{check}-method. If the model satisfies the query expression then the \texttt{check}-method returns \textit{true}.
 
 % how to apply queries and changes?
 % how to load models?
-It is also possible to formulate some of these constraints directly on the model in Java code by checking properties of the abstract syntax
-and not use the \textit{OCL} validation facilities. One example is the constraint that verifies that the new super class does not
-yet exist in the model (Listing \ref{lst:extractSuperclass}, line 65).
+It is also possible to formulate all constraints directly on the model in Java code by checking properties of the abstract 
+syntax and not use the \textit{OCL} validation facilities. One such example is the constraint that verifies that the new super class does 
+not yet exist in the model (Listing \ref{lst:extractSuperclass}, line 65).
 
-If the preconditions are satisfied the actual refactoring is performed through a direct modification of the model object.
-For the \textit{extract superclass} refactoring a new \texttt{Class} instance with the name of the new superclass is created 
-and added to the model (Listing \ref{lst:extractSuperclass}, line 61-62). Then the class from which the refactoring classes 
-of the model are filtered to select the ones that receive the new generalization, and the newly create superclass is added 
-(line 74-77).
+If the preconditions are satisfied the actual refactoring is performed through a direct modification of the model objects. By
+convertion each refactoring retrievs an object with the key \textit{``selectedElement''} from the data container (line 56). This is the 
+main  object that participates in the refactoring and it is also used as the context object to evaluate the OCL expressions\footnote{That 
+means this object directly translates to the self keyword of the OCL constraints.}. For the \textit{extract superclass} refactoring the
+\texttt{selectedElement} is the one that becomes the subclass of the newly created class. First a new \texttt{Class} instance with the 
+name of the new super class is created and added to the model (Listing \ref{lst:extractSuperclass}, line 65-68). Then a generalization 
+object is created and added to the \texttt{selectedElement}. The super class relationship is established by adding the new class to 
+the generalization object with the \texttt{setGeneral}-method (line 74).
 
-After the model is adapted the defined postconditions are checked in the \texttt{checkPostCondition} method 
-(Listing \ref{lst:extractSuperclass}, line 97) in the same way as the preconditions. Every of these steps is verified to succeed 
-via JUnit as in Listing \ref{lst:extractSuperclassTest} lines 16, 23 and 29.
+After the model is transformed the defined postconditions are checked in the \texttt{checkPostCondition} method 
+(Listing \ref{lst:extractSuperclass}, line 94) in the same way as the preconditions. Each of these steps is verified to succeed 
+via JUnit assertions as in Listing \ref{lst:extractSuperclassTest} lines 16, 23 and 29.
 
 \subsection{Model execution}
 \label{sec:execution}
 % usage of fUML reference implementation of BIG
 % how to execute models?
-In the prior section we discussed how the models are statically examined with \textit{OCL} constraints if a refactoring 
-is applicable. In this section we will show how the models can be tested dynamically by executing them. We use the 
-reference implementation as described in \cite{DBLP:conf/models/MayerhoferLK12} to execute the activity diagrams of 
+In the prior section we discussed how the models are statically examined with \textit{OCL} constraints to determin whether a refactoring 
+is possible and we introduced the actual model transformations. In this section we will show how the models can be tested dynamically by 
+executing them. We use the reference implementation as described in \cite{DBLP:conf/models/MayerhoferLK12} to execute the activity diagrams of 
 our models.
 
 \begin{lstsingle}[language=Java,caption=Converting the UML diagram to fUML,label=lst:conversion]
@@ -721,39 +735,14 @@ IConversionResult conversionResult = converter
 Activity activity = conversionResult.getActivity(name);
 \end{lstsingle}
 
-Our models are formally created in \textit{UML} and are converted to \textit{fUML} with the \texttt{UML2fUML} converter 
-provided by the implementation as shown in Listing \ref{lst:conversion}. The resulting \textit{fUML} diagram is executed in the 
-virtual machine for model execution. 
-We test our models by examining if a complete execution trace is possible for the chosen activity. Listing \ref{lst:execution} 
-shows how the activity is executed step by step. The \texttt{EventListener} catches the event which is created for each 
-activity step and builds up a trace. If a trace is created and the process of execution is not interrupted we consider the 
+Our models are created in \textit{UML} and are converted to \textit{fUML} with the \texttt{UML2fUML} converter 
+provided by the implementation as shown in Listing \ref{lst:conversion}. The resulting \textit{fUML} model is executed in the 
+virtual machine for model execution. Listing \ref{lst:execution} in Appendix \ref{sec:applistings} shows how the activity is executed step by step. The \texttt{EventListener} 
+catches the event which is created for each activity step and builds up a trace. If a trace is created and the process of execution is not interrupted we consider the 
 test as successful. Testing more than one trace as some kind of branching is not part of this work and may be included in future studies.
 
-\begin{lstsingle}[language=Java,caption=Executing the activity stepwise and getting the execution trace,label=lst:execution]
-getExecutionContext().addEventListener(
-  new ExecutionEventListener() {
-  @Override
-  public void notify(Event event) {
-    System.out.println(event);
-    if (event instanceof ActivityEntryEvent 
-      && executionID == -1) {
-      executionID = ((ActivityEntryEvent) event)
-          .getActivityExecutionID();
-    }
-    if (event instanceof SuspendEvent) {
-      SuspendEvent suspendEvent = (SuspendEvent) event;
-      getExecutionContext().resume(
-          suspendEvent.getActivityExecutionID());
-    }
-  }
-});
-getExecutionContext().executeStepwise(activity, null, 
-  new ParameterValueList());
-getExecutionContext().getTrace(executionID);
-\end{lstsingle}
-
 In the process of refactoring before and after each model change the corresponding activities are executed to prove that 
-the refactoring did not corrupt the model. 
+the refactoring did not corrupt the model.
 %TODO: we cannot actually prove anything. Because we cannot show that the execution trace goes through all branches that 
 %have been affected by the changes. Or can we?
 Further testing can be implemented by going through the trace and verifying 
@@ -761,7 +750,7 @@ that every node of the trace has the expected values.
 
 \subsection{Eclipse Integration}
 \label{sec:guiintegration}
-In this section we discuss how we can integrate the defined refactorings to the Eclipse framework. For our further 
+In this section we discuss how we can integrate the our refactorings with the Eclipse framework. For our further 
 research we plan to implement some the refactorings in EMF Refactor. EMF Refactor is an Eclipse incubation project 
 which focuses on static model analysis and refactoring.
 
@@ -779,19 +768,21 @@ supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit
 
 \section{Current limitations}
 \label{sec:limitations}
-Our work currently has several limitations. So far we have designed a set of related class and activity diagrams,
-which are the basis for our refactorings. We have discussed the \textit{extract superclass} refactoring including its
-pre- and post conditions and shown how it can be refactored with our toolchain. Until the final version of this
-paper we will formulate the pre- and postconditions for some of the refactorings that have not yet been discussed.
-Furthermore we will implement several more refactorings from the list shown in Figure \ref{fig:refactoringlist}, such as the
-\textit{extract class}, the \textit{rename operation}, the \textit{pullup operation}, the \textit{pullup field} and 
-\textit{rename variable} refactorings.
+Our work currently has several limitations. We have introduced several refactorings with pre- and postconditions and implemented them
+in Java but there are still three refactorings which are not implemented. The last column of Figure \ref{fig:refactoringlist} shows 
+which refactorings were implemented by our work. We have also presented an example model, and we demonstrated how this model 
+would benefit from the different refactorings that we presented. In our implementation we used this model as the basis for our JUnit test 
+cases. While this model works well to demonstrate the functionality of our implementation, it only contains simple use cases of UML. In order to test the reliability of 
+our refactorings a more extensive test suite would be required.
 
-When the paper was written the refactorings were not yet implemented in EMF Refactor.
-We plan to create the whole refactoring chain for \textit{extractSuperclass} in EMF Refactor which includes extracting 
-a super class and pulling up the properties and operations programmatically. We also take the co-refactoring of the activity 
-diagrams into account. If this works as intended we plan to rewrite the creation wizard which allows only refactorings 
-on a single class. The code should ideally be carried to the EMF Refactor repository after a quality review.
+As part of our work we evaluated EMF Refactor and found that it is a useful tool to integrate our refactorings in the Eclipse
+IDE. However we have not implemented the integration of our refactorings with EMF Refactor and must leave this task as future 
+work.
+
+Last but not least our current efforts to execute the models are still quite limited. Model execution provides a good solution to 
+evaluate the correctness and semantic preservation of the refactored models. We were able to show that our refactored models are still 
+executable, but we will leave a more thorough evaluation to future work. This would include the analysis of execution traces and
+model states and their comparison between refactored and non-refactored model versions.
 
 \section{Related work}
 \label{sec:relatedwork}
@@ -805,13 +796,13 @@ refactorings for Java and Ruby which can be be adapted to model refactorings.
 % Refactoring of models and OCL Code analysis via OCL
 
 Suny{\'e} et. al. \cite{DBLP:conf/uml/SunyePTJ01} described how several refactorings can be applied to \textit{UML}
-diagrams and introduced OCL as a possiblity to specify pre- and postconditions. Gorp \textit{et al.} \cite{gorp03} extends the
+diagrams and introduced OCL as a possiblity to specify pre- and postconditions. Gorp \textit{et al.} \cite{gorp03} extend the
 discussion with the usage of \textit{OCL} for additional analysis such as code smells of models.
 
 % Code execution via fUML
 
-Despite of the further discussion of model refactoring (\cite{DBLP:conf/uml/CorreaW04}, \cite{DBLP:conf/ershov/BaarM06},
-\cite{DBLP:journals/ase/ArendtT13}) most authors concentrate on static analysis and class diagram representations of
+Despite further discussions of model refactoring \cite{DBLP:conf/uml/CorreaW04}, \cite{DBLP:conf/ershov/BaarM06},
+\cite{DBLP:journals/ase/ArendtT13} most authors concentrate on static analysis and class diagram representations of
 models. Dynamic analysis of models by execution and debugging \textit{fUML} models is discussed by Mayerhofer
 \cite{DBLP:conf/icse/Mayerhofer12} and provides the basis for the approach discussed here. Mayerhofer \textit{et al.}
 \cite{DBLP:conf/models/MayerhoferLK12} furthermore introduce a runtime model and an
@@ -842,11 +833,13 @@ create a tool chain for model refactoring. With the toolchain in place another c
 steps to perform the actual refactoring work. In particular this meant to identify how the activity diagrams need to 
 change if a change is made in the class diagram.
 
-Most of our efforts in the development of this work were focused on gaining a comprehensive understanding of the
+A good part of our efforts in the development of this work were focused on gaining a comprehensive understanding of the
 technologies described above, to develop the tool chain and to draw the various diagrams presented in this paper and make 
 them executable. We have presented a comprehensive set of diagrams as the basis for our refactoring work and demonstrated 
-the feasibility of our tool chain. However a more comprehensive evaluation of the different refactorings including the 
-specification of pre- and postconditions OCL in is still required and will be the focus of our ongoing efforts.
+the feasibility of our tool chain. The remainder of our work was focused on the implementation of the presented refactorings and
+the development of pre- and post condition for each refactoring. We used the presented example models to test and evaluate the
+OCL constraints and revised them several time until we were satisfied that that they are suitable to guarantee semantic presentation
+of the model.
 
 \newpage
 \bibliographystyle{acm}
@@ -1038,9 +1031,6 @@ public class ExtractSuperClassRefactorableImpl
       (String) data.get("newSuperClassName");
     Package pkg = selectedElement.getPackage();
 
-    Class superClass = UMLFactory.eINSTANCE.createClass();
-    superClass.setName(newSuperClassName);
-
     if (pkg.getPackagedElement(newSuperClassName) == null) {
       // the owning package does not own a class with the 
       // inserted name create new class named 'className'
@@ -1107,5 +1097,28 @@ public class ExtractSuperClassRefactorableImpl
   }
 }
 \end{lstlisting}
+
+\begin{lstsingle}[language=Java,caption=Executing the activity stepwise and getting the execution trace,label=lst:execution]
+getExecutionContext().addEventListener(
+  new ExecutionEventListener() {
+  @Override
+  public void notify(Event event) {
+    System.out.println(event);
+    if (event instanceof ActivityEntryEvent 
+      && executionID == -1) {
+      executionID = ((ActivityEntryEvent) event)
+          .getActivityExecutionID();
+    }
+    if (event instanceof SuspendEvent) {
+      SuspendEvent suspendEvent = (SuspendEvent) event;
+      getExecutionContext().resume(
+          suspendEvent.getActivityExecutionID());
+    }
+  }
+});
+getExecutionContext().executeStepwise(activity, null, 
+  new ParameterValueList());
+getExecutionContext().getTrace(executionID);
+\end{lstsingle}
 
 \end{document}
