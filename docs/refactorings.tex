@@ -671,49 +671,38 @@ load and that the qualified name is the same. The resulting \texttt{EObject} is 
 calling method.
 
 \subsection{Model refactoring}
-Each of our refactorings is implemented in a separated Java class, which implements the \texttt{Refactorable}
+Each of our refactorings is implemented in a separated Java class, which for the demonstration of our implementation 
+is initialized and executed by a \textit{JUnit} test\footnote{\url{http://junit.org/}}.
+The Java classes representing a refactoring implement the \texttt{Refactorable}
 interface that has three operations \texttt{check\-Precondition}, \texttt{perform\-Refactoring}, and \texttt{check\-Post\-condition} as 
-already shown in Figure \ref{fig:toolchain}. The three methods are executed in the described order to apply the refactoring. 
-In the following paragraphs we will explain what is done by the single operations.
+shown in Figure \ref{fig:toolchain}. These three methods are executed in the described order to apply the refactoring. 
+In the following paragraphs we will explain what is done by the single operations. In order to get a better insight we will 
+append Listing \ref{lst:extractSuperclass} which contains the source code for the \textit{extract superclass} refactoring.
 
-First each refactoring identifies the passed model elements that participate in the refactoring with the \texttt{loadElement} method introduced 
-in Listing \ref{lst:loadingelements}. It then creates and evaluates the OCL 
+First the initialization in the JUnit test identifies and loads the passed model elements that participate in the refactoring with the \texttt{loadElement} 
+method introduced in Listing \ref{lst:loadingelements} and puts them into a \texttt{RefactoringData} container 
+(Listing \ref{lst:extractSuperclassTest}, line 7-10). It then creates the specific implementation of the \texttt{Refactorable} interface 
+and passes the data container as argument (line 12-13). The refactoring implementation creates and evaluates the OCL 
 preconditions corresponding to the refactoring on these elements. The class \texttt{OCL} from the \texttt{org.\-eclipse\-.ocl} package is 
-used to create and check the constraints as can be seen in Listing \ref{lst:ocl}. Depending on our refactoring the constraint 
-can also contain a placeholder (line 3 of Listing \ref{lst:loadingelements}) which is later defined as a variable (line 6-11) and 
-then replaced by a specific value (line 14-15).
-
-\begin{lstsingle}[language=Java,caption=OCL validation in Java,label=lst:ocl]
-OCL ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
-OCLHelper helper = ocl.createOCLHelper();
-OCLExpression expression = helper.createQuery(
-    "self.general->includes(newSuperClass)");
-
-Variable variable = 
-  ExpressionsFactory.eINSTANCE.createVariable();
-variable.setName("newSuperClass");
-variable.setType(UMLPackage.Literals.CLASSIFIER);
-ocl.getEnvironment().addElement(variable.getName(),
-                                variable, true);
-
-Query query = ocl.createQuery(expression);
-query.getEvaluationEnvironment()
-    .add("newSuperClass", superClass);
-if (!query.check(clazz))
-    return false;
-\end{lstsingle}
+used to create and check the constraints as can be seen in Listing \ref{lst:extractSuperclass} lines 38 to 47. Depending on our refactoring the constraint 
+can also contain a placeholder (line 13-15) which is later defined as a variable (line 110-115) and then replaced by a specific value 
+(line 121-122).
 
 % how to apply queries and changes?
 % how to load models?
 It is also possible to formulate some of these constraints directly on the model in Java code by checking properties of the abstract syntax
 and not use the \textit{OCL} validation facilities. One example is the constraint that verifies that the new super class does not
-yet exist in the model.
+yet exist in the model (Listing \ref{lst:extractSuperclass}, line 65).
 
 If the preconditions are satisfied the actual refactoring is performed through a direct modification of the model object.
 For the \textit{extract superclass} refactoring a new \texttt{Class} instance with the name of the new superclass is created 
-and added to the model. Then the class from which the refactoring 
-classes of the model are filtered to select the ones that receive the new generalization, and the newly create superclass
-is added.
+and added to the model (Listing \ref{lst:extractSuperclass}, line 61-62). Then the class from which the refactoring classes 
+of the model are filtered to select the ones that receive the new generalization, and the newly create superclass is added 
+(line 74-77).
+
+After the model is adapted the defined postconditions are checked in the \texttt{checkPostCondition} method 
+(Listing \ref{lst:extractSuperclass}, line 97) in the same way as the preconditions. Every of these steps is verified to succeed 
+via JUnit as in Listing \ref{lst:extractSuperclassTest} lines 16, 23 and 29.
 
 \subsection{Model execution}
 \label{sec:execution}
@@ -942,6 +931,51 @@ void initializeResourceSet() {
 \end{lstsingle}
 \\
 
+\begin{lstlisting}[language=Java,caption=Execution of the \textit{extract superClass} refactoring as test,label=lst:extractSuperclassTest]
+@Test
+public void superclassExtration {
+  String superClassName = "Vehicle";
+
+  RefactoringData data = new RefactoringDataImpl();
+  data.set("newSuperClassName", superClassName);
+  Class clazz = 
+    (Class) loadElement("Model::insurance::Car", 
+    Class.class);
+  data.set("selectedElement", clazz);
+
+  Refactorable extractSuperClassRefactoring = 
+    new ExtractSuperClassRefactorableImpl(data);
+
+  try {
+    assertTrue("Precondition not met!", 
+      extractSuperClassRefactoring.checkPreCondition());
+  } catch (ParserException pre) {
+    fail("Preconstraints failed with ParserException");
+  }
+
+  try {
+    extractSuperClassRefactoring.performRefactoring();
+  } catch (RefactoringException e) {
+    e.printStackTrace();
+  }
+
+  try {
+    assertTrue("Post condition not met!", 
+      extractSuperClassRefactoring.checkPostCondition());
+  } catch (ParserException post) {
+    post.printStackTrace();
+    fail("Postconstraints failed with ParserException");
+  }
+
+  try {
+    resource.save(new FileOutputStream(
+      new File(MODEL_SUPERCLASS_PATH)), null);
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+}
+\end{lstlisting}
+
 \begin{lstlisting}[language=Java,caption=Source code of the \textit{extract superClass} refactoring,label=lst:extractSuperclass]
 public class ExtractSuperClassRefactorableImpl 
   implements Refactorable {
@@ -1070,51 +1104,6 @@ public class ExtractSuperClassRefactorableImpl
     }
 
     return true;
-  }
-}
-\end{lstlisting}
-
-\begin{lstlisting}[language=Java,caption=Execution of the \textit{extract superClass} refactoring as test,label=lst:extractSuperclassTest]
-@Test
-public void superclassExtration {
-  String superClassName = "Vehicle";
-
-  RefactoringData data = new RefactoringDataImpl();
-  data.set("newSuperClassName", superClassName);
-  Class clazz = 
-    (Class) loadElement("Model::insurance::Car", 
-    Class.class);
-  data.set("selectedElement", clazz);
-
-  Refactorable extractSuperClassRefactoring = 
-    new ExtractSuperClassRefactorableImpl(data);
-
-  try {
-    assertTrue("Precondition not met!", 
-      extractSuperClassRefactoring.checkPreCondition());
-  } catch (ParserException pre) {
-    fail("Preconstraints failed with ParserException");
-  }
-
-  try {
-    extractSuperClassRefactoring.performRefactoring();
-  } catch (RefactoringException e) {
-    e.printStackTrace();
-  }
-
-  try {
-    assertTrue("Post condition not met!", 
-      extractSuperClassRefactoring.checkPostCondition());
-  } catch (ParserException post) {
-    post.printStackTrace();
-    fail("Postconstraints failed with ParserException");
-  }
-
-  try {
-    resource.save(new FileOutputStream(
-      new File(MODEL_SUPERCLASS_PATH)), null);
-  } catch (Exception e) {
-    e.printStackTrace();
   }
 }
 \end{lstlisting}
