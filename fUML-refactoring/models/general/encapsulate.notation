@@ -19,7 +19,7 @@
       <element xmi:type="uml:Class" href="encapsulate.uml#_EN0uMP7FEeOXWME4whDVnQ"/>
       <layoutConstraint xmi:type="notation:Bounds" xmi:id="_EN2jYf7FEeOXWME4whDVnQ" x="383" y="249" height="25"/>
     </children>
-    <children xmi:type="notation:Shape" xmi:id="_FP7EYP7FEeOXWME4whDVnQ" type="2008" fontHeight="11" fillColor="16754856" lineColor="0">
+    <children xmi:type="notation:Shape" xmi:id="_FP7EYP7FEeOXWME4whDVnQ" type="2008" fontHeight="11" fillColor="15066597" lineColor="0">
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_FP7rcP7FEeOXWME4whDVnQ" source="ShadowFigure">
         <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_FP7rcf7FEeOXWME4whDVnQ" key="ShadowFigure_Value" value="false"/>
       </eAnnotations>
@@ -354,7 +354,7 @@
       <element xmi:type="uml:Class" href="encapsulate.uml#_EN0uMP7FEeOXWME4whDVnQ"/>
       <layoutConstraint xmi:type="notation:Bounds" xmi:id="_O0rwjP7LEeO2RfMQJ4NzTA" x="465" y="287" height="25"/>
     </children>
-    <children xmi:type="notation:Shape" xmi:id="_O0sXgP7LEeO2RfMQJ4NzTA" type="2008" fontHeight="11" fillColor="16754856" lineColor="0">
+    <children xmi:type="notation:Shape" xmi:id="_O0sXgP7LEeO2RfMQJ4NzTA" type="2008" fontHeight="11" fillColor="15066597" lineColor="0">
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_O0sXgf7LEeO2RfMQJ4NzTA" source="ShadowFigure">
         <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_O0sXgv7LEeO2RfMQJ4NzTA" key="ShadowFigure_Value" value="false"/>
       </eAnnotations>

@@ -200,7 +200,7 @@ graphical front end. EMF Refactor\footnote{\url{http://www.eclipse.org/emf-refac
 refactorings into editors such as the UML tree editor or 
 the Papyrus\footnote{\url{http://www.eclipse.org/papyrus/}} UML editor. EMF Refactor provides a Java API as well as a module 
 concept to integrate refactorings. We will discuss the use 
-of EMF Refactor as part of our tool chain presentation.
+of Papyrus and EMF Refactor as part of our tool chain presentation.
 
 %TODO: Maybe discuss emf.refactor as part of future work?
 
@@ -265,7 +265,7 @@ refactoring.
 \end{figure}
 
 In order to demonstrate how the presented refactorings affect both class and activity diagrams we will introduce an example 
-model from the insurance domain. For a better understanding of the abstract syntax we first show the relevant parts of the fUML 
+model from the insurance domain. For a better understanding of the abstract syntax we first show the most relevant parts of the fUML 
 subset for our example. Figure \ref{fig:fuml1} explains how the meta-model concepts \texttt{Property}, which is a subclass of 
 \texttt{Structural\-Feature}, and \texttt{Operation}, which is a \texttt{Behavioral\-Feature}, are linked to the \texttt{Class}. 
 Furthermore is shows that \texttt{Operation} owns zero or more \texttt{Parameter}. It also shows the hierarchy of 
@@ -445,15 +445,9 @@ a common basis. Most of the time it is used in combination with the \textit{pull
 up operation} refactoring. In our case the refactoring takes two parameters. The name of the superclass to extract as well as
 the class that participates in the refactoring and which will receive the created class as its superclass.
 
-Figure \ref{fig:extract} shows the changes of the refactoring on the abstract syntax level. A new \texttt{Class} is 
-introduced and linked via a \texttt{Generalization} to the already existing \texttt{Class}. In our example the two 
-classes \texttt{Car} and \texttt{Truck} will be connected to the new superclass \texttt{Vehicle} via the attribute 
-\textit{superClass} of the meta-model concept \texttt{Class}. Listing \ref{lst:extractsuperclass} shows the OCL pre- and 
-postcondition for this refactoring. The preconditions checks that there are no classes in the namespace with the 
-same name. The postcondition verifies whether the newly created class is visible and the class, from which the refactoring was initiated,
-is a subclass. Parts of the model\footnote{E.g. the insurance policy could then hold a single variable referencing all vehicles instead 
-of one for the cars and one for the trucks.} might also benefit from changing references to the new class, but such a change is not 
-trivial and requires additional considerations, which are not covered by this refactoring.
+To point out the impacts of a class diagram refactoring on the abstract syntax level we visualize the changes for the 
+relevant refactorings. The left hand side of the figures represent the syntax before and the right hand side the syntax 
+after the applied refactoring. Concepts that are not affected by the refactoring are colored in gray. 
 
 \begin{figure}
  \makebox[\textwidth]{
@@ -462,6 +456,21 @@ trivial and requires additional considerations, which are not covered by this re
  \caption{Abstract syntax before \& after \textit{extract superclass} refactoring}
  \label{fig:extract}
 \end{figure}
+
+Figure \ref{fig:extract} shows the changes for the \textit{extract superclass} refactoring a new \texttt{Class} is 
+introduced and linked via a \texttt{Generalization} to the already existing \texttt{Class}. In our example the two 
+classes \texttt{Car} and \texttt{Truck} will be connected to the new superclass \texttt{Vehicle} via the attribute 
+\textit{superClass} of the meta-model concept \texttt{Class}. Listing \ref{lst:extractsuperclass}
+\footnote{As there are minor differences between the programmatic syntax of OCL in Java and the standard OCL console of Eclipse EMF 
+we need to write the term \texttt{uml::} in lowercase letters in Java. You might need to change them to uppercase \texttt{UML::} 
+to run the queries within the OCL console in Eclipse EMF.} shows the OCL pre- and 
+postcondition for this refactoring. The preconditions checks that there are no classes in the namespace with the 
+same name. The postcondition verifies whether the newly created class is visible and the class, from which the refactoring was initiated,
+is a subclass. 
+
+Parts of the model\footnote{E.g. the insurance policy could then hold a single variable referencing all vehicles instead 
+of one for the cars and one for the trucks.} might also benefit from changing references to the new class, but such a change is not 
+trivial and requires additional considerations, which are not covered by this work.
 
 \begin{lstsingle}[language=OCL,caption=OCL for \textit{extract superclass} refactoring,label=lst:extractsuperclass]
 context Class:
@@ -494,32 +503,54 @@ in the target class and that they are not private.
 
 \subsection{Encapsulate property}
 \label{sec:encapsulate}
-The \textit{encapsulate property} refactoring is a rather complex one. The goal is to change the visibility of a property to 
-\textit{private} and introduce \textit{public} getter and setter operations to access the value of the property. Thus at first 
-getter and setter operations for the property are created and
-added to the class. For both operations the corresponding activities are generated and their specification set to the 
-respective operation. Afterwards each \texttt{Structural\-Feature\-Action} in the model has to be checked, whether it accesses 
-the property, and in case must be replaced by a \texttt{Call\-Operation\-Action}. If the action is a 
-\texttt{Read\-Structural\-Feature\-Action} then the call operation invokes the getter, if the node is of class 
-\texttt{Add\-Structural\-Feature\-Value\-Action} the setter operation has to be used. Finally the property's 
-visibility is set to private.
+The \textit{encapsulate property} refactoring is a more complex than the ones before. The goal is to change the visibility of a property to 
+\textit{private} and introduce \textit{public} getter and setter operations to access the value of the property. 
+
+\begin{figure}
+ \makebox[\textwidth]{
+  \includegraphics[scale=0.65]{images/encapsulate/Model_Model_Before}
+ }
+ \caption{Abstract syntax before \textit{encapsulate property} refactoring}
+ \label{fig:encapsulatebefore}
+\end{figure}
 
 Figure \ref{fig:encapsulatebefore} shows the abstract syntax of a part of the model before the refactoring, 
-Figure \ref{fig:encapsulateafter} shows the abstract syntax of the same model after the refactoring. In Figure \ref{fig:encapsulateafter} 
+Figure \ref{fig:encapsulateafter} shows the abstract syntax of the same model after the refactoring\footnote{
+In Figure \ref{fig:encapsulateafter} 
 we have omitted the activity objects and their internal representation for the sake of visual simplicity. So for each operation 
-there is actually a corresponding \texttt{Activity} object, which is also contained by the \texttt{Class}.
+there is actually a corresponding \texttt{Activity} object, which is also contained by the \texttt{Class}.}.
 
-Creating the two activities for the getter and the setter is not trivial. It requires the creation of
+At first 
+getter and setter operations for the property are created and
+added to the class. For both operations the corresponding activities are generated and their specification set to the 
+respective operation. 
+Creating the two activities for the getter and the setter is not trivial as we also need to implement the internals of them. It requires the creation of
 a \texttt{Read\-Self\-Action} to retrieve the properties owner class and the creation of the correct \texttt{Structural\-Feature\-Action}.
 Additionally object and control flow edges, input and output pins and activity parameter nodes need to be created and connected with the 
 actions. For each of these elements there are several properties in the abstract syntax that have to be set correctly, such as the 
-\textit{type} property of pins or the \textit{source} and \textit{target} properties of edges. If only one element is not correctly 
-generated by the refactoring, then the refactoring results in an incorrect model. Once the activities are added to the model, the 
-refactoring searches for structural feature actions to replace. Besides creating the call operation and removing the structural feature 
-action, care must be taken to reassign the corresponding input pins and activity flow edges to the call operation action.
+\textit{type} property of pins or the \textit{source} and \textit{target} properties of edges. If only a single element is not correctly 
+generated by the refactoring, then the refactoring results in an incorrect model.
+
+Afterwards each \texttt{Structural\-Feature\-Action} in the model has to be checked, whether it accesses 
+the property, and in case must be replaced by a \texttt{Call\-Operation\-Action}. If the action is a 
+\texttt{Read\-Structural\-Feature\-Action} then the call operation invokes the getter, if the node is of class 
+\texttt{Add\-Structural\-Feature\-Value\-Action} the setter operation has to be used. 
+One important step is to reassign the corresponding \texttt{InputPin}s and \texttt{OutputPin}s of the original 
+actions to the new actions as well as additional activity edges such as \texttt{ObjectFlow}s or \texttt{ControlFlow}s.
+Finally the property's visibility is set to private.
+
+\begin{figure}
+ \makebox[\textwidth]{
+  \includegraphics[scale=0.63]{images/encapsulate/Model_Model_After}
+ }
+ \caption{Abstract syntax after \textit{encapsulate property} refactoring}
+ \label{fig:encapsulateafter}
+\end{figure}
+
+% TODO: Our example does not contain an operation which uses the encapsulated property of Vehicle.
 
 There are several constraints that need to be checked in order to verify that the refactoring preserved the behavior of the model. 
-We present the relevant constraints in Appendix \ref{sec:appendix} in Listing \ref{lst:encapsulateproperty}.
+We present the relevant constraints in Appendix \ref{sec:appendix} in Listing \ref{lst:encapsulate}.
 The precondition for this refactoring is that the property is not already private and there are not already getters 
 and setters for it. It this case the conditions are not purely formulated in OCL as the \texttt{is\-Distinguishable\-From} method 
 demands an element that already exists. We provide this by creating the element before the precondition check and using it 
@@ -535,31 +566,6 @@ As the postcondition is more complex we have split it into five separate conditi
 pins from the removed structural feature actions matches the number of respective pins of the added call operation actions. Additionally
 we require that the type of each pin is correctly set.
 
-\begin{figure}
- \makebox[\textwidth]{
-  \includegraphics[scale=0.6]{images/encapsulate/Model_Model_Before}
- }
- \caption{Abstract syntax before \textit{encapsulate property} refactoring}
- \label{fig:encapsulatebefore}
-\end{figure}
-
-\begin{figure}
- \makebox[\textwidth]{
-  \includegraphics[scale=0.6]{images/encapsulate/Model_Model_After}
- }
- \caption{Abstract syntax after \textit{encapsulate property} refactoring}
- \label{fig:encapsulateafter}
-\end{figure}
-
-\begin{lstsingle}[language=OCL,caption=OCL for encapsulate property,label=lst:encapsulateproperty]
-context Property:
-pre:  self.visibility <> uml::VisibilityKind::private and
-      self.class.ownedOperation
-      ->forAll(o | o.isDistinguishableFrom(setOperation,
-              self.namespace) and
-      o.isDistinguishableFrom(getOperation, self.namespace))
-\end{lstsingle}
-
 %TODO: explain and state ocl constraints for: 
 %   * Extract class
 %   * Pull up association end
@@ -571,29 +577,57 @@ pre:  self.visibility <> uml::VisibilityKind::private and
 In the last section we explained some refactorings in detail with their respective preconditions and postconditions the model. 
 We also discussed which steps have to be taken to actually co-refactor an activity diagram if changes are implied by refactoring 
 the class diagram. In this section we will present implementation details as well as a toolchain that allows the integration and 
-execution of the refactorings in Eclipse\footnote{\url{http://www.eclipse.org/}}. 
+execution of the refactorings in Eclipse\footnote{\url{http://www.eclipse.org/}}.
 
 % For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
 % models in a virtual machine.
 \subsection{Model loading}
-The models are stored in \textit{XML Metadata Interchange} \cite{man:XMI} (XMI) format 
-and loaded programmatically with an \textit{Eclipse Modeling Framework} \cite{Steinberg:2009:EEM:1197540} (EMF) 
-\texttt{Resource\-Set}. The \texttt{Resource\-Set}
-can be used to retrieve a \texttt{Resource} object through an \texttt{URI}, which is then used to access the different objects in the model 
-(see Listing \ref{lst:resourceset}). All elements contained in the model are instances of Ecore (the implementation of
+The examples in this work were created in Eclipse with the \textit{Eclipse Modeling Framework} \cite{Steinberg:2009:EEM:1197540} 
+(EMF) and Papyrus, a visual modeling tool for different types of diagrams and modeling languages, which stores the models 
+in \textit{XML Metadata Interchange} \cite{man:XMI} (XMI) format. We use Java as programming language to manipulate 
+the models according to the defined refactorings.
+
+Listing \ref{lst:resourceset} shows how a model can be initialized and loaded. The \texttt{Resource\-Set}
+can be used to retrieve a \texttt{Resource} object through an \texttt{URI}, which is then used to access the different objects in the model. 
+All elements contained in the model are instances of Ecore (the implementation of
 the MOF meta-meta-model) and they represent classes of the UML meta-model, which is implemented with Ecore.
 
 \begin{lstsingle}[language=Java,caption=Getting the resourceset,label=lst:resourceset]
-resourceSet = new ResourceSetImpl();
-resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI,
-                                     UMLPackage.eINSTANCE);
-resourceSet.getResourceFactoryRegistry()
-    .getExtensionToFactoryMap()
-    .put(UMLResource.FILE_EXTENSION,
-         UMLResource.Factory.INSTANCE);
-File file = new File(umlModelFile);
-URI uri = URI.createFileURI(file.getAbsolutePath());
-    resource = resourceSet.getResource(uri, true);
+void initializeResourceSet() {
+  ResourceSet resourceSet = new ResourceSetImpl();
+  resourceSet.getPackageRegistry()
+    .put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
+  resourceSet.getResourceFactoryRegistry()
+    .getExtensionToFactoryMap().put(
+      UMLResource.FILE_EXTENSION, 
+      UMLResource.Factory.INSTANCE);
+  File file = new File(MODEL_PATH);
+  URI uri = URI.createFileURI(file.getAbsolutePath());
+  Resource resource = resourceSet
+    .getResource(uri, true);
+}
+
+Object loadElement(String qualifiedName, 
+  java.lang.Class<? extends NamedElement> clazz) {
+  
+  TreeIterator<EObject> iterator = 
+    resource.getAllContents();
+  while (iterator.hasNext()) {
+    EObject eObject = iterator.next();
+    if (!(eObject instanceof NamedElement)) {
+      continue;
+    }
+    if (!clazz.isAssignableFrom(eObject.getClass())) {
+      // inspected element is not from target class type
+      continue;
+    }
+    NamedElement element = (NamedElement) eObject;
+    if (qualifiedName.equals(element.getQualifiedName())) {
+      return eObject;
+    }
+  }
+  return null;
+}
 \end{lstsingle}
 
 \subsection{Model refactoring}
@@ -792,6 +826,9 @@ specification of pre- and postconditions OCL in is still required and will be th
 \section{Appendix}
 \label{sec:appendix}
 
+\subsection{OCL Constraints}
+\label{sec:appconstraints}
+
 \begin{lstsingle}[language=OCL,caption=OCL for \textit{rename class} refactoring,label=lst:renameclass]
 context Class:
 pre:  self.namespace.member
@@ -799,7 +836,7 @@ pre:  self.namespace.member
       ->forAll(c | c.name <> 'newClassName')
 \end{lstsingle}
 \\
-\begin{lstsingle}[language=OCL,caption=OCL for \textit{encapsulate property} refactoring,label=lst:encapsulate]
+\begin{lstlisting}[language=OCL,caption=OCL for \textit{encapsulate property} refactoring,label=lst:encapsulate]
 context Property:
 pre:  self.visibility <> uml::VisibilityKind::private 
       and 
@@ -841,7 +878,9 @@ post: uml::CallOperationAction.allInstances()
         ->select(action | action.operation = operation)
         ->collect(result)->forAll(result | result.type 
         = self.type)
-\end{lstsingle}
+\end{lstlisting}
 
+\subsection{Code Listings}
+\label{sec:applistings}
 
 \end{document}

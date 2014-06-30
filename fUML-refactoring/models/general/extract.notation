@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:uml="http://www.eclipse.org/uml2/4.0.0/UML" xmi:id="_qgrNAP7kEeOvCYT74tK68A" type="PapyrusUMLClassDiagram" name="Extract" measurementUnit="Pixel">
-  <children xmi:type="notation:Shape" xmi:id="_w0KOMP7tEeOvCYT74tK68A" type="2008" fontHeight="11" lineColor="0">
+  <children xmi:type="notation:Shape" xmi:id="_w0KOMP7tEeOvCYT74tK68A" type="2008" fontHeight="11" fillColor="15066597" lineColor="0">
     <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_w0LcUP7tEeOvCYT74tK68A" source="ShadowFigure">
       <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_w0LcUf7tEeOvCYT74tK68A" key="ShadowFigure_Value" value="false"/>
     </eAnnotations>
@@ -54,7 +54,7 @@
     <element xmi:type="uml:Class" href="extract.uml#_2gI5kP7tEeOvCYT74tK68A"/>
     <layoutConstraint xmi:type="notation:Bounds" xmi:id="_2gKuwf7tEeOvCYT74tK68A" x="282" y="167" width="120" height="25"/>
   </children>
-  <children xmi:type="notation:Shape" xmi:id="_7lwvkP7tEeOvCYT74tK68A" type="2008" fontHeight="11" lineColor="0">
+  <children xmi:type="notation:Shape" xmi:id="_7lwvkP7tEeOvCYT74tK68A" type="2008" fontHeight="11" fillColor="15066597" lineColor="0">
     <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_7lwvkv7tEeOvCYT74tK68A" source="ShadowFigure">
       <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_7lwvk_7tEeOvCYT74tK68A" key="ShadowFigure_Value" value="false"/>
     </eAnnotations>
