@@ -491,15 +491,50 @@ post: newSuperClass.visibility = uml::VisibilityKind::public
 \subsection{Pull up property \& pull up operation}
 \label{sec:pullup}
 Both refactorings are quite similar which is why we describe \textit{pull up property} first and explain the specifics of \textit{pull up 
-operation} afterwards. There are two cases of the \textit{pull up property} refactoring. It can either be executed for a property that 
-occurs in a single class or in multiple classes where the properties should also be combined and pulled up. In the class diagram 
-the property has to be pulled up and the occurrences of the properties in the subclasses have to be deleted. The 
-activity diagrams needs to change occurrences of the \texttt{StructuralFeatureValueAction} and use the property of 
-the super class.
+operation} afterwards. The \textit{pull up property} refactoring gets as parameters the selected property as well as the super class to 
+which the property will be moved. Optionally a list of additional properties is provided in the case that more than one property is 
+pulled up.
 
-For the \textit{pull up operation} refactoring all \texttt{Call\-Operation\-Action} actions have to be adapted like described 
-above. A precondition for both of these refactorings is that there does not already exist an property or a operation with the same name 
-in the target class and that they are not private.
+There are two cases of the \textit{pull up property} refactoring. It can either be executed for a property that 
+occurs in a single class or in multiple classes where the properties should be combined and pulled up. We consider the single case first. 
+The property is a separate object that is only referenced by the class which contains it. To pull it up to the super class it is enough to 
+change the containment reference to the super class. No co-refactoring is necessary in this case. However if two or more properties from 
+two or more subclasses need to be pulled up to a common super class then this would result in two identical property objects in the super 
+class. In this case only one property can be pulled up, and the other properties have to be removed. For each property that is removed a 
+co-refactoring of the activities must be performed. The removed property must be replaced by the property that was pulled up to the super 
+class in all elements that reference the removed property.
+
+The \textit{pull up operation} refactoring is similar to the \textit{pull up property} variant. The important difference is that
+if more than one operation should be pulled up, then not only the operation signatures have to be equivalent, but also the implementation.
+However this is hard to verify and outside the scope of this paper, so for pull up operation only one operation can be pulled up at a 
+time. Since only one operation is pulled up, it is enough to change the reference to the operation.
+
+The refactorings have several preconditions. There must not already exist a property or an operation with the same name, type or 
+multiplicity in the target class and they must not be private. Additionally the specified super class must be a super class of the
+class that owns the selected property (or operation). These preconditions are specified in Listing \ref{lst:pullupproperty}. If there are 
+additional properties then for each additional property the precondition in Listing \ref{lst:pullupproperty} as well as in Listing 
+\ref{lst:additionalproperties} must be satisfied. Listing \ref{lst:additionalproperties} specifies that the additional properties must be
+identical to the selected property.
+
+\begin{lstsingle}[language=OCL,caption=OCL for \textit{pull up property},label=lst:pullupproperty]
+context Property:
+pre: self.class.superClass->select(
+         s | s.name = selectedSuperClass.name)->notEmpty()
+     and self.visibility <> uml::VisibilityKind::private
+     and self.class.inheritedMember->selectByType(Property)
+     ->forAll(prop | prop.name = self.name
+              and prop.type = self.type
+              and prop.upper = self.upper
+              and prop.lower = self.lower)
+\end{lstsingle}
+
+\begin{lstsingle}[language=OCL, caption={OCL for additional properties}, label=lst:additionalproperties]
+context Property:
+pre: self.name = otherProperty.name
+     and self.type = otherProperty.type
+     and self.upper = otherProperty.upper
+     and self.lower = otherProperty.lower
+\end{lstsingle}
 
 \subsection{Encapsulate property}
 \label{sec:encapsulate}

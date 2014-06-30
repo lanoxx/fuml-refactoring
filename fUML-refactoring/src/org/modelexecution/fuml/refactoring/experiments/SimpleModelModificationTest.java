@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -44,6 +46,8 @@ public class SimpleModelModificationTest {
         "models/insurancemodel/insurancemodel_removeunusedclass.uml";
     private static final String MODEL_PULLUP_PROPERTY_PATH =
         "models/insurancemodel/insurancemodel_pullupproperty.uml";
+    private static final String MODEL_PULLUP_MULTIPLE_PROPERTY_PATH =
+        "models/insurancemodel/insurancemodel_pullup_multiple_property.uml";
 
     /** The current resource. */
     private ResourceSet resourceSet;
@@ -401,4 +405,83 @@ public class SimpleModelModificationTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testPullupMultipleProperties_shouldSucceed() {
+        String superClassName = "Vehicle";
+
+        RefactoringData data = new RefactoringDataImpl();
+        data.set("newSuperClassName", superClassName);
+        Class clazz = (Class) loadElement("Model::insurance::Car", Class.class);
+        data.set("selectedElement", clazz);
+
+        Refactorable extractSuperClassRefactoring = new ExtractSuperClassRefactorableImpl(data);
+
+        try {
+            assertTrue("Precondition not met!", extractSuperClassRefactoring.checkPreCondition());
+        } catch (ParserException pre) {
+            fail("Preconstraints failed with ParserException");
+        }
+
+        try {
+            extractSuperClassRefactoring.performRefactoring();
+        } catch (RefactoringException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            assertTrue("Post condition not met!", extractSuperClassRefactoring.checkPostCondition());
+        } catch (ParserException post) {
+            post.printStackTrace();
+            fail("Postconstraints failed with ParserException");
+        }
+
+        data = new RefactoringDataImpl();
+        Property property = (Property) loadElement("Model::insurance::Car::registration", Property.class);
+        Property additionalProperty = (Property) loadElement("Model::insurance::Truck::registration", Property.class);
+        Class superClass = (Class) loadElement("Model::insurance::Vehicle", Class.class);
+        data.set("selectedElement", property);
+        data.set("superClass", superClass);
+        Set<Property> additionalElements = new HashSet<>();
+        additionalElements.add(additionalProperty);
+        data.set("additionalElements", additionalElements);
+
+        Refactorable pullUpPropertyRefactoring = new PullUpPropertyRefactorableImpl(data);
+
+        try {
+            // assertTrue("Precondition not met!", pullUpPropertyRefactoring.checkPreCondition());
+            pullUpPropertyRefactoring.checkPreCondition();
+        } catch (ParserException pre) {
+            fail("Preconstraints failed with ParserException");
+        }
+
+        try {
+            pullUpPropertyRefactoring.performRefactoring();
+        } catch (RefactoringException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            assertTrue("Post condition not met!", pullUpPropertyRefactoring.checkPostCondition());
+        } catch (ParserException post) {
+            post.printStackTrace();
+            fail("Postconstraints failed with ParserException");
+        }
+
+        try {
+            resource.save(new FileOutputStream(new File(MODEL_PULLUP_MULTIPLE_PROPERTY_PATH)), null);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        /*
+         * TreeIterator<EObject> iterator = resource.getAllContents(); while (iterator.hasNext()) { EObject eObject =
+         * iterator.next(); if (eObject instanceof Class) { System.out.println(eObject.toString()); } }
+         */
+    }
+
 }

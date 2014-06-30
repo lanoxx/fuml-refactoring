@@ -1,5 +1,8 @@
 package org.modelexecution.fuml.refactoring.experiments;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
@@ -15,6 +18,7 @@ import org.eclipse.ocl.expressions.Variable;
 import org.eclipse.ocl.helper.OCLHelper;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.modelexecution.fuml.refactoring.Refactorable;
 import org.modelexecution.fuml.refactoring.RefactoringData;
@@ -26,14 +30,14 @@ public class PullUpPropertyRefactorableImpl implements Refactorable {
     private final OCLHelper<EClassifier, ?, ?, Constraint> helper;
 
     // Context Property
-    private static final String OCL_PRE_CONSTRAINT = "self.class.superClass->select(s | s.name = selectedSuperClass.name)->notEmpty()"
-    		+ " and self.visibility <> uml::VisibilityKind::private"
-    		+ " and self.class.inheritedMember->selectByType(Property)"
-    		+ "->forAll(prop | prop.isDistinguishableFrom(self, self.class.namespace))";
-    // "self.class.superClass->select(s | s.name = superClass.name)->notEmpty()";
-    // + " and self.visibility <> uml::VisibilityKind::private"
-    // + " and self.class.inheritedMember->selectByType(Property)"
-    // + "->forAll(prop | prop.isDistinguishableFrom(self, self.class.namespace))";
+    private static final String OCL_PRE_CONSTRAINT =
+        "self.class.superClass->select(s | s.name = selectedSuperClass.name)->notEmpty()"
+            + " and self.visibility <> uml::VisibilityKind::private"
+            + " and self.class.inheritedMember->selectByType(Property)"
+            + "->forAll(prop | prop.name = self.name and prop.type = self.type"
+            + " and prop.upper = self.upper and prop.lower = self.lower)";
+    private static final String OCL_PRE_CONSTRAINT_ADDITIONAL_ELEMENTS =
+        "self.name = otherProperty.name and self.type = otherProperty.type and self.upper = otherProperty.upper and self.lower = otherProperty.lower";
 
     private static final String OCL_POST_CONSTRAINT = "";
 
@@ -45,7 +49,8 @@ public class PullUpPropertyRefactorableImpl implements Refactorable {
         this.data = data;
 
         assert (data.get("selectedElement") != null);
-        assert (data.get("superClass") != null);
+        assert (data.get("selectedSuperClass") != null);
+        assert (data.get("additionalElements") != null);
     }
 
     /**
@@ -61,6 +66,7 @@ public class PullUpPropertyRefactorableImpl implements Refactorable {
 
         Property selectedElement = (Property) data.get("selectedElement");
         Class superClass = (Class) data.get("superClass");
+        Set<Property> additionalElements = (Set<Property>) data.get("additionalElements");
 
         Variable<EClassifier, EParameter> variable = ExpressionsFactory.eINSTANCE.createVariable();
         variable.setName("selectedSuperClass");
@@ -72,11 +78,40 @@ public class PullUpPropertyRefactorableImpl implements Refactorable {
         Query<EClassifier, EClass, EObject> query = ocl.createQuery(expression);
         ocl.getEvaluationEnvironment().add("selectedSuperClass", superClass);
 
-        if (!query.check(selectedElement)) {
-            return false;
+        boolean success = query.check(selectedElement);
+
+        /*
+         * If there are additional properties, then we also need to check for each additional property that it is
+         * identical to the selected element and that it satisfies the normal preconstraint.
+         */
+        if (additionalElements != null && additionalElements.size() > 0) {
+            for (Property property : additionalElements) {
+                variable = ExpressionsFactory.eINSTANCE.createVariable();
+                variable.setName("selectedSuperClass");
+                variable.setType(UMLPackage.Literals.CLASSIFIER);
+                ocl.getEnvironment().addElement(variable.getName(), variable, true);
+
+                expression = helper.createQuery(OCL_PRE_CONSTRAINT);
+
+                query = ocl.createQuery(expression);
+
+                success = success && query.check(property);
+
+                variable = ExpressionsFactory.eINSTANCE.createVariable();
+                variable.setName("otherProperty");
+                variable.setType(UMLPackage.Literals.PROPERTY);
+                ocl.getEnvironment().addElement(variable.getName(), variable, true);
+
+                expression = helper.createQuery(OCL_PRE_CONSTRAINT_ADDITIONAL_ELEMENTS);
+
+                query = ocl.createQuery(expression);
+                ocl.getEvaluationEnvironment().add("otherProperty", property);
+
+                success = success && query.check(selectedElement);
+            }
         }
 
-        return true;
+        return success;
     }
 
     /**
@@ -90,8 +125,38 @@ public class PullUpPropertyRefactorableImpl implements Refactorable {
     public boolean performRefactoring() throws RefactoringException {
         Property selectedElement = (Property) data.get("selectedElement");
         Class superClass = (Class) data.get("superClass");
+        Set<Property> additionalElements = (Set<Property>) data.get("additionalElements");
 
         superClass.getOwnedAttributes().add(selectedElement);
+
+        if (additionalElements != null && additionalElements.size() > 0) {
+            for (Property property : additionalElements) {
+
+                // for each element that references the property we need to replace it by the selectedElement
+                OCLExpression<EClassifier> readStructuralExpression = null;
+                try {
+                    readStructuralExpression =
+                        helper.createQuery(String
+                                .format("uml::StructuralFeatureAction.allInstances()->select(r|r.structuralFeature.qualifiedName='%s')",
+                                        property.getQualifiedName()));
+                } catch (ParserException e) {
+                    e.printStackTrace();
+                }
+
+                Query<EClassifier, EClass, EObject> query = ocl.createQuery(readStructuralExpression);
+
+                Collection<ReadStructuralFeatureAction> object =
+                    (Collection<ReadStructuralFeatureAction>) query.evaluate(selectedElement);
+
+                for (ReadStructuralFeatureAction action : object) {
+                    action.setStructuralFeature(selectedElement);
+                }
+
+                // remove the property from its owning class
+                property.getClass_().getOwnedAttributes().remove(property);
+
+            }
+        }
 
         return true;
     }
