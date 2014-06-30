@@ -83,9 +83,6 @@ public class ExtractSuperClassRefactorableImpl implements Refactorable {
         String newSuperClassName = (String) data.get("newSuperClassName");
         Package pkg = selectedElement.getPackage();
 
-        Class superClass = UMLFactory.eINSTANCE.createClass();
-        superClass.setName(newSuperClassName);
-
         if (pkg.getPackagedElement(newSuperClassName) == null) {
             // the owning package does not own a class with the inserted name
             // create new class named 'className'
