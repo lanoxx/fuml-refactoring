@@ -221,19 +221,19 @@ them. Nevertheless we use this catalog as a starting point and adapt it for our 
 
 \begin{figure}[h!t]
  \centering
- \begin{tabular}[]{l | c | c}
-  Class diagram refactoring & Abstract syntax changes & Activity diagram co-refactoring\\
+ \begin{tabular}[]{l | c | c | c}
+  \shortstack{Class diagram\\refactoring} & \shortstack{Abstract syntax\\changes} & \shortstack{Activity diagram\\co-refactoring} & Implemented\\
   \hline
-  Encapsulate property & Yes & Yes\\
-  Extract class & Yes & Yes\\
-  Extract superclass & Yes & No\\
-  Pull up association end & Yes & Yes\\
-  Pull up properties & Yes & Yes\\
-  Pull up operation & Yes & No\\
-  Remove unused class & Yes & No\\
-  Rename class & No & No\\
-  Rename operation & No & No\\
-  Rename property & No & No\\
+  Encapsulate property & Yes & Yes & Yes\\
+  Extract class & Yes & Yes & No\\
+  Pull up association end & Yes & Yes & No\\
+  Pull up properties & Yes & Yes & Yes\\
+  Pull up operation & Yes & No & Yes\\
+  Extract superclass & Yes & No & Yes\\
+  Remove unused class & Yes & No & No\\
+  Rename class & No & No & Yes\\
+  Rename operation & No & No & Yes\\
+  Rename property & No & No & Yes\\
  \end{tabular}
  \caption{Considered refactorings}
  \label{fig:refactoringlist}
