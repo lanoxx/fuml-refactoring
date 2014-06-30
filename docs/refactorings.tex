@@ -228,8 +228,8 @@ them. Nevertheless we use this catalog as a starting point and adapt it for our 
   Extract class & Yes & Yes\\
   Extract superclass & Yes & No\\
   Pull up association end & Yes & Yes\\
-  Pull up property & Yes & Yes\\
-  Pull up operation & Yes & Yes\\
+  Pull up properties & Yes & Yes\\
+  Pull up operation & Yes & No\\
   Remove unused class & Yes & No\\
   Rename class & No & No\\
   Rename operation & No & No\\
@@ -615,42 +615,29 @@ We also discussed which steps have to be taken to actually co-refactor an activi
 the class diagram. In this section we will present implementation details as well as a toolchain that allows the integration and 
 execution of the refactorings in Eclipse\footnote{\url{http://www.eclipse.org/}}.
 
-% For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
-% models in a virtual machine.
-\subsection{Model loading}
+\begin{figure}
+ \makebox[\textwidth]{
+  \includegraphics[scale=0.6]{images/Model_Model_Toolchain}
+ }
+ \caption{Implementation dependencies and class structure}
+ \label{fig:toolchain}
+\end{figure}
+
 The examples in this work were created in Eclipse with the \textit{Eclipse Modeling Framework} \cite{Steinberg:2009:EEM:1197540} 
 (EMF) and Papyrus, a visual modeling tool for different types of diagrams and modeling languages, which stores the models 
 in \textit{XML Metadata Interchange} \cite{man:XMI} (XMI) format. We use Java as programming language to manipulate 
-the models according to the defined refactorings.
+the models according to the defined refactorings. The relevant dependencies used for the implementation of the refactorings 
+as well as our class structure is depicted in Figure \ref{fig:toolchain}.
 
-Listing \ref{lst:resourceset} shows how a model can be initialized and loaded. First the \texttt{Resource\-Set} needs to be 
-initialized to use the correct settings for UML models. It then can be used to retrieve a \texttt{Resource} object through 
-an \texttt{URI}, which is then used to access the different objects in the model. 
+% For our toolchain we have relied on the moliz\footnote{http://www.modelexecution.org} repository, mainly for the ability to execute the fUML 
+% models in a virtual machine.
+\subsection{Model loading}
+The \texttt{Resource\-Set} which serves as a basis to read the XMI files needs to be 
+initialized first to use the correct settings for UML models. It then can be used to retrieve a \texttt{Resource} object through 
+an \texttt{URI}, which is then used to access the different objects in the model. Listing \ref{lst:resourceset} which is contained 
+in Appendix \ref{sec:applistings} shows how a model can be initialized and loaded.
 All elements contained in the model are instances of Ecore\footnote{The EMF core meta-model implementation of
 the MOF meta-meta-model} and they represent classes of the UML meta-model, which is implemented with Ecore.
-
-\begin{lstsingle}[language=Java,caption=Initializing the resourceset,label=lst:resourceset]
-void initializeResourceSet() {
-  ResourceSet resourceSet = new ResourceSetImpl();
-  resourceSet.getPackageRegistry()
-    .put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
-  resourceSet.getResourceFactoryRegistry()
-    .getExtensionToFactoryMap().put(
-      UMLResource.FILE_EXTENSION, 
-      UMLResource.Factory.INSTANCE);
-  File file = new File(MODEL_PATH);
-  URI uri = URI.createFileURI(file.getAbsolutePath());
-  Resource resource = resourceSet
-    .getResource(uri, true);
-}
-\end{lstsingle}
-
-Model elements can be loaded in different ways. We decided to use the qualified name and the class of the concept as 
-parameters to identify and load an element. Listing \ref{lst:loadingelements} shows that we first build up a tree of 
-the model which is retrieved from the \texttt{Resource}. Then we iterate through the tree and check whether the element 
-is a \texttt{NamedElement}. If this is the case we need to verify that element is assignable to the class we want to 
-load and that the qualified name is the same. The resulting \texttt{EObject} is returned and needs to be casted by the 
-calling method.
 
 \begin{lstsingle}[language=Java,caption=Loading elements from the model,label=lst:loadingelements]
 Object loadElement(String qualifiedName, 
@@ -676,55 +663,55 @@ Object loadElement(String qualifiedName,
 }
 \end{lstsingle}
 
+Model elements can be loaded in different ways. We decided to use the qualified name and the class of the concept as 
+parameters to identify and load an element. Listing \ref{lst:loadingelements} shows that we first build up a tree of 
+the model which is retrieved from the \texttt{Resource}. Then we iterate through the tree and check whether the element 
+is a \texttt{NamedElement}. If this is the case we need to verify that element is assignable to the class we want to 
+load and that the qualified name is the same. The resulting \texttt{EObject} is returned and needs to be casted by the 
+calling method.
+
 \subsection{Model refactoring}
+Each of our refactorings is implemented in a separated Java class, which implements the \texttt{Refactorable}
+interface that has three operations \texttt{check\-Precondition}, \texttt{perform\-Refactoring}, and \texttt{check\-Post\-condition} as 
+already shown in Figure \ref{fig:toolchain}. The three methods are executed in the described order to apply the refactoring. 
+In the following paragraphs we will explain what is done by the single operations.
 
-\begin{figure}
- \makebox[\textwidth]{
-  \includegraphics[scale=0.6]{images/Model_Model_Toolchain}
- }
- \caption{Implementation architecture}
- \label{fig:toolchain}
-\end{figure}
-
-Our refactorings are implemented with a strategy pattern, where each refactoring implements a \texttt{Refactorable}
-interface that has three operations \texttt{check\-Precondition}, \texttt{perform\-Refactoring}, and \texttt{check\-Post\-condition}. 
-Each refactoring identifies the model objects that participate in the refactoring and then creates and evaluates the \textit{OCL} 
-constraints on these objects. An object to type \texttt{OCL} from the org.eclipse.ocl package is used to create and evaluate the 
-queries as can be seen in Listing \ref{lst:ocl}.
+First each refactoring identifies the passed model elements that participate in the refactoring with the \texttt{loadElement} method introduced 
+in Listing \ref{lst:loadingelements}. It then creates and evaluates the OCL 
+preconditions corresponding to the refactoring on these elements. The class \texttt{OCL} from the \texttt{org.\-eclipse\-.ocl} package is 
+used to create and check the constraints as can be seen in Listing \ref{lst:ocl}. Depending on our refactoring the constraint 
+can also contain a placeholder (line 3 of Listing \ref{lst:loadingelements}) which is later defined as a variable (line 6-11) and 
+then replaced by a specific value (line 14-15).
 
 \begin{lstsingle}[language=Java,caption=OCL validation in Java,label=lst:ocl]
-variable = ExpressionsFactory.eINSTANCE.createVariable();
+OCL ocl = OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
+OCLHelper helper = ocl.createOCLHelper();
+OCLExpression expression = helper.createQuery(
+    "self.general->includes(newSuperClass)");
+
+Variable variable = 
+  ExpressionsFactory.eINSTANCE.createVariable();
 variable.setName("newSuperClass");
 variable.setType(UMLPackage.Literals.CLASSIFIER);
 ocl.getEnvironment().addElement(variable.getName(),
                                 variable, true);
-query = helper.createQuery(
-    "self.general->includes(newSuperClass)");
-eval = ocl.createQuery(query);
-eval.getEvaluationEnvironment()
+
+Query query = ocl.createQuery(expression);
+query.getEvaluationEnvironment()
     .add("newSuperClass", superClass);
-if (!eval.check(clazz))
+if (!query.check(clazz))
     return false;
 \end{lstsingle}
 
 % how to apply queries and changes?
 % how to load models?
-We have used \textit{OCL} notation to specify all constraints, but in the actual implementation of the refactorings it
-is also possible to verify some of these constraints directly on the model by checking properties of the abstract syntax
+It is also possible to formulate some of these constraints directly on the model in Java code by checking properties of the abstract syntax
 and not use the \textit{OCL} validation facilities. One example is the constraint that verifies that the new super class does not
 yet exist in the model.
 
 If the preconditions are satisfied the actual refactoring is performed through a direct modification of the model object.
-A new \texttt{Class} instance with the name of the new superclass is created and added to the model. 
-
-%TODO: give a one line example of how a class is created?
-\begin{lstsingle}[language=Java,caption=UML element creation,label=lst:createclass]
-Class superClass = UMLFactory.eINSTANCE.createClass();
-superClass.setName(newSuperClassName);
-\end{lstsingle}
-
-
-Then the existing
+For the \textit{extract superclass} refactoring a new \texttt{Class} instance with the name of the new superclass is created 
+and added to the model. Then the class from which the refactoring 
 classes of the model are filtered to select the ones that receive the new generalization, and the newly create superclass
 is added.
 
@@ -937,5 +924,199 @@ post: uml::CallOperationAction.allInstances()
 
 \subsection{Code Listings}
 \label{sec:applistings}
+
+\begin{lstsingle}[language=Java,caption=Initializing the resourceset,label=lst:resourceset]
+void initializeResourceSet() {
+  ResourceSet resourceSet = new ResourceSetImpl();
+  resourceSet.getPackageRegistry()
+    .put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
+  resourceSet.getResourceFactoryRegistry()
+    .getExtensionToFactoryMap().put(
+      UMLResource.FILE_EXTENSION, 
+      UMLResource.Factory.INSTANCE);
+  File file = new File(MODEL_PATH);
+  URI uri = URI.createFileURI(file.getAbsolutePath());
+  Resource resource = resourceSet
+    .getResource(uri, true);
+}
+\end{lstsingle}
+\\
+
+\begin{lstlisting}[language=Java,caption=Source code of the \textit{extract superClass} refactoring,label=lst:extractSuperclass]
+public class ExtractSuperClassRefactorableImpl 
+  implements Refactorable {
+
+  private final OCL<?, EClassifier, ?, ?, ?, 
+    EParameter, ?, ?, ?, Constraint, EClass, EObject> ocl;
+  private final OCLHelper<EClassifier, ?, ?, 
+    Constraint> helper;
+
+  private static final String OCL_PRE_CONSTRAINT =
+    "self.namespace.member->selectByType(Class).name"
+    + "->forAll(o | o <> '%s')";
+
+  private static final String OCL_POST_CONSTRAINT = 
+    "newSuperClass.visibility = uml::VisibilityKind::public"
+    + " and self.general->includes(newSuperClass)";
+
+  private final RefactoringData data;
+
+  public ExtractSuperClassRefactorableImpl(RefactoringData 
+    data) {
+    this.ocl = 
+      OCL.newInstance(EcoreEnvironmentFactory.INSTANCE);
+    this.helper = ocl.createOCLHelper();
+    this.data = data;
+  }
+
+  @Override
+  public boolean checkPreCondition() throws 
+    ParserException {
+    
+    helper.setContext(UMLPackage.eINSTANCE.getClass_());
+
+    Class selectedElement = 
+      (Class) data.get("selectedElement");
+    String newSuperClassName = 
+      (String) data.get("newSuperClassName");
+
+    OCLExpression<EClassifier> expression;
+    expression = helper.createQuery(String.
+      format(OCL_PRE_CONSTRAINT, newSuperClassName));
+
+    Query<EClassifier, EClass, EObject> query = 
+      ocl.createQuery(expression);
+
+    if (!query.check(selectedElement)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public boolean performRefactoring() throws 
+    RefactoringException {
+    
+    Class selectedElement = 
+      (Class) data.get("selectedElement");
+    String newSuperClassName = 
+      (String) data.get("newSuperClassName");
+    Package pkg = selectedElement.getPackage();
+
+    Class superClass = UMLFactory.eINSTANCE.createClass();
+    superClass.setName(newSuperClassName);
+
+    if (pkg.getPackagedElement(newSuperClassName) == null) {
+      // the owning package does not own a class with the 
+      // inserted name create new class named 'className'
+      Class newSuperclass = 
+        UMLFactory.eINSTANCE.createClass();
+      newSuperclass.setName(newSuperClassName);
+      pkg.getPackagedElements().add(newSuperclass);
+      // create generalization from context class to 
+      // new class
+      Generalization gen = 
+        UMLFactory.eINSTANCE.createGeneralization();
+      selectedElement.getGeneralizations().add(gen);
+      gen.setGeneral(newSuperclass);
+      data.set("newSuperClass", newSuperclass);
+    } else { 
+      // the owning package owns a class with the 
+      // inserted name
+      Class existingClass = 
+        (Class) pkg.getPackagedElement(newSuperClassName);
+      // create generalization from context class 
+      // to existing class
+      Generalization gen = 
+        UMLFactory.eINSTANCE.createGeneralization();
+      selectedElement.getGeneralizations().add(gen);
+      gen.setGeneral(existingClass);
+      data.set("newSuperClass", existingClass);
+    }
+
+    return true;
+  }
+
+  @Override
+  public boolean checkPostCondition() throws 
+    ParserException {
+    
+    helper.setContext(UMLPackage.eINSTANCE.getClass_());
+
+    Class selectedElement = 
+      (Class) data.get("selectedElement");
+    Class superClass = (Class) data.get("newSuperClass");
+
+    if (superClass == null) {
+      return false;
+    }
+
+    Variable<EClassifier, EParameter> variable = 
+      ExpressionsFactory.eINSTANCE.createVariable();
+    variable.setName("newSuperClass");
+    variable.setType(UMLPackage.Literals.CLASSIFIER);
+    ocl.getEnvironment().addElement(variable.getName(), 
+      variable, true);
+
+    OCLExpression<EClassifier> expression = 
+      helper.createQuery(OCL_POST_CONSTRAINT);
+    Query<EClassifier, EClass, EObject> query = 
+      ocl.createQuery(expression);
+    query.getEvaluationEnvironment().add("newSuperClass", 
+      superClass);
+    if (!query.check(selectedElement)) {
+      return false;
+    }
+
+    return true;
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java,caption=Execution of the \textit{extract superClass} refactoring as test,label=lst:extractSuperclassTest]
+@Test
+public void superclassExtration {
+  String superClassName = "Vehicle";
+
+  RefactoringData data = new RefactoringDataImpl();
+  data.set("newSuperClassName", superClassName);
+  Class clazz = 
+    (Class) loadElement("Model::insurance::Car", 
+    Class.class);
+  data.set("selectedElement", clazz);
+
+  Refactorable extractSuperClassRefactoring = 
+    new ExtractSuperClassRefactorableImpl(data);
+
+  try {
+    assertTrue("Precondition not met!", 
+      extractSuperClassRefactoring.checkPreCondition());
+  } catch (ParserException pre) {
+    fail("Preconstraints failed with ParserException");
+  }
+
+  try {
+    extractSuperClassRefactoring.performRefactoring();
+  } catch (RefactoringException e) {
+    e.printStackTrace();
+  }
+
+  try {
+    assertTrue("Post condition not met!", 
+      extractSuperClassRefactoring.checkPostCondition());
+  } catch (ParserException post) {
+    post.printStackTrace();
+    fail("Postconstraints failed with ParserException");
+  }
+
+  try {
+    resource.save(new FileOutputStream(
+      new File(MODEL_SUPERCLASS_PATH)), null);
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+}
+\end{lstlisting}
 
 \end{document}
