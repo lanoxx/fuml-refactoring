@@ -587,12 +587,13 @@ The examples in this work were created in Eclipse with the \textit{Eclipse Model
 in \textit{XML Metadata Interchange} \cite{man:XMI} (XMI) format. We use Java as programming language to manipulate 
 the models according to the defined refactorings.
 
-Listing \ref{lst:resourceset} shows how a model can be initialized and loaded. The \texttt{Resource\-Set}
-can be used to retrieve a \texttt{Resource} object through an \texttt{URI}, which is then used to access the different objects in the model. 
-All elements contained in the model are instances of Ecore (the implementation of
-the MOF meta-meta-model) and they represent classes of the UML meta-model, which is implemented with Ecore.
+Listing \ref{lst:resourceset} shows how a model can be initialized and loaded. First the \texttt{Resource\-Set} needs to be 
+initialized to use the correct settings for UML models. It then can be used to retrieve a \texttt{Resource} object through 
+an \texttt{URI}, which is then used to access the different objects in the model. 
+All elements contained in the model are instances of Ecore\footnote{The EMF core meta-model implementation of
+the MOF meta-meta-model} and they represent classes of the UML meta-model, which is implemented with Ecore.
 
-\begin{lstsingle}[language=Java,caption=Getting the resourceset,label=lst:resourceset]
+\begin{lstsingle}[language=Java,caption=Initializing the resourceset,label=lst:resourceset]
 void initializeResourceSet() {
   ResourceSet resourceSet = new ResourceSetImpl();
   resourceSet.getPackageRegistry()
@@ -606,7 +607,16 @@ void initializeResourceSet() {
   Resource resource = resourceSet
     .getResource(uri, true);
 }
+\end{lstsingle}
 
+Model elements can be loaded in different ways. We decided to use the qualified name and the class of the concept as 
+parameters to identify and load an element. Listing \ref{lst:loadingelements} shows that we first build up a tree of 
+the model which is retrieved from the \texttt{Resource}. Then we iterate through the tree and check whether the element 
+is a \texttt{NamedElement}. If this is the case we need to verify that element is assignable to the class we want to 
+load and that the qualified name is the same. The resulting \texttt{EObject} is returned and needs to be casted by the 
+calling method.
+
+\begin{lstsingle}[language=Java,caption=Loading elements from the model,label=lst:loadingelements]
 Object loadElement(String qualifiedName, 
   java.lang.Class<? extends NamedElement> clazz) {
   
