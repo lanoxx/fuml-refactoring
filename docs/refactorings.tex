@@ -750,21 +750,24 @@ that every node of the trace has the expected values.
 
 \subsection{Eclipse Integration}
 \label{sec:guiintegration}
-In this section we discuss how we can integrate the our refactorings with the Eclipse framework. For our further 
-research we plan to implement some the refactorings in EMF Refactor. EMF Refactor is an Eclipse incubation project 
-which focuses on static model analysis and refactoring.
+In this section we discuss how we can integrate our refactorings with the Eclipse framework. EMF Refactor is an Eclipse incubation 
+project which focuses on static model analysis (e.g. metrics and code smell detection) and refactoring. But EMF Refactor currently
+does not include co-refactorings for activity diagrams.
 
-EMF Refactor analyses a project for so called code smells and calculates common model metrics. Those two project quality 
+EMF Refactor analyses a model for so called code smells and calculates common model metrics. Those two project quality 
 indicators reflect in a very convenient way which parts of a model could be improved. From a report view different 
-refactorings already implemented in EMF Refactor can be applied to change the model. The refactorings work in the UML tree 
-editor as well as in several graphical editors based on EMF.
+refactorings that are already implemented in EMF Refactor can be applied to transform the model. The refactorings work in the UML tree 
+editor as well as in several graphical editors based on EMF such as Papyrus.
 
 However EMF Refactor mainly supports the refactoring of class diagrams. The effects that can be seen in activity diagrams 
-when refactoring class diagrams are error prone and seem to happen more or less by accident. Nevertheless we intend to 
-implement our above mentioned catalog in EMF Refactor because of the good integration with the Eclipse framework, the 
-easy generation of simple refactorings\footnote{The framework supports the generation of new smells, metrics and 
+when refactoring class diagrams are error prone and seem to happen more or less by accident. However EMF Refactor does not only
+provide the implemented refactorings but it also containts utilities to generate code skeletons.
+
+A good way to extend our refactorings would be to implement our above mentioned catalog of refactorings in EMF Refactor. This way
+we could directly benefit of the good integration with the Eclipse framework, the 
+easy generation of simple refactoring skeletons\footnote{The framework supports the generation of new smells, metrics and 
 refactorings with a module wizard in Eclipse.} and the various implementation possibilities\footnote{EMF Refactor 
-supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit{Henshin} a transformation language.}.
+supports the creation of refactorings in \textit{Java}, \textit{OCL} and \textit{Henshin} a transformation language.}. 
 
 \section{Current limitations}
 \label{sec:limitations}
@@ -818,7 +821,7 @@ different languages (Java, OCL \& Henshin) and can be directly extended in \text
 
 \section{Conclusion}
 \label{sec:conclusion}
-Refactoring models is a rather difficult task and it requires a concise knowledge of the involved technologies, with
+Refactoring models is a rather difficult task and it requires a comprehensive knowledge of the involved technologies, with
 the list of involved technologies being rather long. For one a reasonably well understanding of fUML is required, in
 particular how class diagrams and activity diagrams are constructed and how they are related. It is not enough to simply
 be able to draw both class and activity diagrams, as one also needs a good understanding of the meta-meta-model (MOF) and
