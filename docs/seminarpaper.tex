@@ -20,7 +20,46 @@
 \newcommand{\uml}[1]{\texttt{#1}}
 \newcommand{\cd}{\textsf{Class Diagram}}
 
+%Colors for general listings
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+%Colors for JSON listings
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstset{ %
+   backgroundcolor=\color{background},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+   basicstyle=\small\ttfamily,        % the size of the fonts that are used for the code
+%   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+%   breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+%   deletekeywords={...},            % if you want to delete keywords from the given language
+%   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+%   extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+   frame=lines,                    % adds a frame around the code
+%   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  columns=fixed,
+  keywordstyle=\color{mymauve},       % keyword style
+  stringstyle=\color{blue},
+%   morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\scriptsize\color{mygray}, % the style that is used for the line-numbers
+%   rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+ showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+ showstringspaces=false,          % underline spaces within strings only
+ showtabs=false,                  % show tabs within strings adding particular underscores
+%   stepnumber=2,                    % the step between two line-numbers. If it is 1, each line will be numbered
+  tabsize=2,                       % sets default tabsize to 2 spaces
+%   title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
 \begin{document}
+\renewcommand{\thelstlisting}{\arabic{lstlisting}}
 \pagestyle{plain}
 \pagenumbering{roman}
 
@@ -63,7 +102,9 @@ The paper is structured as follows. Section \ref{sec:beginning} copes with the e
 of source code development. Section \ref{sec:fromto} presents how commonly known refactorings from source code where
 adapted in theoretical works to models and how they can be tested for correctness with static methods. Section 
 \ref{sec:todynamics} discusses actual research on how models can also be tested dynamically by executing and debugging 
-the models. Finally Section \ref{sec:conclusion} summarizes the presented research.
+the models. In Section \ref{sec:combine} we intend to put the presented approaches together to build a useful basis for 
+refactoring models and testing whether their behavior was preserved by the applied modifications. Finally Section 
+\ref{sec:conclusion} summarizes the presented research.
 
 \section{Beginning in refactoring}
 \label{sec:beginning}
@@ -201,13 +242,75 @@ analysis to ensure that the behavior of the models are preserved and to identify
 this section we will discuss research that adapts the approach presented by \cite{rob99} and uses the execution of
 systems to dynamically verify that the behavior of a model was preserved by a refactoring.
 
-UML does not provide the semantics to make a model as executable as program code is. This issue was addressed in
-the definition of a subset of UML that precisely defines the execution semantics of a subset of UML. This
+Mayerhofer \cite{DBLP:conf/icse/Mayerhofer12} proposes to use common techniques from software development to
+dynamically verify the behavior of UML models namely testing and debugging. The prerequisite to dynamically 
+verify the behavior of a model is that it can be executed. Mayerhofer states that the specified semantics for 
+UML are imprecise and scattered throughout the specification thus leading to ambiguities when it comes to execution. 
+This issue was addressed, as also mentioned in their work, in
+the definition of a subset of UML that precisely defines the execution semantics of this subset of UML. This
 subset is defined in the standard ``Semantics of a Foundational Subset for Executable UML Models'' (fUML) 
 \cite{man:FUML}. It contains concepts of the packages \textit{Classes}, \textit{CommonBehaviors}, \textit{Activities} and \textit{Actions}, which, 
 if you recall Figure \ref{fig:uml},  basically means that it is possible to create 
 \textit{class diagrams} and \textit{activity diagrams} with fUML. The class diagram can be used to model the domain with its concepts, the activity diagram can be used
-to describe the behavior of the concepts in the class diagram.
+to describe the behavior of the concepts in the class diagram. This specification builds up a basic virtual machine 
+that allows UML models conform to fUML to be translated to various executable forms and thereby to be executed themselves.
+
+However, Mayerhofer brings up some problems when
+taking a deeper look because ``UML models constitute a multiple view specification of a system'' \cite{DBLP:conf/icse/Mayerhofer12}.
+This issues as well as some others like different levels of abstraction within the models or incomplete models have to be 
+considered when executing the models. Therefore a execution environment which is based on fUML is proposed that aims to address 
+the questions below. How can UML models be executed even if they are incomplete due to the development phase they are in or 
+to semantics different than fUML applied in practice? How can existing testing techniques from software development be adopted 
+under the before mentioned circumstances and how can test cases be formulated for models? How can debugging be applied for 
+models in terms of addressing issues like finding infected model parts or focusing on origins of defects? The questions are 
+covered in their work by carrying out the following steps. They conduct a survey on model execution as well as its needs in 
+practice and an evaluation of existing approaches to execute models. As the execution environment provided by the specification 
+of fUML is neither observable nor controllable they propose an extension to the existing virtual machine. Finally Mayerhofer 
+aims to adapt existing debugging and testing techniques for models and implement them to the extended virtual machine and 
+furthermore evaluate the resulting model execution environment.
+
+In a further work by Mayerhofer~\textit{et al.} \cite{DBLP:conf/models/MayerhoferLK12} a runtime model for UML models 
+in order to support testing and debugging capabilities is proposed. On the one hand a trace model is introduced which enables 
+a runtime analysis of models executed in the virtual machine defined by the fUML specification. On the other hand they 
+define an event model and a command API to control the execution of the models. This additional functionalities are implemented 
+as an extension to the reference implementation.
+
+The suggested trace model is capable to address the following needs. The inputs provided and outputs of an activity produced 
+can be recorded during the execution. The chronological order of the execution steps as well as the logical order should be 
+maintained. The information which edges have been traversed by an execution token needs to be captured. In their proposal of 
+an event model and a command API they present a meta-model that allows to retrieve events resulting from state changes of the 
+trace and activity changes such as the start or the end of an activity execution. Further events and commands of the API 
+provide functionality to set breakpoints, suspend and resume the execution of a model or execute the examined activity stepwise.
+The code and the extension to the reference implementation is publicly available\footnote{\url{http://www.modelexecution.org/}} 
+and builds a useful toolset for the purpose of dynamically testing behavior preserving refactorings of UML models.
+
+\section{Combining static and dynamic analysis for refactoring class diagrams and co-refactoring activity diagrams}
+\label{sec:combine}
+
+In Section \ref{sec:todynamics} we discussed work that builds up on the implication that modern software development uses 
+dynamic techniques to analyze the correctness and quality of software artifacts, and tries to adapt common those concepts for 
+models. In this section we will combine the approaches of static and dynamic testing to show how to define refactorings on 
+UML class diagrams and co-refactor activity diagrams in order that their semantics are preserved.
+
+In our work we concentrate on the subset of fUML to investigate the changes that are implied in the corresponding
+activity diagram if the class diagram changes. In particular we examined which co-refactorings of activity diagrams 
+have to be applied when a class diagram is refactored, in order to preserve the semantics of the model 
+and its behavior which also means its executability. 
+
+In order for the reader to get more insights on the topic, we provide an example refactoring, namely \textit{encapsulate property}. 
+The refactoring is commonly known from source code refactoring and has the following steps:
+
+\begin{itemize}
+ \item Create setters and getters for the property.
+ \item Change all occurrences of the property to the created setters and getters.
+ \item Change the visibility of the property to private.
+\end{itemize}
+
+In Figure \ref{fig:fuml1} parts of the abstract syntax for defining classes in class diagrams and activities in activity diagram are
+displayed to provide a better understanding which steps have to be taken to apply a refactoring both on the class diagram and the 
+activity diagram. For the class diagram, there are nearly no modifications necessary except to create the new methods and set the
+property's visibility to private. The implied co-refactorings, to access the encapsuled property in an activity diagram, are not that 
+obvious.
 
 \begin{figure}[h!t]
  \centering
@@ -218,22 +321,7 @@ to describe the behavior of the concepts in the class diagram.
  \label{fig:fuml1}
 \end{figure}
 
-In our work we concentrate on this subset to investigate the changes that are implied in the corresponding
-diagram if the other diagram changes. In particular we examined which co-refactorings of activity diagrams 
-have to be applied when a class diagram is refactored, in order to preserve the executability of the model 
-and its behavior. In order for the reader to get more insights on the topic, we provide an example refactoring, namely \textit{encapsulate property}. 
-The refactoring is commonly known from source code refactoring and has the following steps:
-
-\begin{itemize}
- \item Create setters and getters for the property.
- \item Change all occurrences of the property to the created setters and getters.
- \item Change the visibility of the property to private.
-\end{itemize}
-
-In Figure \ref{fig:fuml1} parts of the abstract syntax for defining classes in class diagrams and activities in activity diagram are
-displayed. For the class diagram, there are nearly no modifications necessary except to create the new methods and set the
-property's visibility to private. The implied co-refactorings, to access the encapsuled property in an activity diagram, are not that 
-obvious. Figure \ref{fig:calculatePremiumRef} shows a very
+Figure \ref{fig:calculatePremiumRef} shows a very
 simple activity diagram. Each of the actions \texttt{read\-Number\-Of\-Vehicles}, \texttt{read\-Customer} and
 \texttt{readAge}, displayed in pink in the figures, are actions of type \texttt{Read\-Structural\-Feature\-Action} which read \texttt{Structural\-Features}. 
 Each of these actions has to be changed to actions of type \texttt{Call\-Operation\-Action} as they
@@ -252,13 +340,94 @@ It can be seen that even this refactoring which is rather simple to apply in sou
  \label{fig:calculatePremiumRef}
 \end{figure}
 
-Mayerhofer \cite{DBLP:conf/icse/Mayerhofer12} proposes to use common techniques from software development to
-dynamically verify the behavior of UML models namely testing and debugging. However some problems come up when
-taking a deeper look because ``UML models constitute a multiple view specification of a system reference''. In a further
-scientific work by Mayerhofer~\textit{et al.} \cite{DBLP:conf/models/MayerhoferLK12} a runtime model is presented that is capable
-to execute and trace activities. They also implemented\footnote{http://www.modelexecution.org/} a virtual machine that
-is capable of running fUML models and can even convert UML model compatible to fUML for
-execution purposes.
+We expect that the model is correct at this point and can be converted and executed with the reference implementation introduced in 
+\cite{DBLP:conf/models/MayerhoferLK12}. Now with the goals of the refactoring in mind, we can now formulate preconditions to the 
+refactoring that have to be met before the refactoring is carried out on the model. 
+
+Listing \ref{lst:encapsulate} shows the respective preconditions as well as postconditions for the \textit{encapsulate property} 
+refactoring. First all we have to check whether the property's visibility which we want to set to private is not already private 
+(line 2). Second the newly created getter and setter operations of the class need to be distinguishable from the existing 
+operations. In line 17 of Listing \ref{lst:encapsulate} we formulate that the multiplicity of the property is at most '1'. We 
+formulate this to provide that the exmple stays relatively simple. Finally we define that there are no \texttt{Clear\-Structural\-Feature\-Action} and 
+\texttt{Remove\-Structural\-Feature\-Value\-Action} that access the property.
+
+The later formulated OCL constraint is needed 
+because in the strict sense of the \textit{encapsulate property} refactoring, proposed by \cite{fow99}, the definition of the 
+\texttt{Clear\-Structural\-Feature\-Action} cannot be matched to one of the two introduced operations. The action would need to be 
+changed to to a \texttt{Call\-Operation\-Action} that invokes the getter operation. However, the getter operation in the classical 
+sense does not own any arguments that can be used to lead to a deletion of the value of the property. This leads to an important 
+conclusion from our view. Already existing refactorings for code centric software development might need to be adapted to meet the 
+requirements of co-refactoring different views.
+
+\begin{lstlisting}[language=OCL,caption=OCL for \textit{encapsulate property} refactoring,label=lst:encapsulate]
+context Property:
+pre:  self.visibility <> uml::VisibilityKind::private 
+      and 
+      self.class.ownedOperation
+        ->forAll(o | o.isDistinguishableFrom(setOperation, 
+            self.namespace)
+          and 
+          o.isDistinguishableFrom(getOperation, 
+            self.namespace)) 
+      and 
+      uml::ClearStructuralFeatureAction.allInstances().
+        structuralFeature->forAll(s|s<>self)
+      and
+      uml::RemoveStructuralFeatureValueAction.allInstances().
+        structuralFeature->forAll(s|s<>self)
+      and
+      self.upper <= 1"
+post: uml::CallOperationAction.allInstances()
+        ->select(action | action.operation = operation)
+        ->collect(input)->select(pin | pin <> null)
+        ->size() = inputPinCounter
+      and
+      uml::CallOperationAction.allInstances()
+        ->select(action | action.operation = operation)
+        ->collect(result)->select(pin | pin <> null)
+        ->size() = outputPinCounter
+      and
+      uml::CallOperationAction.allInstances()
+        ->select(action | action.operation = operation)
+        ->collect(target)->forAll(target | target.type 
+        = self.class)
+      and 
+      uml::CallOperationAction.allInstances()
+        ->select(action | action.operation = operation)
+        ->collect(argument)->forAll(argument | argument.type 
+        = self.type)
+      and
+      uml::CallOperationAction.allInstances()
+        ->select(action | action.operation = operation)
+        ->collect(result)->forAll(result | result.type 
+        = self.type)
+\end{lstlisting}
+
+The postconditions make use of variables define prior to the application of the refactoring. The \texttt{input\-Pin\-Counter} holds 
+the number of input pins to the \texttt{Structural\-Feature\-Action}s in the originating model. The \texttt{output\-Pin\-Counter} holds 
+he respective number of output pins for the model. The number of pins in the model that access the \texttt{Structural\-Feature\-Action} 
+before the refactoring and the \texttt{Call\-Operation\-Action} after the refactoring have to be the same. We also define that the 
+target types, the argument types as well as the result types of both action have to be the same after the refactoring. There might be 
+even more unrevealed constraints that should be checked for the \textit{encapsulate property} refactoring.
+
+We can apply the refactoring between the check of the preconditions and the postconditions. After the postconditions, however, the preservation 
+of the semantic behavior should also be tested dynamically. The first step would be to check whether the relevant activities stay executable 
+in general. As a second step we can observe the following attributes of the execution which were introduced in the runtime model of 
+\cite{DBLP:conf/models/MayerhoferLK12}.
+
+\begin{itemize}
+ \item The inputs provided for the activities as well as the outputs produced need to stay the same.
+ \item The logical order of the trace is most likely not the same as the \texttt{Call\-Operation\-Action} invokes further actions that result 
+ in another behavior.
+ \item The chronological order of the trace is most likely not the same as the \texttt{Call\-Operation\-Action} invokes further actions 
+ that follow another timely manner.
+ \item The edge traversal will also e different as of the original execution.
+ \item The action states do not need to be the same as new actions were introduced.
+\end{itemize}
+
+We can conclude that depending on the refactoring the execution attributes change dramatically and have to be chosen carefully to 
+be representative. Nevertheless it seems promising to combine the approach of static and dynamic analysis to verify that  refactoring 
+preserves the behavior of the model as intended.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -268,7 +437,9 @@ from source code refactoring with pre- and postconditions and the domain of mode
 where refactoring is equally needed but harder to implement because of the different views on the underlying models and
 their correlations. Model development tries to take common techniques from source code development and adapt them for
 its needs. While from the beginning static analysis was taken into account verifying the correctness of refactorings in the later research and especially with the
-standardization of fUML also dynamic analysis like testing and debugging during execution can be exploited.
+standardization of fUML also dynamic analysis like testing and debugging during execution can be exploited. The combination 
+of static and dynamic verification was shown for an example of co-refactoring class diagrams and activity diagrams which where 
+small changes in the one can lead to complex changes in the other.
 
 \newpage
 \bibliographystyle{acm}
